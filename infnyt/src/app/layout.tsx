@@ -47,6 +47,7 @@ export default function RootLayout({
         </svg>
         <Cursor />
         <Nav />
+        <div className="h-20" aria-hidden="true" />
         {children}
         <Footer />
       </body>

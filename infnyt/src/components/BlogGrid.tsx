@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Search, ChevronLeft, ChevronRight, ArrowRight, Tag } from "lucide-react";
+import SpiderLines from "./SpiderLines";
 
 const FILTERS = [
   "All Articles",
@@ -99,8 +100,7 @@ export default function BlogGrid() {
   const [email, setEmail] = useState("");
 
   const filtered = ARTICLES.filter((a) => {
-    const matchesFilter =
-      activeFilter === "All Articles" || a.category === activeFilter;
+    const matchesFilter = activeFilter === "All Articles" || a.category === activeFilter;
     const matchesSearch =
       search.trim() === "" ||
       a.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -110,16 +110,11 @@ export default function BlogGrid() {
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ARTICLES_PER_PAGE));
   const safePage = Math.min(page, totalPages);
-  const visible = filtered.slice(
-    (safePage - 1) * ARTICLES_PER_PAGE,
-    safePage * ARTICLES_PER_PAGE
-  );
+  const visible = filtered.slice((safePage - 1) * ARTICLES_PER_PAGE, safePage * ARTICLES_PER_PAGE);
 
   function changePage(n: number) {
     setPage(Math.min(Math.max(1, n), totalPages));
-    document
-      .getElementById("articles")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById("articles")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function handleFilterClick(f: string) {
@@ -128,8 +123,46 @@ export default function BlogGrid() {
   }
 
   return (
-    <section id="articles" className="py-16 bg-site-bg">
-      <div className="max-w-300 mx-auto px-8">
+    <section id="articles" className="relative overflow-hidden py-16" style={{ background: "transparent" }}>
+
+      {/* Dark teal overlay */}
+      <div className="pointer-events-none absolute inset-0" style={{ background: "rgba(0, 20, 26, 0.88)" }} aria-hidden="true" />
+
+      {/* Particle network */}
+      <SpiderLines />
+
+      {/* Key light */}
+      <div className="cinema-key pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 72% 62% at 14% -5%, rgba(14,158,181,0.24) 0%, rgba(14,158,181,0.06) 45%, transparent 72%)", filter: "blur(8px)" }} aria-hidden="true" />
+
+      {/* Fill light */}
+      <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 60% 55% at 96% 110%, rgba(180,204,65,0.15) 0%, rgba(180,204,65,0.04) 48%, transparent 72%)", filter: "blur(14px)" }} aria-hidden="true" />
+
+      {/* God rays */}
+      <div className="cinema-rays pointer-events-none absolute inset-0 overflow-hidden" style={{ mixBlendMode: "screen" }} aria-hidden="true">
+        <div style={{ position:"absolute", top:"-40%", left:"5%",  width:280, height:"170%", background:"linear-gradient(180deg,rgba(180,204,65,0.9) 0%,rgba(180,204,65,0.20) 52%,transparent 100%)", transform:"rotate(-28deg)", transformOrigin:"top center", filter:"blur(34px)", opacity:0.038 }} />
+        <div style={{ position:"absolute", top:"-40%", left:"19%", width:95,  height:"170%", background:"linear-gradient(180deg,rgba(180,204,65,0.8) 0%,rgba(180,204,65,0.14) 58%,transparent 100%)", transform:"rotate(-28deg)", transformOrigin:"top center", filter:"blur(22px)", opacity:0.026 }} />
+        <div style={{ position:"absolute", top:"-40%", left:"33%", width:160, height:"170%", background:"linear-gradient(180deg,rgba(14,158,181,0.8)  0%,rgba(14,158,181,0.10)  62%,transparent 100%)", transform:"rotate(-22deg)", transformOrigin:"top center", filter:"blur(30px)", opacity:0.028 }} />
+      </div>
+
+      {/* Drifting ambient */}
+      <div className="hero-gradient-drift pointer-events-none absolute inset-0" aria-hidden="true" />
+
+      {/* Ambient — upper-left chartreuse */}
+      <div className="pointer-events-none absolute -top-40 -left-40 w-160 h-160" style={{ background: "radial-gradient(circle, rgba(180,204,65,0.09) 0%, transparent 62%)" }} aria-hidden="true" />
+
+      {/* Ambient — lower-right */}
+      <div className="pointer-events-none absolute bottom-0 right-0 h-120 w-[65%]" style={{ background: "radial-gradient(ellipse 80% 90% at 90% 100%, rgba(180,204,65,0.07) 0%, rgba(14,158,181,0.04) 45%, transparent 70%)" }} aria-hidden="true" />
+
+      {/* Mid-depth haze */}
+      <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 88% 28% at 50% 46%, rgba(14,158,181,0.032) 0%, transparent 100%)" }} aria-hidden="true" />
+
+      {/* Cinematic vignette */}
+      <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 88% 74% at 50% 42%, transparent 30%, rgba(0,0,0,0.68) 100%)" }} aria-hidden="true" />
+      <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.34) 0%, transparent 16%, transparent 84%, rgba(0,0,0,0.34) 100%)" }} aria-hidden="true" />
+
+      {/* Content */}
+      <div className="relative z-10 max-w-300 mx-auto px-8">
+
         {/* Filters + search */}
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-10">
           <div className="flex flex-wrap gap-2">
@@ -137,28 +170,43 @@ export default function BlogGrid() {
               <button
                 key={f}
                 onClick={() => handleFilterClick(f)}
-                className={`px-4 py-1.5 rounded-full text-[12.5px] font-semibold transition-all duration-150 ${
+                className="px-4 py-1.5 text-[12.5px] font-semibold transition-all duration-200"
+                style={
                   activeFilter === f
-                    ? "bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-[0_4px_14px_rgba(14,158,181,0.25)]"
-                    : "bg-dark-surface text-gray-500 border border-white/7 hover:border-teal-500/30 hover:text-white"
-                }`}
+                    ? { background: "#e1ff51", color: "#000000" }
+                    : {
+                        border: "1px solid rgba(255,255,255,0.07)",
+                        background: "transparent",
+                        color: "rgba(255,255,255,0.50)",
+                      }
+                }
+                onMouseEnter={e => {
+                  if (activeFilter !== f) (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.90)";
+                }}
+                onMouseLeave={e => {
+                  if (activeFilter !== f) (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.50)";
+                }}
               >
                 {f}
               </button>
             ))}
           </div>
+
+          {/* Search */}
           <div className="relative shrink-0">
-            <Search
-              size={13}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-              aria-hidden="true"
-            />
+            <Search size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "rgba(255,255,255,0.30)" }} aria-hidden="true" />
             <input
               type="search"
               placeholder="Search articles…"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="pl-9 pr-4 py-2 rounded-full border border-white/7 bg-dark-surface text-[13px] text-white placeholder:text-gray-500 focus:outline-none focus:border-teal-500/40 w-52.5 transition-colors"
+              className="pl-9 pr-4 py-2 text-[13px] text-white placeholder:text-white/30 focus:outline-none w-52 transition-colors"
+              style={{
+                border: "1px solid rgba(255,255,255,0.07)",
+                background: "rgba(0,20,26,0.45)",
+              }}
+              onFocus={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(225,255,81,0.30)"; }}
+              onBlur={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)"; }}
             />
           </div>
         </div>
@@ -167,21 +215,23 @@ export default function BlogGrid() {
         <div className="flex gap-8 items-start">
           <div className="flex-1 min-w-0">
             {visible.length === 0 ? (
-              <p className="text-[14px] text-gray-500">No articles match your search.</p>
+              <p className="text-[14px] text-white/50">No articles match your search.</p>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                 {visible.map((a) => (
                   <ArticleCard key={a.id} article={a} />
                 ))}
               </div>
             )}
 
+            {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-2 mt-10">
                 <button
                   onClick={() => changePage(safePage - 1)}
                   disabled={safePage === 1}
-                  className="w-9 h-9 rounded-full border border-white/7 bg-dark-surface flex items-center justify-center text-gray-500 hover:border-teal-500/30 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="w-9 h-9 flex items-center justify-center text-white/40 disabled:opacity-30 disabled:cursor-not-allowed transition-colors hover:text-white"
+                  style={{ border: "1px solid rgba(255,255,255,0.07)", background: "transparent" }}
                   aria-label="Previous page"
                 >
                   <ChevronLeft size={15} />
@@ -190,11 +240,12 @@ export default function BlogGrid() {
                   <button
                     key={n}
                     onClick={() => changePage(n)}
-                    className={`w-9 h-9 rounded-full text-[13px] font-semibold transition-all duration-150 ${
+                    className="w-9 h-9 text-[13px] font-semibold transition-all duration-150"
+                    style={
                       n === safePage
-                        ? "bg-linear-to-r from-teal-600 to-teal-500 text-white"
-                        : "border border-white/7 bg-dark-surface text-gray-500 hover:border-teal-500/30 hover:text-white"
-                    }`}
+                        ? { background: "#e1ff51", color: "#000000" }
+                        : { border: "1px solid rgba(255,255,255,0.07)", background: "transparent", color: "rgba(255,255,255,0.50)" }
+                    }
                     aria-current={n === safePage ? "page" : undefined}
                   >
                     {n}
@@ -203,7 +254,8 @@ export default function BlogGrid() {
                 <button
                   onClick={() => changePage(safePage + 1)}
                   disabled={safePage === totalPages}
-                  className="w-9 h-9 rounded-full border border-white/7 bg-dark-surface flex items-center justify-center text-gray-500 hover:border-teal-500/30 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="w-9 h-9 flex items-center justify-center text-white/40 disabled:opacity-30 disabled:cursor-not-allowed transition-colors hover:text-white"
+                  style={{ border: "1px solid rgba(255,255,255,0.07)", background: "transparent" }}
                   aria-label="Next page"
                 >
                   <ChevronRight size={15} />
@@ -214,17 +266,22 @@ export default function BlogGrid() {
 
           {/* Sidebar */}
           <aside className="hidden xl:flex flex-col gap-5 w-[264px] shrink-0">
+
             {/* Newsletter */}
-            <div className="bg-linear-to-b from-dark-surface to-[#0A1828] rounded-2xl border border-white/7 shadow-[0_2px_8px_rgba(0,0,0,0.35)] p-6 relative overflow-hidden">
+            <div
+              className="relative overflow-hidden p-6"
+              style={{ border: "1px solid rgba(255,255,255,0.07)", background: "rgba(0,20,26,0.45)" }}
+            >
+              {/* Chartreuse top line */}
               <div
-                className="absolute left-0 top-0 h-0.5 w-full"
-                style={{ background: "linear-gradient(90deg, var(--color-teal-400), var(--color-teal-600))" }}
+                className="absolute inset-x-0 top-0 h-px"
+                style={{ background: "linear-gradient(90deg, transparent, rgba(225,255,81,0.45) 50%, transparent)" }}
                 aria-hidden="true"
               />
-              <h3 className="text-[15px] font-semibold text-white mb-1 tracking-[-0.01em]">
+              <h3 className="text-[15px] font-semibold text-white mb-1 tracking-tight">
                 Stay in the loop
               </h3>
-              <p className="text-[12.5px] text-gray-500 leading-[1.6] mb-4">
+              <p className="text-[12.5px] text-white/50 leading-[1.6] mb-4">
                 New articles to your inbox, no noise.
               </p>
               <div className="flex gap-2">
@@ -233,11 +290,15 @@ export default function BlogGrid() {
                   placeholder="you@company.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 min-w-0 px-3 py-2 rounded-lg border border-white/7 bg-site-bg text-[13px] text-white placeholder:text-gray-500 focus:outline-none focus:border-teal-500/40 transition-colors"
+                  className="flex-1 min-w-0 px-3 py-2 text-[13px] text-white placeholder:text-white/30 focus:outline-none transition-colors"
+                  style={{ border: "1px solid rgba(255,255,255,0.07)", background: "rgba(0,20,26,0.60)" }}
+                  onFocus={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(225,255,81,0.30)"; }}
+                  onBlur={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)"; }}
                 />
                 <button
                   onClick={() => setEmail("")}
-                  className="w-9 h-9 shrink-0 bg-linear-to-r from-teal-600 to-teal-500 text-white rounded-full flex items-center justify-center hover:brightness-110 transition-all"
+                  className="w-9 h-9 shrink-0 flex items-center justify-center hover:brightness-110 transition-all"
+                  style={{ background: "#e1ff51", color: "#000000" }}
                   aria-label="Subscribe"
                 >
                   <ArrowRight size={14} />
@@ -246,8 +307,16 @@ export default function BlogGrid() {
             </div>
 
             {/* Popular topics */}
-            <div className="bg-linear-to-b from-dark-surface to-[#0A1828] rounded-2xl border border-white/7 shadow-[0_2px_8px_rgba(0,0,0,0.35)] p-6">
-              <h3 className="text-[15px] font-semibold text-white mb-4 tracking-[-0.01em]">
+            <div
+              className="relative overflow-hidden p-6"
+              style={{ border: "1px solid rgba(255,255,255,0.07)", background: "rgba(0,20,26,0.45)" }}
+            >
+              <div
+                className="absolute inset-x-0 top-0 h-px"
+                style={{ background: "linear-gradient(90deg, transparent, rgba(225,255,81,0.45) 50%, transparent)" }}
+                aria-hidden="true"
+              />
+              <h3 className="text-[15px] font-semibold text-white mb-4 tracking-tight">
                 Popular topics
               </h3>
               <ul className="flex flex-col gap-3">
@@ -262,11 +331,14 @@ export default function BlogGrid() {
                       }}
                       className="flex items-center justify-between w-full group"
                     >
-                      <span className="flex items-center gap-2 text-[13px] text-gray-500 font-medium group-hover:text-teal-400 transition-colors">
-                        <Tag size={11} className="text-teal-500 shrink-0" aria-hidden="true" />
+                      <span className="flex items-center gap-2 text-[13px] text-white/50 font-medium group-hover:text-[#e1ff51] transition-colors duration-200">
+                        <Tag size={11} style={{ color: "#e1ff51" }} className="shrink-0" aria-hidden="true" />
                         {label}
                       </span>
-                      <span className="text-[11px] font-semibold text-teal-400 bg-teal-500/15 px-2 py-0.5 rounded-full">
+                      <span
+                        className="text-[11px] font-semibold px-2 py-0.5"
+                        style={{ background: "rgba(225,255,81,0.10)", color: "#e1ff51" }}
+                      >
                         {count}
                       </span>
                     </button>
@@ -274,6 +346,7 @@ export default function BlogGrid() {
                 ))}
               </ul>
             </div>
+
           </aside>
         </div>
       </div>
@@ -281,22 +354,24 @@ export default function BlogGrid() {
   );
 }
 
-function ArticleCard({
-  article,
-}: {
-  article: (typeof ARTICLES)[number];
-}) {
-  const { category, date, readTime, title, body, author, image, imageAlt } =
-    article;
+function ArticleCard({ article }: { article: (typeof ARTICLES)[number] }) {
+  const { category, date, readTime, title, body, author, image, imageAlt } = article;
   return (
-    <article className="group relative flex flex-col bg-linear-to-b from-dark-surface to-[#0A1828] rounded-2xl border border-white/7 overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.35)] transition-all duration-300 ease-out hover:-translate-y-2 hover:border-teal-500/25 hover:shadow-[0_20px_50px_-10px_rgba(14,158,181,0.28)]">
-      {/* Top teal line */}
-      <div
-        className="absolute left-0 top-0 h-0.5 w-0 transition-all duration-300 ease-out group-hover:w-full z-10"
-        style={{
-          background:
-            "linear-gradient(90deg, var(--color-teal-400), var(--color-teal-600))",
-        }}
+    <article
+      className="group relative flex flex-col overflow-hidden transition-colors duration-500 ease-out hover:bg-white/1.5 cursor-pointer"
+      style={{ border: "1px solid rgba(255,255,255,0.07)", background: "rgba(0,20,26,0.35)" }}
+    >
+      {/* Chartreuse bloom on hover */}
+      <span
+        className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out z-10"
+        style={{ background: "radial-gradient(ellipse 80% 35% at 50% 0%, rgba(225,255,81,0.05) 0%, transparent 70%)" }}
+        aria-hidden="true"
+      />
+
+      {/* Chartreuse top-edge line — fills on hover */}
+      <span
+        className="absolute top-0 left-0 h-px w-0 group-hover:w-full transition-all duration-500 ease-out z-20"
+        style={{ background: "linear-gradient(90deg, transparent, #e1ff51 50%, transparent)" }}
         aria-hidden="true"
       />
 
@@ -310,29 +385,35 @@ function ArticleCard({
           sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 340px"
         />
         <div className="absolute top-3 left-3 z-10">
-          <span className="inline-flex items-center bg-navy-900/90 backdrop-blur-sm text-white text-[10px] font-semibold tracking-[0.1em] uppercase px-2.5 py-1 rounded-full">
+          <span
+            className="inline-flex items-center text-[10px] font-mono font-semibold tracking-[0.14em] uppercase px-2.5 py-1"
+            style={{ background: "rgba(0,20,26,0.80)", color: "#e1ff51", border: "1px solid rgba(225,255,81,0.18)" }}
+          >
             {category}
           </span>
         </div>
       </div>
 
+      {/* Hairline between image and content */}
+      <div className="h-px w-full" style={{ background: "rgba(255,255,255,0.07)" }} aria-hidden="true" />
+
       {/* Body */}
-      <div className="flex flex-col flex-1 p-5">
-        <div className="flex items-center gap-2 text-[11.5px] text-gray-500 mb-3">
+      <div className="relative z-10 flex flex-col flex-1 p-5">
+        <div className="flex items-center gap-2 text-[11.5px] text-white/40 mb-3">
           <span>{date}</span>
-          <span className="w-1 h-1 rounded-full bg-white/15" aria-hidden="true" />
+          <span className="w-1 h-1 rounded-full bg-white/20" aria-hidden="true" />
           <span>{readTime} read</span>
         </div>
-        <h3 className="text-[15px] font-semibold text-white leading-[1.35] mb-2 tracking-[-0.01em] transition-colors duration-300 group-hover:text-teal-400">
+        <h3 className="text-[15px] font-semibold text-white leading-[1.35] mb-2 tracking-tight transition-colors duration-300 group-hover:text-[#e1ff51]">
           {title}
         </h3>
-        <p className="text-[12.5px] text-gray-500 leading-[1.65] flex-1">{body}</p>
+        <p className="text-[12.5px] text-white/55 leading-[1.65] flex-1">{body}</p>
 
-        <div className="flex items-center justify-between mt-5 pt-4 border-t border-white/7">
-          <span className="text-[12px] font-medium text-gray-500">{author}</span>
+        <div className="flex items-center justify-between mt-5 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>
+          <span className="text-[12px] font-medium text-white/40">{author}</span>
           <a
             href="#"
-            className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-teal-400 hover:text-teal-300 transition-colors"
+            className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-white/55 hover:text-[#e1ff51] transition-colors duration-200"
           >
             Read
             <ArrowRight size={12} strokeWidth={2.2} aria-hidden="true" />

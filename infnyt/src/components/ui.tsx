@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { ArrowRight } from "lucide-react";
 
 export function Eyebrow({
   children,
@@ -9,11 +10,11 @@ export function Eyebrow({
 }) {
   return (
     <span
-      className={`inline-flex items-center gap-3 text-[13px] font-semibold tracking-[0.12em] uppercase text-teal-400
-        after:content-[''] after:inline-block after:w-7 after:h-[1.5px] after:bg-teal-400
-        ${center ? "justify-center" : ""}`}
+      className={`inline-flex items-center gap-3 text-[13px] font-semibold tracking-[0.12em] uppercase ${center ? "justify-center" : ""}`}
+      style={{ color: "#e1ff51" }}
     >
       {children}
+      <span style={{ display: "inline-block", width: 28, height: 1.5, background: "#e1ff51", flexShrink: 0 }} aria-hidden="true" />
     </span>
   );
 }
@@ -28,9 +29,10 @@ export function PrimaryBtn({
   return (
     <a
       href={href}
-      className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-teal-600 to-teal-500 px-5 py-2 text-[14px] font-semibold text-white whitespace-nowrap transition-all duration-[180ms] hover:brightness-110 shadow-[0_4px_14px_rgba(14,158,181,0.25)]"
+      className="inline-flex items-center gap-1.5 rounded-full px-5 py-2.5 text-[14px] font-semibold whitespace-nowrap cta-glow"
+      style={{ background: "#e1ff51", color: "#00272c" }}
     >
-      <span className="text-white">{children}</span>
+      <span>{children}</span>
     </a>
   );
 }
@@ -45,10 +47,10 @@ export function SecondaryBtn({
   return (
     <a
       href={href}
-      className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.12] bg-white/[0.06] px-5 py-2 text-[14px] font-semibold text-white whitespace-nowrap transition-all duration-[180ms] hover:border-teal-500/40 hover:bg-white/[0.1]"
+      className="secondary-btn inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[14px] font-semibold whitespace-nowrap"
     >
       <span>{children}</span>
-      <span aria-hidden="true">&rarr;</span>
+      <ArrowRight size={13} strokeWidth={2} className="btn-arrow" style={{ transform: "rotate(-45deg)" }} aria-hidden="true" />
     </a>
   );
 }

@@ -1,134 +1,102 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import Image from "next/image";
 
-interface NavLink {
-  label: string;
-  href: string;
-}
-
-const NAV_LINKS: NavLink[] = [
-  { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Services", href: "/#services" },
-  { label: "Case Studies", href: "/case-studies" },
-  { label: "Blog", href: "/blog" },
-  { label: "Contact", href: "/contact" },
+const NAV_LINKS = [
+  { label: "Home",         href: "/"             },
+  { label: "About",        href: "/about"        },
+  { label: "Services",     href: "/#services"    },
+  { label: "Work",         href: "/case-studies"   },
+  { label: "Blog",         href: "/blog"         },
 ];
 
 export default function Nav() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [activeHash, setActiveHash] = useState("");
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 8);
-    const handleHashChange = () => setActiveHash(window.location.hash);
-
-    handleScroll();
-    handleHashChange();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("hashchange", handleHashChange);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("hashchange", handleHashChange);
-    };
+    const handler = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handler, { passive: true });
+    return () => window.removeEventListener("scroll", handler);
   }, []);
 
-  const isActive = (href: string) => {
-    if (href.startsWith("#")) {
-      return pathname === "/" && activeHash === href;
-    }
-    return pathname === href;
-  };
+  const isActive = (href: string) => pathname === href;
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-300 backdrop-blur-md ${
-        scrolled
-          ? "bg-dark-surface-2/90 border-b border-white/7 shadow-(--shadow-nav)"
-          : "bg-site-bg/60 border-b border-transparent"
-      }`}
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
+      style={{
+        background: scrolled ? "rgba(2,12,19,0.85)" : "rgba(2,12,19,0.08)",
+        backdropFilter: scrolled ? "blur(20px)" : "blur(0px)",
+        WebkitBackdropFilter: scrolled ? "blur(20px)" : "blur(0px)",
+        borderBottom: `1px solid ${scrolled ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.04)"}`,
+      }}
     >
-      <div className="max-w-300 mx-auto px-8">
-        <nav className="h-20.5 flex items-center gap-5" aria-label="Main navigation">
-          <Link href="/" className="shrink-0" aria-label="InfinytTech home">
+      <div className="max-w-310 mx-auto w-full px-8">
+        <nav className="relative h-20 flex items-center" aria-label="Main navigation">
+
+          {/* Logo — left */}
+          <a href="/" className="logo-entrance shrink-0">
             <Image
-              src="/logo.png"
+              src="/infinytTech-Chartreue1.png"
               alt="InfinytTech"
               width={160}
               height={40}
-              className="h-8 w-auto"
+              style={{ objectFit: "contain" }}
               priority
             />
-          </Link>
-
-          <div className="hidden lg:flex flex-1 items-center justify-center gap-5">
-            {NAV_LINKS.map(({ label, href }) => (
-              <a
-                key={label}
-                href={href}
-                className={`relative flex items-center py-2 text-[13.5px] font-medium transition-colors duration-300 hover:text-white ${
-                  isActive(href)
-                    ? "font-bold text-teal-400"
-                    : scrolled ? "text-white/60" : "text-white"
-                }`}
-              >
-                {label}
-              </a>
-            ))}
-          </div>
-
-          <a
-            href="/contact"
-            className="hidden lg:inline-flex items-center gap-1.5 rounded-full bg-linear-to-r from-teal-600 to-teal-500 px-4.5 py-1.5 text-[13.5px] font-semibold text-white whitespace-nowrap transition-all duration-180 hover:brightness-110 shadow-[0_4px_14px_rgba(14,158,181,0.22)]"
-          >
-            <span className="text-white">Book a call</span>
           </a>
 
-          <button
-            className="lg:hidden w-10 h-10 flex items-center justify-center rounded-full bg-white/8 text-white transition-colors hover:bg-white/12"
-            onClick={() => setOpen((v) => !v)}
-            aria-label={open ? "Close menu" : "Open menu"}
-            aria-expanded={open}
-          >
-            {open ? <X size={20} /> : <Menu size={20} />}
-          </button>
-        </nav>
-
-        {open && (
-          <div className="lg:hidden mt-2 bg-dark-surface rounded-2xl p-6 border border-white/7 shadow-[0_16px_48px_rgba(0,0,0,0.5)]">
-            <nav className="flex flex-col gap-4" aria-label="Mobile navigation">
-              {NAV_LINKS.map(({ label, href }) => (
+          {/* Links — center */}
+          <div className="flex-1 flex items-center justify-center gap-8">
+            {NAV_LINKS.map(({ label, href }) => {
+              const active = isActive(href);
+              return (
                 <a
                   key={label}
                   href={href}
-                  className={`text-[14px] transition-colors hover:text-white ${
-                    isActive(href)
-                      ? "font-bold text-teal-400"
-                      : "font-medium text-white/70"
-                  }`}
-                  onClick={() => setOpen(false)}
+                  className="relative text-[13.5px] font-medium transition-colors duration-200"
+                  style={{
+                    color: active ? "#e1ff51" : "rgba(255,255,255,0.50)",
+                    textShadow: active ? "0 0 22px rgba(225,255,81,0.40)" : "none",
+                  }}
+                  onMouseEnter={e => {
+                    if (!active) e.currentTarget.style.color = "rgba(255,255,255,0.90)";
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.color = active ? "#e1ff51" : "rgba(255,255,255,0.50)";
+                  }}
                 >
                   {label}
+                  {/* Active indicator — chartreuse hairline at nav bottom */}
+                  {active && (
+                    <span
+                      className="absolute left-0 right-0 pointer-events-none"
+                      style={{
+                        bottom: -30,
+                        height: 1,
+                        background: "linear-gradient(90deg, transparent, #e1ff51 50%, transparent)",
+                      }}
+                      aria-hidden="true"
+                    />
+                  )}
                 </a>
-              ))}
-              <a
-                href="/contact"
-                className="mt-2 flex items-center justify-center gap-1.5 rounded-full bg-linear-to-r from-teal-600 to-teal-500 px-5 py-2 text-[14px] font-semibold text-white"
-                onClick={() => setOpen(false)}
-              >
-                <span className="text-white">Book a call</span>
-              </a>
-            </nav>
+              );
+            })}
           </div>
-        )}
+
+          {/* CTA — right */}
+          <a
+            href="/contact"
+            className="ml-auto shrink-0 px-5 py-2 rounded-full text-[13.5px] font-semibold cta-glow"
+            style={{ background: "#e1ff51", color: "#000000" }}
+          >
+            Contact us
+          </a>
+
+        </nav>
       </div>
     </header>
   );

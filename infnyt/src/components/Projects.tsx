@@ -8,7 +8,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { type LucideIcon } from "lucide-react";
-import { Eyebrow } from "./ui";
+import { Eyebrow, SecondaryBtn } from "./ui";
+import SpiderLines from "./SpiderLines";
 
 const PROJECTS: {
   tag: string;
@@ -16,7 +17,6 @@ const PROJECTS: {
   title: string;
   body: string;
   metric: string;
-  bg: string;
 }[] = [
   {
     tag: "Healthcare",
@@ -24,7 +24,6 @@ const PROJECTS: {
     title: "MediCare Plus",
     body: "Hospital management system used across 8 facilities. Reduced patient intake time by 40% and unified records across departments.",
     metric: "40% faster intake",
-    bg: "from-slate-900 to-slate-800",
   },
   {
     tag: "Education",
@@ -32,7 +31,6 @@ const PROJECTS: {
     title: "EduSmart Platform",
     body: "LMS for 200+ instructors and 15,000 students. Live classes, assignments, and analytics in one platform.",
     metric: "15,000+ active users",
-    bg: "from-indigo-950 to-indigo-900",
   },
   {
     tag: "Logistics",
@@ -40,7 +38,6 @@ const PROJECTS: {
     title: "Translogix",
     body: "Fleet and route optimization for a national delivery operator. Cut average dispatch time by 35% across 1,200 vehicles.",
     metric: "35% faster dispatch",
-    bg: "from-teal-950 to-teal-900",
   },
   {
     tag: "SaaS",
@@ -48,7 +45,6 @@ const PROJECTS: {
     title: "ScaleDesk",
     body: "Customer support platform for a fast-growing B2B SaaS. Cut average ticket resolution time by 55% with AI-powered routing.",
     metric: "55% faster resolution",
-    bg: "from-violet-950 to-violet-900",
   },
   {
     tag: "Real Estate",
@@ -56,7 +52,6 @@ const PROJECTS: {
     title: "PropertyHub",
     body: "Property management platform for a regional real estate firm. Unified listings, tenant portal, and maintenance — across 400 properties.",
     metric: "400 properties managed",
-    bg: "from-emerald-950 to-emerald-900",
   },
   {
     tag: "Retail",
@@ -64,120 +59,294 @@ const PROJECTS: {
     title: "ShopSphere",
     body: "E-commerce platform for a multi-brand retailer. Doubled conversion rate post-launch with a rebuilt checkout flow.",
     metric: "2x conversion",
-    bg: "from-sky-950 to-sky-900",
   },
 ];
 
+const ICON_BOX = "inset 0 1px 0 rgba(255,255,255,0.10), inset 0 0 0 1px rgba(255,255,255,0.06), 0 0 0 1px rgba(0,0,0,0.5)";
+const ARROW_BOX = ICON_BOX;
+
+function Bloom() {
+  return (
+    <span
+      className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out"
+      style={{ background: "radial-gradient(ellipse 70% 45% at 50% 0%, rgba(225,255,81,0.055) 0%, transparent 70%)" }}
+      aria-hidden="true"
+    />
+  );
+}
+
+function ArrowBtn() {
+  return (
+    <div
+      className="w-9 h-9 shrink-0 rounded-full flex items-center justify-center transition-transform duration-300 ease-out group-hover:-rotate-45"
+      style={{ background: "#00272c", color: "rgba(212,255,58,0.70)", boxShadow: ARROW_BOX }}
+      aria-hidden="true"
+    >
+      <ArrowRight size={14} strokeWidth={2} />
+    </div>
+  );
+}
+
 export default function Projects() {
   return (
-    <section id="projects" className="py-24 bg-dark-surface-2">
-      <div className="max-w-300 mx-auto px-8">
-        <div className="relative flex flex-col gap-3.5 mb-12">
+    <section id="projects" className="relative overflow-hidden py-24" style={{ background: "transparent" }}>
+
+      {/* Dark teal overlay */}
+      <div className="pointer-events-none absolute inset-0" style={{ background: "rgba(0, 20, 26, 0.88)" }} aria-hidden="true" />
+
+      {/* Particle network */}
+      <SpiderLines />
+
+      {/* Key light */}
+      <div className="cinema-key pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 72% 62% at 14% -5%, rgba(14,158,181,0.24) 0%, rgba(14,158,181,0.06) 45%, transparent 72%)", filter: "blur(8px)" }} aria-hidden="true" />
+
+      {/* Fill light */}
+      <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 60% 55% at 96% 110%, rgba(180,204,65,0.15) 0%, rgba(180,204,65,0.04) 48%, transparent 72%)", filter: "blur(14px)" }} aria-hidden="true" />
+
+      {/* God rays */}
+      <div className="cinema-rays pointer-events-none absolute inset-0 overflow-hidden" style={{ mixBlendMode: "screen" }} aria-hidden="true">
+        <div style={{ position:"absolute", top:"-40%", left:"5%",  width:280, height:"170%", background:"linear-gradient(180deg,rgba(180,204,65,0.9) 0%,rgba(180,204,65,0.20) 52%,transparent 100%)", transform:"rotate(-28deg)", transformOrigin:"top center", filter:"blur(34px)", opacity:0.038 }} />
+        <div style={{ position:"absolute", top:"-40%", left:"19%", width:95,  height:"170%", background:"linear-gradient(180deg,rgba(180,204,65,0.8) 0%,rgba(180,204,65,0.14) 58%,transparent 100%)", transform:"rotate(-28deg)", transformOrigin:"top center", filter:"blur(22px)", opacity:0.026 }} />
+        <div style={{ position:"absolute", top:"-40%", left:"33%", width:160, height:"170%", background:"linear-gradient(180deg,rgba(14,158,181,0.8)  0%,rgba(14,158,181,0.10)  62%,transparent 100%)", transform:"rotate(-22deg)", transformOrigin:"top center", filter:"blur(30px)", opacity:0.028 }} />
+      </div>
+
+      {/* Drifting ambient */}
+      <div className="hero-gradient-drift pointer-events-none absolute inset-0" aria-hidden="true" />
+
+      {/* Ambient — upper-left chartreuse */}
+      <div className="pointer-events-none absolute -top-40 -left-40 w-160 h-160" style={{ background: "radial-gradient(circle, rgba(180,204,65,0.09) 0%, transparent 62%)" }} aria-hidden="true" />
+
+      {/* Ambient — lower-right */}
+      <div className="pointer-events-none absolute bottom-0 right-0 h-120 w-[65%]" style={{ background: "radial-gradient(ellipse 80% 90% at 90% 100%, rgba(180,204,65,0.07) 0%, rgba(14,158,181,0.04) 45%, transparent 70%)" }} aria-hidden="true" />
+
+      {/* Mid-depth haze */}
+      <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 88% 28% at 50% 46%, rgba(14,158,181,0.032) 0%, transparent 100%)" }} aria-hidden="true" />
+
+      {/* Cinematic vignette */}
+      <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 88% 74% at 50% 42%, transparent 30%, rgba(0,0,0,0.68) 100%)" }} aria-hidden="true" />
+      <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.34) 0%, transparent 16%, transparent 84%, rgba(0,0,0,0.34) 100%)" }} aria-hidden="true" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-32" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.30) 0%, transparent 100%)" }} aria-hidden="true" />
+
+      <div className="relative z-10 max-w-300 mx-auto px-8">
+
+        <div className="relative flex flex-col gap-3.5 mb-16">
           <Eyebrow>Our work</Eyebrow>
-          <h2 className="text-[36px] lg:text-[40px] font-bold tracking-[-0.015em] leading-[1.1] text-white">
+          <h2 className="text-[36px] lg:text-[40px] font-extrabold tracking-[-0.015em] leading-[1.1] text-white">
             Selected Work
           </h2>
-          <p className="text-[18px] leading-[1.6] text-gray-500 max-w-[640px]">
-            Six recent projects across education, healthcare, retail,
-            logistics, SaaS, and real estate. Built for production, shipped to
-            spec.
+          <p className="text-[18px] leading-[1.6] max-w-160">
+            Six recent projects across education, healthcare, retail, logistics, SaaS, and real estate.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[22px]">
-          {PROJECTS.map((p) => (
-            <ProjectCard key={p.title} {...p} />
-          ))}
+        {/*
+          Asymmetric bento hairline grid
+          ┌─────────────┬──────────────────────────┐
+          │  Featured   │  Wide panel (EduSmart)   │
+          │  (tall)     ├──────────────────────────┤
+          │             │  Wide panel (Translogix) │
+          ├─────┬───────┴──────────┬───────────────┤
+          │ Std │      Std         │      Std       │
+          └─────┴──────────────────┴───────────────┘
+        */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 border-t border-white/[0.07]">
+
+          {/* [0] Featured — tall, left column, spans 2 rows */}
+          <FeaturedPanel {...PROJECTS[0]} />
+
+          {/* [1] Wide — cols 2-3, row 1 */}
+          <WidePanel {...PROJECTS[1]} index={1} />
+
+          {/* [2] Wide — cols 2-3, row 2 */}
+          <WidePanel {...PROJECTS[2]} index={2} />
+
+          {/* [3-5] Standard — bottom row */}
+          <StandardPanel {...PROJECTS[3]} index={3} />
+          <StandardPanel {...PROJECTS[4]} index={4} />
+          <StandardPanel {...PROJECTS[5]} index={5} />
+
         </div>
 
-        <div className="flex justify-center mt-[42px]">
-          <a
-            href="/case-studies"
-            className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-dark-surface px-8 py-4 text-[14px] font-semibold text-white whitespace-nowrap transition-all duration-180 hover:border-teal-500/40 hover:text-teal-400"
-          >
-            <span>View all case studies</span>
-            <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
-          </a>
+        {/* Footer row */}
+        <div className="border-t border-white/[0.07] py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <p className="text-[12px] italic text-white/35 max-w-none">
+            All work shown with client permission. Some project names anonymized for confidentiality.
+          </p>
+          <SecondaryBtn href="/case-studies">View all case studies</SecondaryBtn>
         </div>
 
-        <p className="mt-6 text-center text-[12px] italic text-gray-500">
-          All work shown with client permission. Some project names anonymized
-          for confidentiality.
-        </p>
       </div>
     </section>
   );
 }
 
-
-function ProjectCard({
-  tag,
-  Icon,
-  title,
-  body,
-  metric,
-  bg,
-}: {
-  tag: string;
-  Icon: LucideIcon;
-  title: string;
-  body: string;
-  metric: string;
-  bg: string;
-}) {
+/* ─── Featured panel — col 1, row-span-2, tall ─────────────────────────── */
+function FeaturedPanel({
+  tag, Icon, title, body, metric,
+}: { tag: string; Icon: LucideIcon; title: string; body: string; metric: string }) {
   return (
-    <article
-      className={`group rounded-2xl bg-linear-to-br ${bg} p-7 flex flex-col min-h-[280px] relative overflow-hidden text-white cursor-pointer
-        shadow-[0_2px_12px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.06)]
-        transition-all duration-[400ms] ease-out
-        hover:scale-[1.02]
-        hover:shadow-[0_0_0_1.5px_rgba(255,255,255,0.14),0_0_0_4px_rgba(255,255,255,0.04),0_28px_70px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.14)]`}
-    >
-      {/* Spotlight bloom */}
-      <span
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-[400ms] ease-out pointer-events-none rounded-2xl"
-        style={{
-          background:
-            "radial-gradient(ellipse 90% 55% at 50% -5%, rgba(255,255,255,0.13), transparent 65%)",
-        }}
-        aria-hidden="true"
-      />
+    <article className="group relative flex flex-col p-10 lg:p-14 border-b border-white/[0.07] lg:row-span-2 lg:border-r lg:border-white/[0.07] transition-colors duration-500 ease-out hover:bg-white/1.5 cursor-pointer">
+      <Bloom />
 
-      {/* Top-edge shimmer */}
-      <span
-        className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-white/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-[400ms] ease-out"
-        aria-hidden="true"
-      />
-
-      <div className="relative z-10 flex flex-col flex-1">
-        <div className="flex items-center gap-2 text-teal-400 text-[12px] font-semibold tracking-[0.04em] mb-3.5">
-          <span className="w-7 h-7 rounded-lg bg-white/8 inline-flex items-center justify-center transition-all duration-[400ms] group-hover:bg-white/16 group-hover:shadow-[0_0_12px_rgba(255,255,255,0.1)]">
-            <Icon size={16} strokeWidth={1.7} aria-hidden="true" />
-          </span>
-          <span>{tag}</span>
+      {/* Number + tag + arrow */}
+      <div className="relative z-10 flex items-center justify-between mb-14">
+        <div className="flex items-center gap-3">
+          <span className="font-mono text-[11px] tracking-[0.14em] text-white/20 group-hover:text-[#e1ff51] transition-colors duration-300 ease-out select-none">01</span>
+          <span className="text-[11px] font-semibold tracking-[0.08em] uppercase" style={{ color: "#e1ff51" }}>{tag}</span>
         </div>
-
-        <h3 className="text-2xl font-bold text-white tracking-[-0.01em] leading-[1.2] mb-2">
-          {title}
-        </h3>
-        <p className="text-sm text-white/65 leading-[1.6] mb-4.5 line-clamp-4 transition-colors duration-[400ms] group-hover:text-white/85">
-          {body}
-        </p>
-
-        <a
-          href="#"
-          className="inline-flex items-center gap-2.5 text-teal-400 text-[14px] font-semibold mt-auto transition-colors duration-[400ms] group-hover:text-teal-300"
-        >
-          <span>View Project</span>
-          <span className="w-7 h-7 rounded-full bg-teal-400/15 inline-flex items-center justify-center transition-all duration-[400ms] group-hover:translate-x-1 group-hover:bg-teal-400/28 group-hover:shadow-[0_0_14px_rgba(43,184,207,0.35)]">
-            <ArrowRight size={14} strokeWidth={2} />
-          </span>
-        </a>
+        <ArrowBtn />
       </div>
 
-      {/* Large faded background icon */}
-      <div className="absolute -bottom-8 -right-8 w-48 h-48 text-white opacity-7 group-hover:opacity-16 transition-opacity duration-[400ms] ease-out pointer-events-none">
-        <Icon size={192} strokeWidth={0.8} aria-hidden="true" />
+      {/* Icon — larger for featured */}
+      <div
+        className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-xl mb-10 transition-all duration-300 ease-out group-hover:scale-105"
+        style={{ background: "#00272c", color: "#e1ff51", boxShadow: ICON_BOX }}
+      >
+        <Icon size={30} strokeWidth={1.7} aria-hidden="true" />
+      </div>
+
+      {/* Title */}
+      <h3 className="relative z-10 text-[26px] font-bold tracking-tight leading-tight text-white mb-4">
+        {title}
+      </h3>
+
+      {/* Body */}
+      <p className="relative z-10 text-[14px] leading-[1.8] text-white/60 flex-1">
+        {body}
+      </p>
+
+      {/* Metric — hero stat, large and prominent */}
+      <div className="relative z-10 mt-10 pt-7 border-t border-white/[0.07]">
+        <p
+          className="font-extrabold tracking-[-0.03em] leading-none"
+          style={{ fontSize: "clamp(28px, 3vw, 40px)", color: "#e1ff51" }}
+        >
+          {metric}
+        </p>
+        <p className="mt-2 text-[11px] font-semibold uppercase tracking-widest text-white/30">
+          Key outcome
+        </p>
+      </div>
+    </article>
+  );
+}
+
+/* ─── Wide panel — col-span-2, horizontal layout ───────────────────────── */
+function WidePanel({
+  tag, Icon, title, body, metric, index,
+}: { tag: string; Icon: LucideIcon; title: string; body: string; metric: string; index: number }) {
+  return (
+    <article className="group relative flex flex-col p-10 lg:p-14 border-b border-white/[0.07] lg:col-span-2 transition-colors duration-500 ease-out hover:bg-white/1.5 cursor-pointer">
+      <Bloom />
+
+      {/* Number + tag + arrow */}
+      <div className="relative z-10 flex items-center justify-between mb-10">
+        <div className="flex items-center gap-3">
+          <span className="font-mono text-[11px] tracking-[0.14em] text-white/20 group-hover:text-[#e1ff51] transition-colors duration-300 ease-out select-none">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+          <span className="text-[11px] font-semibold tracking-[0.08em] uppercase" style={{ color: "#e1ff51" }}>{tag}</span>
+        </div>
+        <ArrowBtn />
+      </div>
+
+      {/* Horizontal: content left, metric right */}
+      <div className="relative z-10 flex flex-col lg:flex-row lg:items-end gap-8 lg:gap-12">
+
+        {/* Left: icon + title + body */}
+        <div className="flex items-start gap-6 flex-1">
+          <div
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl transition-all duration-300 ease-out group-hover:scale-105"
+            style={{ background: "#00272c", color: "#e1ff51", boxShadow: ICON_BOX }}
+          >
+            <Icon size={26} strokeWidth={1.8} aria-hidden="true" />
+          </div>
+          <div>
+            <h3 className="text-[22px] font-bold tracking-[-0.02em] leading-tight text-white mb-3">
+              {title}
+            </h3>
+            <p className="text-[14px] leading-[1.75] text-white/60">
+              {body}
+            </p>
+          </div>
+        </div>
+
+        {/* Right: metric — visually separated */}
+        <div className="shrink-0 lg:border-l lg:border-white/[0.07] lg:pl-12 pt-6 lg:pt-0 border-t border-white/[0.07] lg:border-t-0">
+          <p
+            className="font-extrabold tracking-[-0.03em] leading-none whitespace-nowrap"
+            style={{ fontSize: "clamp(22px, 2vw, 32px)", color: "#e1ff51" }}
+          >
+            {metric}
+          </p>
+          <p className="mt-2 text-[11px] font-semibold uppercase tracking-widest text-white/30">
+            Key outcome
+          </p>
+        </div>
+
+      </div>
+    </article>
+  );
+}
+
+/* ─── Standard panel — 1/3 col, bottom row ─────────────────────────────── */
+function StandardPanel({
+  tag, Icon, title, body, metric, index,
+}: { tag: string; Icon: LucideIcon; title: string; body: string; metric: string; index: number }) {
+  const isLastCol = index === 5;
+
+  return (
+    <article
+      className={[
+        "group relative flex flex-col p-10 lg:p-12 border-b border-white/[0.07] transition-colors duration-500 ease-out hover:bg-white/1.5 cursor-pointer",
+        !isLastCol ? "lg:border-r lg:border-white/[0.07]" : "",
+      ].join(" ")}
+    >
+      <Bloom />
+
+      {/* Number + tag + arrow */}
+      <div className="relative z-10 flex items-center justify-between mb-10">
+        <div className="flex items-center gap-3">
+          <span className="font-mono text-[11px] tracking-[0.14em] text-white/20 group-hover:text-[#e1ff51] transition-colors duration-300 ease-out select-none">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+          <span className="text-[11px] font-semibold tracking-[0.08em] uppercase" style={{ color: "#e1ff51" }}>{tag}</span>
+        </div>
+        <ArrowBtn />
+      </div>
+
+      {/* Metric — leads the panel as the hero stat */}
+      <div className="relative z-10 mb-8">
+        <p
+          className="font-extrabold tracking-tight leading-none"
+          style={{ fontSize: "clamp(26px, 2.2vw, 36px)", color: "#e1ff51" }}
+        >
+          {metric}
+        </p>
+        <p className="mt-2 text-[11px] font-semibold uppercase tracking-widest text-white/30">
+          Key outcome
+        </p>
+      </div>
+
+      {/* Hairline divider */}
+      <div className="relative z-10 border-t border-white/[0.07] mb-8" />
+
+      {/* Icon + title + body — horizontal compact layout */}
+      <div className="relative z-10 flex items-start gap-5 flex-1">
+        <div
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-all duration-300 ease-out group-hover:scale-105"
+          style={{ background: "#00272c", color: "#e1ff51", boxShadow: ICON_BOX }}
+        >
+          <Icon size={22} strokeWidth={1.8} aria-hidden="true" />
+        </div>
+        <div>
+          <h3 className="text-[18px] font-bold tracking-tight leading-tight text-white mb-2">
+            {title}
+          </h3>
+          <p className="text-[13px] leading-[1.75] text-white/60">
+            {body}
+          </p>
+        </div>
       </div>
     </article>
   );

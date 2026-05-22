@@ -5,16 +5,17 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 
 const NAV_LINKS = [
-  { label: "Home",         href: "/"             },
-  { label: "About",        href: "/about"        },
-  { label: "Services",     href: "/#services"    },
-  { label: "Work",         href: "/case-studies"   },
-  { label: "Blog",         href: "/blog"         },
+  { label: "Home",     href: "/",            section: null       },
+  { label: "About",    href: "/about",       section: null       },
+  { label: "Services", href: "/#services",   section: "services" },
+  { label: "Work",     href: "/case-studies", section: null      },
+  { label: "Blog",     href: "/blog",        section: null       },
 ];
 
 export default function Nav() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 10);
@@ -22,7 +23,24 @@ export default function Nav() {
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
-  const isActive = (href: string) => pathname === href;
+  useEffect(() => {
+    if (pathname !== "/") { setActiveSection(null); return; }
+    const el = document.getElementById("services");
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setActiveSection(entry.isIntersecting ? "services" : null),
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [pathname]);
+
+  const isActive = (href: string, section: string | null) => {
+    if (section) return activeSection === section;
+    if (href.includes("#")) return false;
+    if (href === "/" && pathname === "/") return activeSection === null;
+    return pathname === href;
+  };
 
   return (
     <header
@@ -51,8 +69,8 @@ export default function Nav() {
 
           {/* Links — center */}
           <div className="flex-1 flex items-center justify-center gap-8">
-            {NAV_LINKS.map(({ label, href }) => {
-              const active = isActive(href);
+            {NAV_LINKS.map(({ label, href, section }) => {
+              const active = isActive(href, section);
               return (
                 <a
                   key={label}

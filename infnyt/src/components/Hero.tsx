@@ -1,6 +1,7 @@
+import { Fragment } from "react";
 import { SecondaryBtn } from "./ui";
 import { LiveLatency } from "./LiveLatency";
-import { TypewriterAccent } from "./TypewriterAccent";
+import { ScrambleText } from "./ScrambleText";
 import SpiderLines from "./SpiderLines";
 import { WebGLShader } from "@/components/ui/web-gl-shader";
 import { LiquidButton } from "@/components/ui/liquid-glass-button";
@@ -38,7 +39,7 @@ export default function Hero() {
       style={{
         background: "transparent",
         minHeight: "100vh",
-        paddingTop: "90px",
+        paddingTop: "64px",
         paddingBottom: "80px",
       }}
     >
@@ -156,9 +157,25 @@ export default function Hero() {
               className="font-bold tracking-[-0.04em] leading-[1.08]"
               style={{ fontSize: "clamp(40px, 4.6vw, 58px)", color: "#ffffff" }}
             >
-              We build the systems
+              {/* Line 1 — word-by-word clip-path reveal */}
+              {["We", "build", "the", "systems"].map((word, i) => (
+                <Fragment key={word}>
+                  <span className="word-reveal-wrap">
+                    <span className="word-reveal" style={{ animationDelay: `${i * 0.09}s` }}>
+                      {word}
+                    </span>
+                  </span>
+                  {i < 3 && " "}
+                </Fragment>
+              ))}
               <br />
-              <TypewriterAccent />
+              {/* Line 2 — scramble decode in chartreuse */}
+              <ScrambleText
+                text="your customers depend on."
+                delay={420}
+                lockInterval={55}
+                style={{ color: "#D4FF3A" }}
+              />
             </h1>
 
             <p

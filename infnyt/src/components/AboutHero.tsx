@@ -11,7 +11,7 @@ export default function AboutHero() {
   return (
     <section
       className="relative overflow-hidden"
-      style={{ background: "transparent", paddingTop: "110px", paddingBottom: "96px" }}
+      style={{ background: "transparent", paddingTop: "80px", paddingBottom: "96px" }}
     >
 
       {/* Dark teal overlay */}
@@ -80,65 +80,28 @@ export default function AboutHero() {
       <div className="relative z-10 max-w-300 mx-auto px-8">
         <div className="grid grid-cols-1 lg:grid-cols-[0.95fr_1.1fr] gap-14 items-center">
 
-          {/* Left: copy */}
+          {/* Left: copy — kept lean to match dashboard height */}
           <div>
             <Eyebrow>About us</Eyebrow>
 
-            <h1 className="mt-4.5 text-[36px] lg:text-[48px] font-extrabold tracking-tight leading-[1.08] text-white max-w-145">
+            <h1 className="mt-4.5 text-[36px] lg:text-[48px] font-extrabold tracking-tight leading-[1.08] text-white">
               We&apos;re the team<br />you wished was in-house.
             </h1>
 
-            <div className="flex flex-col gap-3.5 mt-6 mb-6">
-              <span className="text-[20px] font-semibold tracking-[-0.005em]" style={{ color: "#e1ff51" }}>
+            <div className="flex flex-col gap-3 mt-6 mb-6">
+              <span className="text-[18px] font-semibold tracking-[-0.005em]" style={{ color: "#e1ff51" }}>
                 Production systems. Senior engineers. One accountable team.
               </span>
               <div className="w-22.5 h-px bg-white/10" aria-hidden="true" />
             </div>
 
-            <p className="text-[14.5px] leading-[1.7] text-white/60 mb-4 max-w-130">
-              InfinytTech is a software engineering firm built by senior
-              engineers and product designers who have shipped production
-              systems across teams of every size. We embed with product teams as
-              the senior engineers and designers needed to ship the hardest
-              parts of the roadmap.
-            </p>
-            <p className="text-[14.5px] leading-[1.7] text-white/60 mb-8 max-w-130">
-              We don&apos;t outsource, and we don&apos;t subcontract. The senior
-              engineer who scopes your project is the one writing code on day
-              one. From discovery to launch, one accountable team owns the work
-              and works in your timezone.
-            </p>
-
-            {/* Principles — open hairline panels */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 border-t border-white/[0.07] mb-8">
-              {PRINCIPLES.map((principle, index) => (
-                <div
-                  key={principle}
-                  className={[
-                    "group relative flex flex-col py-5 pr-5 border-b border-white/[0.07] transition-colors duration-300",
-                    index < 2 ? "sm:border-r sm:border-white/[0.07]" : "",
-                  ].join(" ")}
-                >
-                  {/* Chartreuse left accent bar */}
-                  <span
-                    className="absolute left-0 inset-y-0 w-0.5 origin-top scale-y-0 group-hover:scale-y-100 transition-transform duration-300 ease-out rounded-full"
-                    style={{ background: "#e1ff51" }}
-                    aria-hidden="true"
-                  />
-                  <span className="font-mono text-[10px] tracking-[0.14em] text-white/20 group-hover:text-[#e1ff51] transition-colors duration-300 mb-3 select-none">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <p className="text-[12.5px] font-medium leading-[1.6] text-white/55 pl-3">
-                    {principle}
-                  </p>
-                </div>
-              ))}
-            </div>
-
             <p className="text-[14.5px] leading-[1.7] text-white/60 max-w-130">
-              These aren&apos;t slogans &mdash; they&apos;re what we hire for
-              and how we work.
+              We embed with product teams as the senior engineers needed to ship
+              the hardest parts of the roadmap — without outsourcing, without
+              subcontracting, and without bait-and-switch. The engineer who
+              scopes your project is the one writing code on day one.
             </p>
+
           </div>
 
           {/* Right: agency profile panel */}
@@ -280,6 +243,33 @@ export default function AboutHero() {
           </div>
 
         </div>
+
+        {/* Principles — full-width hairline row below */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 border-t border-white/[0.07] mt-16">
+          {PRINCIPLES.map((principle, index) => (
+            <div
+              key={principle}
+              className={[
+                "group relative flex items-start gap-4 py-6 pr-6 border-b border-white/[0.07] transition-colors duration-300",
+                index < 2 ? "sm:border-r sm:border-white/[0.07]" : "",
+                index > 0 ? "sm:pl-6" : "",
+              ].join(" ")}
+            >
+              <span
+                className="absolute left-0 inset-y-0 w-0.5 origin-top scale-y-0 group-hover:scale-y-100 transition-transform duration-300 ease-out rounded-full"
+                style={{ background: "#e1ff51" }}
+                aria-hidden="true"
+              />
+              <span className="font-mono text-[11px] tracking-[0.14em] text-white/20 group-hover:text-[#e1ff51] transition-colors duration-300 select-none shrink-0 mt-0.5">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <p className="text-[13px] font-medium leading-[1.6] text-white/55">
+                {principle}
+              </p>
+            </div>
+          ))}
+        </div>
+
       </div>
     </section>
   );

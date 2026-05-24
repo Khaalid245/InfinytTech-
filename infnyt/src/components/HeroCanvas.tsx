@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 
-class InfinityCurve extends THREE.Curve<THREE.Vector3> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+class InfinityCurve extends (THREE.Curve as any)<THREE.Vector3> {
   getPoint(t: number, optionalTarget = new THREE.Vector3()): THREE.Vector3 {
     const angle  = t * Math.PI * 2;
     const scale  = 2.2;
@@ -50,7 +51,7 @@ export default function HeroCanvas() {
     // Infinity mesh
     const TUBULAR  = 400;
     const RADIAL   = 24;
-    const curve    = new InfinityCurve();
+    const curve    = new InfinityCurve() as unknown as THREE.Curve<THREE.Vector3>;
     const tubeGeo  = new THREE.TubeGeometry(curve, TUBULAR, 0.18, RADIAL, true);
 
     // Vertex colours — first half chartreuse, second half white, small blend zone

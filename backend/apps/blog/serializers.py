@@ -10,17 +10,25 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class PostListSerializer(serializers.ModelSerializer):
-    """Lightweight serializer for list views — no full content."""
     author_name = serializers.CharField(source='author.full_name', read_only=True)
     category = CategorySerializer(read_only=True)
+    thumbnail = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'slug', 'author_name', 'category', 'thumbnail', 'status', 'published_at')
+        fields = (
+            'id', 'title', 'slug', 'excerpt', 'author_name',
+            'category', 'thumbnail', 'read_time', 'published_at',
+        )
+
+    def get_thumbnail(self, obj):
+        if not obj.thumbnail:
+            return None
+        request = self.context.get('request')
+        return request.build_absolute_uri(obj.thumbnail.url) if request else obj.thumbnail.url
 
 
 class PostDetailSerializer(serializers.ModelSerializer):
-    """Full serializer for detail/write views."""
     author_name = serializers.CharField(source='author.full_name', read_only=True)
     category = CategorySerializer(read_only=True)
     category_id = serializers.PrimaryKeyRelatedField(
@@ -30,11 +38,18 @@ class PostDetailSerializer(serializers.ModelSerializer):
         required=False,
         allow_null=True,
     )
+    thumbnail = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
         fields = (
-            'id', 'title', 'slug', 'author_name', 'category', 'category_id',
-            'content', 'thumbnail', 'status', 'published_at', 'created_at',
+            'id', 'title', 'slug', 'excerpt', 'author_name', 'category', 'category_id',
+            'content', 'thumbnail', 'read_time', 'status', 'published_at', 'created_at',
         )
         read_only_fields = ('id', 'author_name', 'created_at')
+
+    def get_thumbnail(self, obj):
+        if not obj.thumbnail:
+            return None
+        request = self.context.get('request')
+        return request.build_absolute_uri(obj.thumbnail.url) if request else obj.thumbnail.url

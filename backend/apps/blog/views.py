@@ -13,12 +13,13 @@ class PostListView(APIView):
         qs = Post.objects.select_related('author', 'category').filter(status=Post.Status.PUBLISHED)
         if request.query_params.get('category'):
             qs = qs.filter(category__slug=request.query_params['category'])
-        return api_response(data=PostListSerializer(qs, many=True).data)
+        serializer = PostListSerializer(qs, many=True, context={'request': request})
+        return api_response(data=serializer.data)
 
     def post(self, request):
         if not request.user.is_staff:
             return api_error('Permission denied.', status=403)
-        serializer = PostDetailSerializer(data=request.data)
+        serializer = PostDetailSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save(author=request.user)
         return api_response(data=serializer.data, message='Post created.', status=201)
@@ -34,12 +35,16 @@ class PostDetailView(APIView):
         return get_object_or_404(Post, slug=slug)
 
     def get(self, request, slug):
-        return api_response(data=PostDetailSerializer(self.get_object(slug)).data)
+        serializer = PostDetailSerializer(self.get_object(slug), context={'request': request})
+        return api_response(data=serializer.data)
 
     def put(self, request, slug):
         if not request.user.is_staff:
             return api_error('Permission denied.', status=403)
-        serializer = PostDetailSerializer(self.get_admin_object(slug), data=request.data, partial=True)
+        serializer = PostDetailSerializer(
+            self.get_admin_object(slug), data=request.data,
+            partial=True, context={'request': request}
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return api_response(data=serializer.data, message='Post updated.')

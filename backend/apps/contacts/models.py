@@ -10,6 +10,8 @@ class Inquiry(models.Model):
     full_name = models.CharField(max_length=150)
     email = models.EmailField()
     phone = models.CharField(max_length=20, blank=True)
+    company = models.CharField(max_length=150, blank=True)
+    service_interest = models.CharField(max_length=100, blank=True)
     subject = models.CharField(max_length=200)
     message = models.TextField()
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.NEW)

@@ -13,12 +13,15 @@ class ProjectListView(APIView):
         qs = Project.objects.select_related('service').all()
         if request.query_params.get('featured'):
             qs = qs.filter(is_featured=True)
-        return api_response(data=ProjectSerializer(qs, many=True).data)
+        if request.query_params.get('tag'):
+            qs = qs.filter(tag__iexact=request.query_params['tag'])
+        serializer = ProjectSerializer(qs, many=True, context={'request': request})
+        return api_response(data=serializer.data)
 
     def post(self, request):
         if not request.user.is_staff:
             return api_error('Permission denied.', status=403)
-        serializer = ProjectSerializer(data=request.data)
+        serializer = ProjectSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return api_response(data=serializer.data, message='Project created.', status=201)
@@ -31,12 +34,16 @@ class ProjectDetailView(APIView):
         return get_object_or_404(Project, slug=slug)
 
     def get(self, request, slug):
-        return api_response(data=ProjectSerializer(self.get_object(slug)).data)
+        serializer = ProjectSerializer(self.get_object(slug), context={'request': request})
+        return api_response(data=serializer.data)
 
     def put(self, request, slug):
         if not request.user.is_staff:
             return api_error('Permission denied.', status=403)
-        serializer = ProjectSerializer(self.get_object(slug), data=request.data, partial=True)
+        serializer = ProjectSerializer(
+            self.get_object(slug), data=request.data,
+            partial=True, context={'request': request}
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return api_response(data=serializer.data, message='Project updated.')

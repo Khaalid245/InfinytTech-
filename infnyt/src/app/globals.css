@@ -1,0 +1,441 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Brand design tokens — dark premium theme
+   ============================================================ */
+@theme {
+  /* Teal brand palette — brightened for dark bg legibility */
+  --color-teal-50:  rgba(14,158,181,0.12);
+  --color-teal-100: rgba(14,158,181,0.20);
+  --color-teal-400: #2BB8CF;
+  --color-teal-500: #0E9EB5;
+  --color-teal-600: #0B84A0;
+
+  /* Dark surface palette */
+  --color-navy-800: #152E4A;
+  --color-navy-900: #0D2035;
+  --color-dark-surface: #0D1E33;
+  --color-dark-surface-2: #091728;
+
+  /* Neutral dark palette */
+  --color-gray-50:  rgba(255,255,255,0.02);
+  --color-gray-100: rgba(255,255,255,0.04);
+  --color-gray-200: rgba(255,255,255,0.07);
+  --color-gray-300: rgba(255,255,255,0.12);
+  --color-gray-400: rgba(255,255,255,0.22);
+  --color-gray-500: #6888A6;
+  --color-gray-700: #ACC5D9;
+
+  /* Page background */
+  --color-site-bg: #07101E;
+
+  /* Dark-tuned shadows */
+  --shadow-brand-sm:
+    0 1px 3px rgba(0,0,0,0.5),
+    0 1px 2px rgba(0,0,0,0.6);
+  --shadow-brand-md:
+    0 4px 16px rgba(0,0,0,0.45),
+    0 2px 6px rgba(0,0,0,0.35);
+  --shadow-brand-lg:
+    0 20px 50px rgba(0,0,0,0.55),
+    0 8px 20px rgba(0,0,0,0.45);
+  --shadow-nav:
+    0 4px 20px rgba(0,0,0,0.5),
+    0 1px 4px rgba(0,0,0,0.4);
+
+}
+
+/* Plus Jakarta Sans resolved at runtime from next/font CSS variable */
+@theme inline {
+  --font-sans:       var(--font-jakarta);
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  background: #020c13;
+  color: #ACC5D9;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Global film grain — enforced across all sections */
+body > svg[aria-hidden="true"]:first-child {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  pointer-events: none !important;
+  z-index: 9999 !important;
+  opacity: 0.04 !important;
+  mix-blend-mode: overlay !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+}
+
+p {
+  color: rgba(255,255,255,0.85);
+  max-width: 44ch;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+
+@keyframes bubbleA {
+  0%   { transform: translate(0px, 0px);      opacity: 0.35; }
+  25%  { transform: translate(18px, -24px);   opacity: 0.55; }
+  50%  { transform: translate(-14px, -40px);  opacity: 0.4;  }
+  75%  { transform: translate(22px, -18px);   opacity: 0.6;  }
+  100% { transform: translate(0px, 0px);      opacity: 0.35; }
+}
+
+@keyframes bubbleB {
+  0%   { transform: translate(0px, 0px);      opacity: 0.4;  }
+  20%  { transform: translate(-20px, -15px);  opacity: 0.6;  }
+  50%  { transform: translate(16px, -32px);   opacity: 0.35; }
+  80%  { transform: translate(-10px, -20px);  opacity: 0.55; }
+  100% { transform: translate(0px, 0px);      opacity: 0.4;  }
+}
+
+@keyframes bubbleC {
+  0%   { transform: translate(0px, 0px);      opacity: 0.5;  }
+  30%  { transform: translate(24px, -28px);   opacity: 0.35; }
+  60%  { transform: translate(-18px, -16px);  opacity: 0.6;  }
+  100% { transform: translate(0px, 0px);      opacity: 0.5;  }
+}
+
+.bubble-a { animation: bubbleA ease-in-out infinite; }
+.bubble-b { animation: bubbleB ease-in-out infinite; }
+.bubble-c { animation: bubbleC ease-in-out infinite; }
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.deploy-cursor {
+  animation: blink 1s steps(2, end) infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.35; }
+}
+
+.live-dot {
+  animation: livePulse 2s ease-in-out infinite;
+}
+
+/* Card perspective tilt entrance — spatial, not a flat lift */
+.card-reveal {
+  animation: cardReveal 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes cardReveal {
+  from {
+    opacity: 0;
+    transform: perspective(1000px) rotateX(7deg) rotateY(-5deg) translateY(16px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0) scale(1);
+  }
+}
+
+@keyframes logLineIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.log-line {
+  display: block;
+  animation: logLineIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+
+/* ============================================================
+   Headline accent color reveal
+   ============================================================ */
+.headline-accent {
+  color: #ffffff;
+  animation: accentReveal 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.62s forwards;
+}
+
+@keyframes accentReveal {
+  0%   { color: #ffffff; text-shadow: none; }
+  60%  { color: #D4FF3A; text-shadow: 0 0 28px rgba(212,255,58,0.42), 0 0 8px rgba(212,255,58,0.28); }
+  100% { color: #D4FF3A; text-shadow: 0 0 16px rgba(212,255,58,0.13); }
+}
+
+/* ============================================================
+   Hero motion
+   ============================================================ */
+
+/* Cinematic key light — slow directional pulse */
+.cinema-key {
+  animation: cinemaKeyPulse 22s ease-in-out infinite alternate;
+}
+
+@keyframes cinemaKeyPulse {
+  from { opacity: 0.78; transform: scale(1)    translate(0,    0); }
+  to   { opacity: 1;    transform: scale(1.07) translate(1.5%, -1%); }
+}
+
+/* God rays — drift very slowly left/right */
+.cinema-rays {
+  animation: cinemaRaysDrift 34s ease-in-out infinite alternate;
+}
+
+@keyframes cinemaRaysDrift {
+  from { opacity: 1;    transform: translateX(0); }
+  to   { opacity: 1.35; transform: translateX(-2.5%); }
+}
+
+/* 1. Background gradient drift — very slow, barely perceptible */
+.hero-gradient-drift {
+  background:
+    radial-gradient(ellipse 55% 45% at 18% 28%, rgba(180,204,65,0.05) 0%, transparent 68%),
+    radial-gradient(ellipse 48% 55% at 82% 72%, rgba(38,71,76,0.38) 0%, transparent 62%);
+  animation: heroDrift 22s ease-in-out infinite alternate;
+}
+
+@keyframes heroDrift {
+  from { opacity: 0.65; transform: scale(1)    translate(0,    0);   }
+  to   { opacity: 1;    transform: scale(1.07) translate(1.2%, -1%); }
+}
+
+/* 2. Text entrance — fade up with blur */
+.anim-fade-up {
+  opacity: 0;
+  animation: fadeUpBlur 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes fadeUpBlur {
+  from { opacity: 0; transform: translateY(22px); filter: blur(7px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0);   }
+}
+
+/* 3. Scroll indicator line */
+.scroll-indicator-line {
+  width: 1px;
+  height: 34px;
+  background: linear-gradient(to bottom, rgba(245,245,240,0.45), transparent);
+  animation: scrollLinePulse 2.4s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+@keyframes scrollLinePulse {
+  0%   { transform: scaleY(0.5) translateY(0);   opacity: 0.35; }
+  50%  { transform: scaleY(1)   translateY(5px); opacity: 0.75; }
+  100% { transform: scaleY(0.5) translateY(0);   opacity: 0.35; }
+}
+
+/* 4. Nodes SVG — edge draw-in */
+@keyframes drawLine {
+  to { stroke-dashoffset: 0; }
+}
+
+/* 5. Nodes SVG — dot appear */
+@keyframes nodeAppear {
+  from { opacity: 0; transform: scale(0.3); }
+  to   { opacity: 1; transform: scale(1);   }
+}
+
+/* 6. Nodes SVG — ring pulse */
+.node-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: nodeRingPulse 3.6s ease-in-out infinite;
+}
+
+@keyframes nodeRingPulse {
+  0%, 100% { opacity: 0.05; transform: scale(1);    }
+  50%       { opacity: 0.15; transform: scale(1.55); }
+}
+
+/* 7. Nav logo entrance */
+.logo-entrance {
+  opacity: 0;
+  animation: logoFadeIn 1s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+}
+
+@keyframes logoFadeIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.94); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+/* 8. Book a call — ring + glow bloom on hover */
+.cta-glow {
+  transition: box-shadow 0.26s ease, transform 0.26s ease, filter 0.26s ease;
+}
+
+.cta-glow:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+  box-shadow:
+    0 0 0 1.5px rgba(212,255,58,0.35),
+    0 8px 28px rgba(212,255,58,0.22),
+    0 2px 8px rgba(212,255,58,0.14);
+}
+
+/* ============================================================
+   Secondary CTA — chartreuse outline pill
+   ============================================================ */
+.secondary-btn {
+  border: 1px solid rgba(212,255,58,0.20);
+  color: rgba(212,255,58,0.75);
+  background: rgba(212,255,58,0.04);
+  transition: border-color 0.24s ease, background 0.24s ease, color 0.24s ease, box-shadow 0.24s ease;
+}
+
+.secondary-btn:hover {
+  border-color: rgba(212,255,58,0.45);
+  background: rgba(212,255,58,0.08);
+  color: #D4FF3A;
+  box-shadow: 0 0 18px rgba(212,255,58,0.10);
+}
+
+.secondary-btn .btn-arrow {
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.secondary-btn:hover .btn-arrow {
+  transform: rotate(-45deg) translateX(4px);
+}
+
+/* ============================================================
+   Headline word-by-word entrance
+   ============================================================ */
+.word-enter {
+  display: inline-block;
+  opacity: 0;
+  animation: wordEnter 0.72s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes wordEnter {
+  from { opacity: 0; transform: translateY(18px); filter: blur(5px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0);   }
+}
+
+/* ============================================================
+   Word reveal — geometric clip, no fade, no blur
+   Text rises from behind baseline. Wrapper clips the travel.
+   ============================================================ */
+.word-reveal-wrap {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  line-height: 1.18;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+.word-reveal {
+  display: inline-block;
+  animation: wordReveal 0.72s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes wordReveal {
+  from { transform: translateY(110%); }
+  to   { transform: translateY(0); }
+}
+
+/* ============================================================
+   Animated infinity stroke chase
+   ============================================================ */
+.infinity-chase {
+  animation: infinityChase 7s linear infinite;
+}
+
+@keyframes infinityChase {
+  from { stroke-dashoffset: 0;  }
+  to   { stroke-dashoffset: 90; }
+}
+
+/* Industries — transitions handled inline in component */
+
+/* ============================================================
+   Service card border shimmer
+   ============================================================ */
+@keyframes cardShimmerH {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes cardShimmerV {
+  0%   { background-position: 0 -200%; }
+  100% { background-position: 0 200%; }
+}
+.card-line-h {
+  background: linear-gradient(90deg, transparent 0%, #26474c 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: cardShimmerH 2.8s ease-in-out infinite;
+}
+.card-line-v {
+  background: linear-gradient(180deg, transparent 0%, #26474c 50%, transparent 100%);
+  background-size: 100% 200%;
+  animation: cardShimmerV 2.8s ease-in-out infinite;
+}
+
+/* ============================================================
+   Marquee
+   ============================================================ */
+.marquee-track {
+  width: max-content;
+  animation: marqueeScroll 30s linear infinite;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ============================================================
+   Custom cursor
+   ============================================================ */
+.cursor-dot {
+  position: fixed;
+  width: 9px;
+  height: 9px;
+  background: #b4cc41;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition:
+    width  0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.cursor-dot.cursor-grow {
+  width: 36px;
+  height: 36px;
+  background: rgba(180, 204, 65, 0.12);
+  border: 1px solid rgba(180, 204, 65, 0.45);
+}
+
+@media (hover: none) {
+  .cursor-dot { display: none; }
+}

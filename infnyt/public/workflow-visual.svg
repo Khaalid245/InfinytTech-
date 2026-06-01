@@ -1,0 +1,221 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 440" width="560" height="440">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#060C18"/>
+      <stop offset="100%" stop-color="#0C1A2E"/>
+    </linearGradient>
+    <radialGradient id="glow1" cx="45%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0E7490" stop-opacity="0.38"/>
+      <stop offset="100%" stop-color="#0E7490" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="70%" cy="70%" r="40%">
+      <stop offset="0%" stop-color="#075F72" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#075F72" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#1C2D42" stroke-width="0.5"/>
+    </pattern>
+    <filter id="panel-shadow">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#000000" flood-opacity="0.55"/>
+    </filter>
+    <filter id="soft-shadow">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="560" height="440" fill="url(#bg)" rx="20"/>
+  <rect width="560" height="440" fill="url(#grid)" rx="20"/>
+  <ellipse cx="248" cy="228" rx="230" ry="190" fill="url(#glow1)"/>
+  <ellipse cx="420" cy="320" rx="160" ry="130" fill="url(#glow2)"/>
+
+  <!-- ═══════════════════════════════════════════
+       PANEL A — Deployment Pipeline (back-left)
+  ═══════════════════════════════════════════ -->
+  <g transform="translate(18, 52) rotate(-3, 130, 110)" filter="url(#panel-shadow)">
+    <rect width="252" height="212" rx="14" fill="#0C1B2E" stroke="#1E3E5C" stroke-width="1"/>
+    <!-- header bar -->
+    <rect width="252" height="38" rx="14" fill="#0E2336"/>
+    <rect y="26" width="252" height="12" fill="#0E2336"/>
+    <circle cx="18" cy="19" r="4.5" fill="#EF4444" opacity="0.75"/>
+    <circle cx="34" cy="19" r="4.5" fill="#F59E0B" opacity="0.75"/>
+    <circle cx="50" cy="19" r="4.5" fill="#22C55E" opacity="0.75"/>
+    <text x="148" y="23" text-anchor="middle" fill="#4A6580" font-size="10" font-family="ui-monospace,monospace">deployment pipeline</text>
+
+    <!-- stage row -->
+    <!-- build -->
+    <rect x="14" y="52" width="58" height="38" rx="7" fill="#0A2740" stroke="#2DD4BF" stroke-width="1"/>
+    <circle cx="26" cy="67" r="6" fill="#2DD4BF"/>
+    <path d="M22.5 67 l3 3 5-5" stroke="#060C18" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <text x="36" y="63" fill="#E2E8F0" font-size="9" font-family="ui-monospace,monospace">build</text>
+    <text x="36" y="75" fill="#2DD4BF" font-size="8" font-family="ui-monospace,monospace">2m 14s</text>
+
+    <!-- connector -->
+    <line x1="72" y1="71" x2="88" y2="71" stroke="#2DD4BF" stroke-width="1.2" stroke-dasharray="3,2"/>
+    <polygon points="87,68 93,71 87,74" fill="#2DD4BF"/>
+
+    <!-- test -->
+    <rect x="94" y="52" width="58" height="38" rx="7" fill="#0A2740" stroke="#2DD4BF" stroke-width="1"/>
+    <circle cx="106" cy="67" r="6" fill="#2DD4BF"/>
+    <path d="M102.5 67 l3 3 5-5" stroke="#060C18" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <text x="116" y="63" fill="#E2E8F0" font-size="9" font-family="ui-monospace,monospace">test</text>
+    <text x="116" y="75" fill="#2DD4BF" font-size="8" font-family="ui-monospace,monospace">212/212</text>
+
+    <!-- connector -->
+    <line x1="152" y1="71" x2="168" y2="71" stroke="#F59E0B" stroke-width="1.2" stroke-dasharray="3,2"/>
+    <polygon points="167,68 173,71 167,74" fill="#F59E0B"/>
+
+    <!-- staging -->
+    <rect x="174" y="52" width="62" height="38" rx="7" fill="#1A1505" stroke="#F59E0B" stroke-width="1"/>
+    <circle cx="186" cy="67" r="6" fill="#F59E0B"/>
+    <text x="186" y="71" text-anchor="middle" fill="#060C18" font-size="10" font-family="ui-monospace,monospace">⟳</text>
+    <text x="196" y="63" fill="#E2E8F0" font-size="9" font-family="ui-monospace,monospace">stage</text>
+    <text x="196" y="75" fill="#F59E0B" font-size="8" font-family="ui-monospace,monospace">running</text>
+
+    <!-- down connector -->
+    <line x1="126" y1="90" x2="126" y2="108" stroke="#2A3F55" stroke-width="1"/>
+    <polygon points="123,107 126,113 129,107" fill="#2A3F55"/>
+
+    <!-- prod -->
+    <rect x="76" y="114" width="100" height="38" rx="7" fill="#090E18" stroke="#2A3F55" stroke-width="1" stroke-dasharray="5,3"/>
+    <circle cx="92" cy="133" r="6" fill="#2A3F55"/>
+    <text x="104" y="129" fill="#4A6070" font-size="9" font-family="ui-monospace,monospace">prod</text>
+    <text x="104" y="142" fill="#2A3F55" font-size="8" font-family="ui-monospace,monospace">waiting…</text>
+
+    <!-- metrics strip -->
+    <rect x="14" y="164" width="68" height="30" rx="7" fill="#091828"/>
+    <text x="48" y="177" text-anchor="middle" fill="#2DD4BF" font-size="12" font-weight="bold" font-family="ui-sans-serif,sans-serif">99.98%</text>
+    <text x="48" y="189" text-anchor="middle" fill="#4A6580" font-size="8" font-family="ui-sans-serif,sans-serif">uptime</text>
+
+    <rect x="92" y="164" width="68" height="30" rx="7" fill="#091828"/>
+    <text x="126" y="177" text-anchor="middle" fill="#2DD4BF" font-size="12" font-weight="bold" font-family="ui-sans-serif,sans-serif">18ms</text>
+    <text x="126" y="189" text-anchor="middle" fill="#4A6580" font-size="8" font-family="ui-sans-serif,sans-serif">p95 latency</text>
+
+    <rect x="170" y="164" width="68" height="30" rx="7" fill="#091828"/>
+    <text x="204" y="177" text-anchor="middle" fill="#2DD4BF" font-size="12" font-weight="bold" font-family="ui-sans-serif,sans-serif">0</text>
+    <text x="204" y="189" text-anchor="middle" fill="#4A6580" font-size="8" font-family="ui-sans-serif,sans-serif">incidents</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       PANEL B — Sprint Board (center-front)
+  ═══════════════════════════════════════════ -->
+  <g transform="translate(158, 130) rotate(1, 138, 118)" filter="url(#panel-shadow)">
+    <rect width="276" height="238" rx="14" fill="#0A1828" stroke="#1A3650" stroke-width="1"/>
+    <!-- header -->
+    <rect width="276" height="38" rx="14" fill="#0E2136"/>
+    <rect y="26" width="276" height="12" fill="#0E2136"/>
+    <text x="14" y="23" fill="#64849E" font-size="10" font-family="ui-monospace,monospace">sprint-24 · release-2.5.1</text>
+    <!-- progress -->
+    <rect x="192" y="13" width="70" height="6" rx="3" fill="#172A40"/>
+    <rect x="192" y="13" width="51" height="6" rx="3" fill="#2DD4BF"/>
+    <text x="266" y="22" text-anchor="end" fill="#2DD4BF" font-size="8" font-family="ui-sans-serif,sans-serif">8/11</text>
+
+    <!-- columns -->
+    <!-- IN PROGRESS label -->
+    <text x="14" y="56" fill="#3D5570" font-size="7.5" letter-spacing="1.2" font-family="ui-sans-serif,sans-serif">IN PROGRESS</text>
+
+    <!-- card 1 -->
+    <rect x="14" y="62" width="78" height="44" rx="7" fill="#0C2238" stroke="#1A3A55" stroke-width="0.8"/>
+    <rect x="14" y="62" width="3" height="44" rx="1.5" fill="#2DD4BF"/>
+    <text x="24" y="77" fill="#CBD5E1" font-size="9.5" font-weight="600" font-family="ui-sans-serif,sans-serif">Auth API</text>
+    <text x="24" y="90" fill="#3D5570" font-size="8" font-family="ui-sans-serif,sans-serif">Backend · HM</text>
+    <rect x="24" y="95" width="42" height="4" rx="2" fill="#162A3E"/>
+    <rect x="24" y="95" width="32" height="4" rx="2" fill="#2DD4BF" opacity="0.65"/>
+
+    <!-- card 2 -->
+    <rect x="14" y="112" width="78" height="44" rx="7" fill="#0C2238" stroke="#1A3A55" stroke-width="0.8"/>
+    <rect x="14" y="112" width="3" height="44" rx="1.5" fill="#F59E0B"/>
+    <text x="24" y="127" fill="#CBD5E1" font-size="9.5" font-weight="600" font-family="ui-sans-serif,sans-serif">CI Pipeline</text>
+    <text x="24" y="140" fill="#3D5570" font-size="8" font-family="ui-sans-serif,sans-serif">DevOps · DV</text>
+    <rect x="24" y="145" width="42" height="4" rx="2" fill="#162A3E"/>
+    <rect x="24" y="145" width="20" height="4" rx="2" fill="#F59E0B" opacity="0.65"/>
+
+    <!-- REVIEW label -->
+    <text x="104" y="56" fill="#3D5570" font-size="7.5" letter-spacing="1.2" font-family="ui-sans-serif,sans-serif">REVIEW</text>
+
+    <rect x="104" y="62" width="78" height="44" rx="7" fill="#0C2238" stroke="#1A3A55" stroke-width="0.8"/>
+    <rect x="104" y="62" width="3" height="44" rx="1.5" fill="#818CF8"/>
+    <text x="114" y="77" fill="#CBD5E1" font-size="9.5" font-weight="600" font-family="ui-sans-serif,sans-serif">Dashboard</text>
+    <text x="114" y="90" fill="#3D5570" font-size="8" font-family="ui-sans-serif,sans-serif">Frontend · SK</text>
+
+    <rect x="104" y="112" width="78" height="44" rx="7" fill="#0C2238" stroke="#1A3A55" stroke-width="0.8"/>
+    <rect x="104" y="112" width="3" height="44" rx="1.5" fill="#818CF8"/>
+    <text x="114" y="127" fill="#CBD5E1" font-size="9.5" font-weight="600" font-family="ui-sans-serif,sans-serif">Onboarding</text>
+    <text x="114" y="140" fill="#3D5570" font-size="8" font-family="ui-sans-serif,sans-serif">Product · RM</text>
+
+    <!-- DONE label -->
+    <text x="194" y="56" fill="#3D5570" font-size="7.5" letter-spacing="1.2" font-family="ui-sans-serif,sans-serif">DONE</text>
+
+    <rect x="194" y="62" width="68" height="44" rx="7" fill="#091614" stroke="#0F2C1E" stroke-width="0.8"/>
+    <rect x="194" y="62" width="3" height="44" rx="1.5" fill="#22C55E"/>
+    <text x="204" y="77" fill="#3D5570" font-size="9.5" font-family="ui-sans-serif,sans-serif">DB Schema</text>
+    <text x="204" y="90" fill="#2A4030" font-size="8" font-family="ui-sans-serif,sans-serif">Backend</text>
+
+    <rect x="194" y="112" width="68" height="44" rx="7" fill="#091614" stroke="#0F2C1E" stroke-width="0.8"/>
+    <rect x="194" y="112" width="3" height="44" rx="1.5" fill="#22C55E"/>
+    <text x="204" y="127" fill="#3D5570" font-size="9.5" font-family="ui-sans-serif,sans-serif">API Routes</text>
+    <text x="204" y="140" fill="#2A4030" font-size="8" font-family="ui-sans-serif,sans-serif">Backend</text>
+
+    <!-- footer -->
+    <rect x="0" y="200" width="276" height="38" rx="0" fill="#080F1C"/>
+    <rect x="0" y="200" width="276" height="14" fill="#080F1C"/>
+    <rect x="0" y="224" width="276" height="14" rx="14" fill="#080F1C"/>
+    <text x="14" y="221" fill="#2A3F55" font-size="8.5" font-family="ui-monospace,monospace">last push</text>
+    <text x="68" y="221" fill="#2DD4BF" font-size="8.5" font-family="ui-monospace,monospace">feat: auth middleware → main</text>
+    <text x="252" y="221" text-anchor="end" fill="#2A3F55" font-size="8.5" font-family="ui-monospace,monospace">2m</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       PANEL C — Terminal / Deploy Log (right)
+  ═══════════════════════════════════════════ -->
+  <g transform="translate(340, 52) rotate(3, 108, 108)" filter="url(#soft-shadow)">
+    <rect width="210" height="220" rx="14" fill="#060C18" stroke="#1A3248" stroke-width="1"/>
+    <!-- header -->
+    <rect width="210" height="38" rx="14" fill="#09131F"/>
+    <rect y="26" width="210" height="12" fill="#09131F"/>
+    <circle cx="18" cy="19" r="4.5" fill="#EF4444" opacity="0.7"/>
+    <circle cx="34" cy="19" r="4.5" fill="#F59E0B" opacity="0.7"/>
+    <circle cx="50" cy="19" r="4.5" fill="#22C55E" opacity="0.7"/>
+    <text x="130" y="23" text-anchor="middle" fill="#3A5470" font-size="9" font-family="ui-monospace,monospace">deploy.log — bash</text>
+
+    <!-- log lines -->
+    <text x="14" y="56" fill="#3A5470" font-size="9" font-family="ui-monospace,monospace">$ run deploy --env prod</text>
+
+    <text x="14" y="74" fill="#2DD4BF" font-size="9" font-family="ui-monospace,monospace">[ok]</text>
+    <text x="46" y="74" fill="#8AA4BE" font-size="9" font-family="ui-monospace,monospace">lint — 0 errors</text>
+
+    <text x="14" y="90" fill="#2DD4BF" font-size="9" font-family="ui-monospace,monospace">[ok]</text>
+    <text x="46" y="90" fill="#8AA4BE" font-size="9" font-family="ui-monospace,monospace">tests 212 passed</text>
+
+    <text x="14" y="106" fill="#2DD4BF" font-size="9" font-family="ui-monospace,monospace">[ok]</text>
+    <text x="46" y="106" fill="#8AA4BE" font-size="9" font-family="ui-monospace,monospace">migration v18</text>
+
+    <text x="14" y="122" fill="#F59E0B" font-size="9" font-family="ui-monospace,monospace">[→]</text>
+    <text x="46" y="122" fill="#8AA4BE" font-size="9" font-family="ui-monospace,monospace">canary 10 → 100%</text>
+
+    <text x="14" y="138" fill="#22C55E" font-size="9" font-family="ui-monospace,monospace">[live]</text>
+    <text x="52" y="138" fill="#E2E8F0" font-size="9" font-weight="600" font-family="ui-monospace,monospace">product-api</text>
+
+    <text x="14" y="154" fill="#3A5470" font-size="9" font-family="ui-monospace,monospace">[trace]</text>
+    <text x="58" y="154" fill="#2DD4BF" font-size="9" font-family="ui-monospace,monospace">p95 18ms ↓</text>
+
+    <!-- cursor -->
+    <text x="14" y="170" fill="#8AA4BE" font-size="9" font-family="ui-monospace,monospace">$</text>
+    <rect x="26" y="159" width="7" height="13" rx="1" fill="#2DD4BF" opacity="0.85"/>
+
+    <!-- status bar -->
+    <line x1="0" y1="182" x2="210" y2="182" stroke="#0E1E30" stroke-width="1"/>
+    <rect x="0" y="183" width="210" height="37" rx="0" fill="#07101A"/>
+    <rect x="0" y="209" width="210" height="11" rx="11" fill="#07101A"/>
+    <circle cx="18" cy="200" r="4" fill="#2DD4BF"/>
+    <text x="28" y="204" fill="#2DD4BF" font-size="8.5" font-family="ui-monospace,monospace">prod</text>
+    <text x="62" y="204" fill="#2A3F55" font-size="8.5" font-family="ui-monospace,monospace">release-2.5.1</text>
+    <text x="196" y="204" text-anchor="end" fill="#2A3F55" font-size="8.5" font-family="ui-monospace,monospace">14:38 UTC</text>
+  </g>
+
+  <!-- accent dots / depth hints -->
+  <circle cx="152" cy="108" r="3.5" fill="#2DD4BF" opacity="0.5"/>
+  <circle cx="430" cy="320" r="2.5" fill="#2DD4BF" opacity="0.35"/>
+  <circle cx="76" cy="344" r="2" fill="#2DD4BF" opacity="0.25"/>
+  <circle cx="490" cy="148" r="2" fill="#2DD4BF" opacity="0.3"/>
+</svg>

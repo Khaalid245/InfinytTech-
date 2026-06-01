@@ -2,8 +2,6 @@
 
 # dependencies
 /node_modules
-node_modules/
-infnyt/node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -24,7 +22,6 @@ infnyt/node_modules/
 
 # misc
 .DS_Store
-Thumbs.db
 *.pem
 
 # debug
@@ -33,7 +30,7 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
+# env files (can opt-in for committing if needed)
 .env*
 
 # vercel
@@ -42,13 +39,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# dev utility scripts
-replace_modal.js
-
-# AI tooling (internal only)
-.claude/
-CLAUDE.md
-AGENTS.md
-infnyt/CLAUDE.md
-infnyt/AGENTS.md

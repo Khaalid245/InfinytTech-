@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# dev utility scripts
+replace_modal.js
+
+# AI tooling (internal only)
+CLAUDE.md
+AGENTS.md

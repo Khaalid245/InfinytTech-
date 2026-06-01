@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Dev utility script — not part of the app
+    "replace_modal.js",
   ]),
 ]);
 

@@ -1,6 +1,8 @@
 # InfinytTech Website
 
-This is the marketing website for InfinytTech. It's built with Next.js, React, TypeScript, and Tailwind CSS. The site has six pages: Home, About, Services, Work, Blog, and Contact.
+This is the frontend for InfinytTech. It's built with Next.js, React, TypeScript, and Tailwind CSS. The site has six pages: Home, About, Services, Work, Blog, and Contact.
+
+The frontend lives inside the `frontend/` directory of the InfinytTech repository, alongside the backend.
 
 ---
 
@@ -59,13 +61,20 @@ If it shows something older than v20.9, grab the latest LTS version from [nodejs
 
 ## Running the project
 
-**1. Go into the project folder**
+**1. Clone the repository**
 
 ```bash
-cd path/to/Tech/infinyttech
+git clone https://github.com/Khaalid245/InfinytTech-.git
+cd InfinytTech-
 ```
 
-**2. Install the dependencies**
+**2. Go into the frontend folder**
+
+```bash
+cd frontend
+```
+
+**3. Install the dependencies**
 
 ```bash
 npm install
@@ -73,7 +82,7 @@ npm install
 
 This downloads everything listed in `package.json`. It only takes a minute. You'll see a `node_modules` folder appear when it's done.
 
-**3. Start the dev server**
+**4. Start the dev server**
 
 ```bash
 npm run dev
@@ -96,74 +105,74 @@ Any file you save will update in the browser automatically — no need to refres
 
 ## Folder structure
 
+The InfinytTech repository is split into two parts:
+
 ```
-infinyttech/
-├── public/                        # Static files served as-is
-│   ├── logo.png                   # Main logo
-│   ├── logo1.png                  # Logo variant
-│   ├── card.png                   # Generic card image
-│   ├── card1.png                  # Work card images (card1 – card6)
-│   ├── card2.png
-│   ├── card3.png
-│   ├── card4.png
-│   ├── card5.png
-│   ├── card6.png
-│   ├── About.png                  # About page image
-│   ├── Blog.png                   # Blog page image
-│   ├── Service.png                # Service page image
-│   ├── Work.png                   # Work page image
-│   ├── testimonial1-img.png       # Testimonial avatar images
-│   ├── testimonial2-img.png
-│   ├── testimonial3-img.png
-│   ├── testimonial4-img.png
-│   ├── file.svg
-│   ├── globe.svg
-│   ├── next.svg
-│   ├── vercel.svg
-│   └── window.svg
-├── src/
-│   ├── app/                       # One folder = one page (Next.js App Router)
-│   │   ├── layout.tsx             # Shared layout — adds Nav and Footer to every page
-│   │   ├── page.tsx               # Home page  ( / )
-│   │   ├── globals.css            # All styles and CSS color variables
-│   │   ├── favicon.ico
-│   │   ├── about/
-│   │   │   └── page.tsx           # About page  ( /about )
-│   │   ├── blog/
-│   │   │   └── page.tsx           # Blog page  ( /blog )
-│   │   ├── contact/
-│   │   │   └── page.tsx           # Contact page  ( /contact )
-│   │   ├── projects/
-│   │   │   └── page.tsx           # Work page  ( /projects ) — shown as "Work" in the nav
-│   │   └── services/
-│   │       └── page.tsx           # Services page  ( /services )
-│   └── components/
-│       ├── icons/
-│       │   └── Icons.tsx          # Every icon used in the project is exported from here
-│       ├── layout/
-│       │   ├── Nav.tsx            # Navigation bar
-│       │   └── Footer.tsx         # Footer
-│       ├── sections/              # Page-level sections dropped into pages
-│       │   ├── HomeHero.tsx       # Hero section on the home page
-│       │   ├── ServicesSection.tsx        # The 6 service cards + the service detail modal (both live in this file)
-│       │   ├── ProjectsSection.tsx        # Work card preview on the home page
-│       │   ├── ProjectsFilterSection.tsx  # Filterable full work grid on /projects
-│       │   ├── ProjectModal.tsx           # Detail modal that opens when you click a work card
-│       │   ├── ProjectCTA.tsx             # CTA section on the work page
-│       │   ├── WhyChooseSection.tsx       # "Why choose us" section
-│       │   ├── TestimonialSection.tsx     # Client testimonials
-│       │   ├── StatsSection.tsx           # Stats/numbers section
-│       │   ├── IndustriesSection.tsx      # Industries we work in
-│       │   ├── ConnectCTA.tsx             # "Let's connect" call-to-action
-│       │   ├── FinalCTA.tsx               # Bottom CTA section
-│       │   └── projects-data.ts           # All work card content lives here
-│       └── ui/
-│           ├── Button.tsx                 # Reusable button component
-│           └── Eyebrow.tsx               # Small label shown above headings
-├── next.config.ts                 # Next.js config (Turbopack enabled)
-├── tsconfig.json                  # TypeScript config
-├── postcss.config.mjs             # PostCSS config for Tailwind v4
-└── package.json                   # Dependencies and scripts
+InfinytTech-/
+├── backend/              # Django backend
+└── frontend/             # This — the website
+    ├── public/                        # Static files served as-is
+    │   ├── logo.png                   # Main logo
+    │   ├── logo1.png                  # Logo variant
+    │   ├── card.png                   # Generic card image
+    │   ├── card1.png                  # Work card images (card1 – card6)
+    │   ├── card2.png
+    │   ├── card3.png
+    │   ├── card4.png
+    │   ├── card5.png
+    │   ├── card6.png
+    │   ├── About.png                  # About page image
+    │   ├── Blog.png                   # Blog page image
+    │   ├── Service.png                # Service page image
+    │   ├── Work.png                   # Work page image
+    │   ├── testimonial1-img.png       # Testimonial avatar images
+    │   ├── testimonial2-img.png
+    │   ├── testimonial3-img.png
+    │   └── testimonial4-img.png
+    ├── src/
+    │   ├── app/                       # One folder = one page (Next.js App Router)
+    │   │   ├── layout.tsx             # Shared layout — adds Nav and Footer to every page
+    │   │   ├── page.tsx               # Home page  ( / )
+    │   │   ├── globals.css            # All styles and CSS color variables
+    │   │   ├── favicon.ico
+    │   │   ├── about/
+    │   │   │   └── page.tsx           # About page  ( /about )
+    │   │   ├── blog/
+    │   │   │   └── page.tsx           # Blog page  ( /blog )
+    │   │   ├── contact/
+    │   │   │   └── page.tsx           # Contact page  ( /contact )
+    │   │   ├── projects/
+    │   │   │   └── page.tsx           # Work page  ( /projects ) — shown as "Work" in the nav
+    │   │   └── services/
+    │   │       └── page.tsx           # Services page  ( /services )
+    │   └── components/
+    │       ├── icons/
+    │       │   └── Icons.tsx          # Every icon used in the project is exported from here
+    │       ├── layout/
+    │       │   ├── Nav.tsx            # Navigation bar
+    │       │   └── Footer.tsx         # Footer
+    │       ├── sections/              # Page-level sections dropped into pages
+    │       │   ├── HomeHero.tsx       # Hero section on the home page
+    │       │   ├── ServicesSection.tsx        # The 6 service cards + service detail modal
+    │       │   ├── ProjectsSection.tsx        # Work card preview on the home page
+    │       │   ├── ProjectsFilterSection.tsx  # Filterable full work grid on /projects
+    │       │   ├── ProjectModal.tsx           # Detail modal that opens when you click a work card
+    │       │   ├── ProjectCTA.tsx             # CTA section on the work page
+    │       │   ├── WhyChooseSection.tsx       # "Why choose us" section
+    │       │   ├── TestimonialSection.tsx     # Client testimonials
+    │       │   ├── StatsSection.tsx           # Stats/numbers section
+    │       │   ├── IndustriesSection.tsx      # Industries we work in
+    │       │   ├── ConnectCTA.tsx             # "Let's connect" call-to-action
+    │       │   ├── FinalCTA.tsx               # Bottom CTA section
+    │       │   └── projects-data.ts           # All work card content lives here
+    │       └── ui/
+    │           ├── Button.tsx                 # Reusable button component
+    │           └── Eyebrow.tsx               # Small label shown above headings
+    ├── next.config.ts                 # Next.js config
+    ├── tsconfig.json                  # TypeScript config
+    ├── postcss.config.mjs             # PostCSS config for Tailwind v4
+    ├── eslint.config.mjs              # ESLint config
+    └── package.json                   # Dependencies and scripts
 ```
 
 ---
@@ -444,13 +453,15 @@ This runs the compiled site on [http://localhost:3000](http://localhost:3000). I
 
 ## Before you push — commit everything
 
-Run `git status` first. If you see a lot of untracked files (images in `public/`, page files, components), those files don't exist on GitHub yet and Vercel won't have them either. Commit them all before pushing:
+Make sure you're inside the `frontend/` folder when running git commands. Run `git status` first to see what's changed. Then:
 
 ```bash
 git add .
-git commit -m "add project files"
-git push origin main
+git commit -m "your message"
+git push origin your-branch-name
 ```
+
+Then open a pull request on GitHub for review before merging into `master`.
 
 ---
 
@@ -467,16 +478,14 @@ Follow the steps in the "Before you push" section above, then come back here.
 1. Go to [vercel.com](https://vercel.com) and sign up or sign in
 2. Click **Add New Project**
 3. Connect your GitHub account if you haven't already
-4. Find and select the repository
-5. Before hitting Deploy, check the **Root Directory** setting:
-   - If `package.json` is at the root of the repo, leave it as `./`
-   - If the project lives inside a subfolder (e.g. `infinyttech/`), set it to `infinyttech`
+4. Find and select the `InfinytTech-` repository
+5. **Important — set the Root Directory to `frontend`** since the Next.js project is inside the `frontend/` folder, not at the root of the repo
 6. Leave everything else as default — Vercel detects Next.js on its own
 7. Hit **Deploy**
 
 Vercel will build and publish the site. It gives you a live URL straight away (something like `your-project.vercel.app`).
 
-From this point on, every push to `main` triggers a new deployment automatically.
+From this point on, every push to `master` triggers a new deployment automatically.
 
 **3. Add a custom domain (optional)**
 
@@ -486,7 +495,7 @@ In your Vercel project dashboard, go to **Settings → Domains**, type your doma
 
 ## Environment variables
 
-If you ever need to add an API key or a backend URL, create a `.env.local` file in the root of the project:
+If you ever need to add an API key or a backend URL, create a `.env.local` file inside the `frontend/` folder:
 
 ```
 NEXT_PUBLIC_API_URL=https://api.example.com
@@ -498,6 +507,8 @@ Variables that start with `NEXT_PUBLIC_` are available in the browser. The rest 
 
 ## npm scripts
 
+Run these from inside the `frontend/` folder.
+
 | Command | What it does |
 |---|---|
 | `npm run dev` | Start the dev server |
@@ -508,6 +519,15 @@ Variables that start with `NEXT_PUBLIC_` are available in the browser. The rest 
 ---
 
 ## Things to watch out for
+
+**Always work from inside the `frontend/` folder**
+
+All npm commands and file edits happen inside `frontend/`. If you're at the repo root, nothing will work.
+
+```bash
+cd InfinytTech-/frontend
+npm run dev
+```
 
 **Tailwind v4 is not the same as v3**
 
@@ -589,7 +609,7 @@ Here's a quick overview of how this project was put together, so you know what d
 
 9. **Used Lucide React for icons** — all icons are imported once in `src/components/icons/Icons.tsx` and re-exported from there.
 
-10. **Tested locally with `npm run dev`** before any deployment.
+10. **Tested locally with `npm run dev`** from inside the `frontend/` folder before any deployment.
 
 ---
 
@@ -692,15 +712,15 @@ For shadows, use the three tokens already defined — don't write new ones:
 
 | If you want to… | Edit this file |
 |---|---|
-| Change a color, shadow, or spacing value | `src/app/globals.css` |
-| Change the font or add a new font | `src/app/layout.tsx` |
-| Change what's in the Nav or Footer | `src/components/layout/Nav.tsx` or `Footer.tsx` |
-| Add or edit a work portfolio card | `src/components/sections/projects-data.ts` |
-| Add or edit a service offering | `src/components/sections/ServicesSection.tsx` |
-| Change button styles | `src/app/globals.css` (Buttons section) |
-| Add a new page | Create `src/app/<page-name>/page.tsx` |
-| Add a new image | Drop it in `public/` |
-| Change the site title or meta description | `src/app/layout.tsx` |
+| Change a color, shadow, or spacing value | `frontend/src/app/globals.css` |
+| Change the font or add a new font | `frontend/src/app/layout.tsx` |
+| Change what's in the Nav or Footer | `frontend/src/components/layout/Nav.tsx` or `Footer.tsx` |
+| Add or edit a work portfolio card | `frontend/src/components/sections/projects-data.ts` |
+| Add or edit a service offering | `frontend/src/components/sections/ServicesSection.tsx` |
+| Change button styles | `frontend/src/app/globals.css` (Buttons section) |
+| Add a new page | Create `frontend/src/app/<page-name>/page.tsx` |
+| Add a new image | Drop it in `frontend/public/` |
+| Change the site title or meta description | `frontend/src/app/layout.tsx` |
 
 ---
 
@@ -711,12 +731,18 @@ These are simple rules to avoid overwriting each other's work and breaking thing
 **1. Always pull the latest code before you start**
 
 ```bash
-git pull
+git pull origin master
 ```
 
-**2. Create a new branch for every change**
+**2. Always work from inside the `frontend/` folder**
 
-Don't work directly on `main`. Name the branch after what you're doing:
+```bash
+cd InfinytTech-/frontend
+```
+
+**3. Create a new branch for every change**
+
+Don't work directly on `master`. Name the branch after what you're doing:
 
 ```bash
 git checkout -b feature/add-new-service
@@ -724,11 +750,11 @@ git checkout -b fix/nav-mobile-menu
 git checkout -b update/testimonial-content
 ```
 
-**3. Be careful with shared files**
+**4. Be careful with shared files**
 
 Files like `globals.css`, `Nav.tsx`, `Footer.tsx`, and `Button.tsx` affect the whole site. If two people edit the same file at the same time, you get a conflict. Coordinate before touching these.
 
-**4. Use specific class names for new styles**
+**5. Use specific class names for new styles**
 
 If you need a style that only applies to one section, name it clearly — don't reuse or modify shared classes like `.btn`, `.container`, `.section`, `.h1`, or `.h2`. Add a new class instead:
 
@@ -740,7 +766,7 @@ If you need a style that only applies to one section, name it clearly — don't 
 .btn { padding: 20px; }
 ```
 
-**5. Check your work before pushing**
+**6. Check your work before pushing**
 
 ```bash
 npm run lint     # checks for code errors
@@ -749,10 +775,10 @@ npm run build    # makes sure the whole site compiles
 
 If either of these fails, fix it before pushing.
 
-**6. Push your branch and open a pull request**
+**7. Push your branch and open a pull request**
 
 ```bash
 git push origin feature/add-new-service
 ```
 
-Then open a pull request on GitHub so someone can review before it goes to `main`.
+Then open a pull request on GitHub so someone can review before it goes to `master`.

@@ -1,5 +1,5 @@
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.generics import get_object_or_404
 from apps.common.response import api_response, api_error
 from .models import Post, Category
@@ -25,6 +25,20 @@ class PostListView(APIView):
         return api_response(data=serializer.data, message='Post created.', status=201)
 
 
+class PostAdminListView(APIView):
+    """Staff-only — returns all posts (drafts + published) using the full detail serializer."""
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        qs = Post.objects.select_related('author', 'category').all()
+        if request.query_params.get('status'):
+            qs = qs.filter(status=request.query_params['status'])
+        if request.query_params.get('category'):
+            qs = qs.filter(category__slug=request.query_params['category'])
+        serializer = PostDetailSerializer(qs, many=True, context={'request': request})
+        return api_response(data=serializer.data)
+
+
 class PostDetailView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
@@ -35,7 +49,9 @@ class PostDetailView(APIView):
         return get_object_or_404(Post, slug=slug)
 
     def get(self, request, slug):
-        serializer = PostDetailSerializer(self.get_object(slug), context={'request': request})
+        # Staff can view any post (including drafts); public only sees published
+        obj = self.get_admin_object(slug) if request.user.is_staff else self.get_object(slug)
+        serializer = PostDetailSerializer(obj, context={'request': request})
         return api_response(data=serializer.data)
 
     def put(self, request, slug):

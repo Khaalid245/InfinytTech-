@@ -1,0 +1,140 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand Color Tokens */
+  --color-primary-bg: #FFFFFF;
+  --color-primary-text: #111111;
+  --color-secondary-text: #555555;
+  --color-accent-primary: #EAB308;
+  --color-accent-secondary: #FACC15;
+  --color-surface-light: #FAFAFA;
+  --color-border-primary: #E5E5E5;
+
+  /* Typography Fonts */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Precise Typography Scale */
+  --text-h1: 3.5rem; /* 56px */
+  --text-h1--line-height: 1.15;
+  --text-h1--letter-spacing: -0.03em;
+
+  --text-h2: 2.25rem; /* 36px */
+  --text-h2--line-height: 1.2;
+  --text-h2--letter-spacing: -0.02em;
+
+  --text-h3: 1.5rem; /* 24px */
+  --text-h3--line-height: 1.3;
+  --text-h3--letter-spacing: -0.015em;
+
+  --text-h4: 1.25rem; /* 20px */
+  --text-h4--line-height: 1.35;
+  --text-h4--letter-spacing: -0.01em;
+
+  --text-body-large: 1.125rem; /* 18px */
+  --text-body-large--line-height: 1.6;
+
+  --text-body: 1rem; /* 16px */
+  --text-body--line-height: 1.625;
+
+  --text-small: 0.875rem; /* 14px */
+  --text-small--line-height: 1.5;
+
+  --text-caption: 0.75rem; /* 12px */
+  --text-caption--line-height: 1.5;
+  --text-caption--letter-spacing: 0.05em;
+
+  /* Standardized Spacing Scale */
+  --spacing-0: 0px;
+  --spacing-1: 0.25rem;  /* 4px */
+  --spacing-2: 0.5rem;   /* 8px */
+  --spacing-3: 0.75rem;  /* 12px */
+  --spacing-4: 1rem;     /* 16px */
+  --spacing-5: 1.25rem;  /* 20px */
+  --spacing-6: 1.5rem;   /* 24px */
+  --spacing-8: 2rem;     /* 32px */
+  --spacing-10: 2.5rem;  /* 40px */
+  --spacing-12: 3rem;    /* 48px */
+  --spacing-16: 4rem;    /* 64px */
+  --spacing-20: 5rem;    /* 80px */
+  --spacing-24: 6rem;    /* 96px */
+  --spacing-32: 8rem;    /* 128px */
+  --spacing-40: 10rem;   /* 160px */
+  --spacing-48: 12rem;   /* 192px */
+  --spacing-64: 16rem;   /* 256px */
+
+  /* Border Radius Scale */
+  --radius-none: 0px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-elegant: 0 4px 20px -2px rgba(17, 17, 17, 0.05), 0 2px 6px -1px rgba(17, 17, 17, 0.03);
+  --shadow-elegant-lg: 0 10px 30px -5px rgba(17, 17, 17, 0.08), 0 4px 12px -2px rgba(17, 17, 17, 0.04);
+}
+
+/* ── Dark Mode Overrides ── */
+.dark {
+  --color-primary-bg: #0F0F10;
+  --color-primary-text: #FFFFFF;
+  --color-secondary-text: #D4D4D4;
+  --color-accent-primary: #EAB308;
+  --color-accent-secondary: #FACC15;
+  --color-surface-light: #171717;
+  --color-border-primary: #2A2A2A;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-primary-bg);
+    color: var(--color-primary-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+}
+
+/* ── Navbar Animations ── */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.35s ease both;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fade-in 0.2s ease both;
+}
+
+@keyframes fade-in-right {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.animate-fade-in-right {
+  animation: fade-in-right 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Custom Scrollbar for Premium Look */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-primary-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-primary);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-secondary-text);
+}

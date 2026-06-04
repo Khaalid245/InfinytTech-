@@ -1,5 +1,17 @@
 import { useState } from 'react';
 import { cn } from '../utils/cn';
+import { 
+  Target, 
+  Eye, 
+  Compass, 
+  Award, 
+  ShieldCheck, 
+  Globe, 
+  Sparkles, 
+  Users, 
+  BookOpen, 
+  type LucideIcon 
+} from 'lucide-react';
 
 interface MissionVisionValuesProps {
   theme: 'dark' | 'light';
@@ -9,42 +21,55 @@ interface ValueItem {
   id: string;
   title: string;
   desc: string;
+  icon: LucideIcon;
 }
 
 export default function MissionVisionValues({ theme }: MissionVisionValuesProps) {
   const [activeTab, setActiveTab] = useState<'mission' | 'vision' | 'values'>('mission');
   const isDark = theme === 'dark';
 
+  const tabIcons = {
+    mission: Target,
+    vision: Eye,
+    values: Compass,
+  };
+
   const values: ValueItem[] = [
     {
       id: '01',
       title: 'Excellence',
-      desc: 'We deliver exceptional software code bases that pass rigorous audits. We accept nothing short of outstanding execution.',
+      desc: 'We hold ourselves to the highest standards, ensuring every solution we deliver is durable, reliable, and crafted with meticulous attention to detail.',
+      icon: Award,
     },
     {
       id: '02',
       title: 'Ownership',
-      desc: 'Every developer acts as a principal founder, treating system uptime, deadlines, and project success as their own responsibility.',
+      desc: 'We approach every project with the mindset of a founder, taking full responsibility for the outcomes and long-term success of the partners we serve.',
+      icon: ShieldCheck,
     },
     {
       id: '03',
       title: 'Transparency',
-      desc: 'Open communication, real-time code repositories, and weekly video sessions guarantee absolute collaboration alignment.',
+      desc: 'We build trust through honest, open, and clear communication, keeping our partners fully aligned and informed at every stage.',
+      icon: Globe,
     },
     {
       id: '04',
       title: 'Innovation',
-      desc: 'Constant technological experimentation. We deploy modern agentic frameworks, multi-tenant databases, and zero-trust clouds.',
+      desc: 'We challenge conventional approaches and continuously seek better ways to solve meaningful problems.',
+      icon: Sparkles,
     },
     {
       id: '05',
       title: 'Collaboration',
-      desc: 'We integrate with your internal product developers seamlessly, sharing roadmap parameters and scaling as a single team.',
+      desc: 'We work as an extension of your team, aligning our goals with yours to build strong, unified partnerships that amplify our collective impact.',
+      icon: Users,
     },
     {
       id: '06',
       title: 'Continuous Learning',
-      desc: 'The digital frontier changes daily. We actively train in next-generation type-safety, AI fine-tuning, and low-latency execution.',
+      desc: 'We remain perpetually curious, constantly expanding our knowledge and adapting to new paradigms to deliver future-ready solutions.',
+      icon: BookOpen,
     },
   ];
 
@@ -69,6 +94,7 @@ export default function MissionVisionValues({ theme }: MissionVisionValuesProps)
         >
           {(['mission', 'vision', 'values'] as const).map((tab) => {
             const isActive = activeTab === tab;
+            const IconComponent = tabIcons[tab];
             return (
               <button
                 key={tab}
@@ -87,7 +113,10 @@ export default function MissionVisionValues({ theme }: MissionVisionValuesProps)
                       : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
                 )}
               >
-                {tab}
+                <span className="flex items-center justify-center gap-2">
+                  <IconComponent className="w-3.5 h-3.5" />
+                  <span>{tab}</span>
+                </span>
               </button>
             );
           })}
@@ -97,7 +126,15 @@ export default function MissionVisionValues({ theme }: MissionVisionValuesProps)
         <div className="min-h-[220px] flex flex-col justify-center">
           {activeTab === 'mission' && (
             <div className="animate-fade-in text-center max-w-3xl mx-auto space-y-4">
-              <span className={cn('font-mono text-xs font-bold tracking-widest uppercase', isDark ? 'text-[#EAB308]' : 'text-[#CA8A04]')}>
+              <div className="flex justify-center">
+                <div className={cn(
+                  'w-12 h-12 rounded-2xl border flex items-center justify-center',
+                  isDark ? 'border-[#2A2A2A] bg-[#171717] text-[#EAB308]' : 'border-[#E2E8F0] bg-white text-[#CA8A04]'
+                )}>
+                  <Target className="w-6 h-6" />
+                </div>
+              </div>
+              <span className={cn('font-mono text-xs font-bold tracking-widest uppercase block', isDark ? 'text-[#EAB308]' : 'text-[#CA8A04]')}>
                 Mission
               </span>
               <h3 className={cn('text-3xl font-black tracking-tight', isDark ? 'text-white' : 'text-slate-900')}>
@@ -111,7 +148,15 @@ export default function MissionVisionValues({ theme }: MissionVisionValuesProps)
 
           {activeTab === 'vision' && (
             <div className="animate-fade-in text-center max-w-3xl mx-auto space-y-4">
-              <span className={cn('font-mono text-xs font-bold tracking-widest uppercase', isDark ? 'text-[#EAB308]' : 'text-[#CA8A04]')}>
+              <div className="flex justify-center">
+                <div className={cn(
+                  'w-12 h-12 rounded-2xl border flex items-center justify-center',
+                  isDark ? 'border-[#2A2A2A] bg-[#171717] text-[#EAB308]' : 'border-[#E2E8F0] bg-white text-[#CA8A04]'
+                )}>
+                  <Eye className="w-6 h-6" />
+                </div>
+              </div>
+              <span className={cn('font-mono text-xs font-bold tracking-widest uppercase block', isDark ? 'text-[#EAB308]' : 'text-[#CA8A04]')}>
                 Vision
               </span>
               <h3 className={cn('text-3xl font-black tracking-tight', isDark ? 'text-white' : 'text-slate-900')}>
@@ -136,38 +181,42 @@ export default function MissionVisionValues({ theme }: MissionVisionValuesProps)
 
               {/* Grid Layout */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-6">
-                {values.map((val) => (
-                  <div
-                    key={val.title}
-                    className={cn(
-                      'group rounded-2xl border p-6 transition-all duration-300 text-left flex flex-col justify-between space-y-4',
-                      isDark 
-                        ? 'bg-[#171717] border-[#2A2A2A] hover:border-[#EAB308]/30 text-white' 
-                        : 'bg-white border-[#E2E8F0] hover:border-[#CA8A04]/30 text-slate-900'
-                    )}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className={cn('font-mono text-xs font-bold tracking-widest', isDark ? 'text-[#EAB308]/60' : 'text-[#CA8A04]/60')}>
-                        {val.id}
-                      </span>
-                      <span 
-                        className={cn(
-                          'w-2.5 h-2.5 rounded-full transition-transform duration-300 transform group-hover:scale-150',
-                          isDark ? 'bg-[#EAB308]' : 'bg-[#CA8A04]'
-                        )}
-                        aria-hidden="true"
-                      />
+                {values.map((val) => {
+                  const ValIcon = val.icon;
+                  return (
+                    <div
+                      key={val.title}
+                      className={cn(
+                        'group rounded-2xl border p-6 transition-all duration-300 text-left flex flex-col justify-between space-y-4',
+                        isDark 
+                          ? 'bg-[#171717] border-[#2A2A2A] hover:border-[#EAB308]/30 text-white' 
+                          : 'bg-white border-[#E2E8F0] hover:border-[#CA8A04]/30 text-slate-900'
+                      )}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className={cn(
+                          'w-8 h-8 rounded-lg flex items-center justify-center border transition-all duration-300',
+                          isDark 
+                            ? 'border-[#2A2A2A] bg-[#1F1F1F] text-[#EAB308] group-hover:bg-[#EAB308]/10 group-hover:border-[#EAB308]/30' 
+                            : 'border-[#E2E8F0] bg-slate-50 text-[#CA8A04] group-hover:bg-[#CA8A04]/10 group-hover:border-[#CA8A04]/30'
+                        )}>
+                          <ValIcon className="w-4 h-4" />
+                        </div>
+                        <span className={cn('font-mono text-xs font-bold tracking-widest', isDark ? 'text-[#EAB308]/60' : 'text-[#CA8A04]/60')}>
+                          {val.id}
+                        </span>
+                      </div>
+                      <div className="space-y-2">
+                        <h4 className="text-base font-bold tracking-tight">
+                          {val.title}
+                        </h4>
+                        <p className={cn('text-xs font-light leading-relaxed', isDark ? 'text-[#D4D4D4]' : 'text-slate-500')}>
+                          {val.desc}
+                        </p>
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <h4 className="text-base font-bold tracking-tight">
-                        {val.title}
-                      </h4>
-                      <p className={cn('text-xs font-light leading-relaxed', isDark ? 'text-[#D4D4D4]' : 'text-slate-500')}>
-                        {val.desc}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

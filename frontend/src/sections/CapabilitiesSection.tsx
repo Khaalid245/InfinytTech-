@@ -1,112 +1,67 @@
 import React, { useState } from 'react';
-import { Container } from '../components/layout/Container';
-import { Section } from '../components/layout/Section';
-import { Heading } from '../components/ui/Heading';
-import { Text } from '../components/ui/Text';
 import { cn } from '../utils/cn';
 
-// ─── Inline SVG icons (stroke-width 2, 24×24 viewBox) ────────────────────
-const Icons = {
-  Cpu: ({ className }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden>
-      <rect x="4" y="4" width="16" height="16" rx="2" />
-      <rect x="9" y="9" width="6" height="6" />
-      <path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2" />
+// ─── Inline SVG icons (stroke-width = 2px) ───────────────────────────────
+const Icon = {
+  Layers: ({ className, style }: { className?: string; style?: React.CSSProperties }) => (
+    <svg className={className} style={style} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="m12 3-10 5 10 5 10-5-10-5Z" />
+      <path d="m2 17 10 5 10-5" />
+      <path d="m2 12 10 5 10-5" />
     </svg>
   ),
-  Cloud: ({ className }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden>
-      <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+  BrainCircuit: ({ className, style }: { className?: string; style?: React.CSSProperties }) => (
+    <svg className={className} style={style} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z" />
+      <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z" />
+      <path d="M9 13h6" />
+      <path d="M12 10v6" />
     </svg>
   ),
-  Code: ({ className }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden>
-      <polyline points="16 18 22 12 16 6" />
-      <polyline points="8 6 2 12 8 18" />
+  Palette: ({ className, style }: { className?: string; style?: React.CSSProperties }) => (
+    <svg className={className} style={style} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12c0 2.2 1.8 4 4 4h.5c1.1 0 2 .9 2 2v.5c0 2.2 1.8 4 4 4z" />
+      <circle cx="7.5" cy="10.5" r="1" fill="currentColor" />
+      <circle cx="11.5" cy="7.5" r="1" fill="currentColor" />
+      <circle cx="16.5" cy="9.5" r="1" fill="currentColor" />
     </svg>
   ),
-  Smartphone: ({ className }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden>
-      <rect x="5" y="2" width="14" height="20" rx="2" />
-      <path d="M12 18h.01" />
+  CloudCog: ({ className, style }: { className?: string; style?: React.CSSProperties }) => (
+    <svg className={className} style={style} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20 16.2A4.5 4.5 0 0 0 17.5 8h-1.8A7 7 0 1 0 9 19h8.5a4.5 4.5 0 0 0 2.5-2.8" />
+      <circle cx="12" cy="13" r="2" />
+      <path d="M12 10v1M12 15v1M9.5 13h1M13.5 13h1" />
     </svg>
   ),
-  Layout: ({ className }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden>
-      <rect x="3" y="3" width="18" height="18" rx="2" />
-      <path d="M3 9h18M9 21V9" />
+  Smartphone: ({ className, style }: { className?: string; style?: React.CSSProperties }) => (
+    <svg className={className} style={style} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+      <line x1="12" y1="18" x2="12.01" y2="18" />
     </svg>
   ),
-  Globe: ({ className }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden>
-      <circle cx="12" cy="12" r="10" />
-      <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+  Rocket: ({ className, style }: { className?: string; style?: React.CSSProperties }) => (
+    <svg className={className} style={style} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4.5 16.5c-1.5 1.25-2.5 3.5-2.5 3.5s2.25-1 3.5-2.5" />
+      <path d="M12 2C12 2 3 7 3 12c0 2.5 1 4.5 2.5 6l6-6 6 6c1.5-1.5 2.5-3.5 2.5-6 0-5-9-10-9-10z" />
+      <path d="M9 15l-3-3" />
+      <path d="M15 15l3-3" />
     </svg>
   ),
 };
 
 // ─── Types ────────────────────────────────────────────────────────────────
 interface Capability {
-  icon: React.FC<{ className?: string }>;
+  id: string;
+  icon: React.FC<{ className?: string; style?: React.CSSProperties }>;
   title: string;
   description: string;
-  deliverables: string[];
 }
 
-interface CapabilitiesSectionProps {
+interface OurCapabilitiesSectionProps {
   theme: 'dark' | 'light';
-  tagline?: string;
-  title?: string;
-  subtitle?: string;
 }
 
-// ─── Business Offerings static data (No redundant dev stacks) ──────────────
-const CAPABILITIES: Capability[] = [
-  {
-    icon: Icons.Cpu,
-    title: 'AI & Machine Learning Solutions',
-    description:
-      'Deploy proprietary LLM integrations, autonomous service agents, business optimisation nodes, and dynamic predictive tools.',
-    deliverables: ['Proprietary LLMs', 'AI Agent Workflows', 'Predictive Analysis'],
-  },
-  {
-    icon: Icons.Cloud,
-    title: 'SaaS & Cloud System Architecture',
-    description:
-      'Construct highly available, reliable platforms using AWS, Kubernetes, Terraform, and Docker configurations.',
-    deliverables: ['High-Availability Infra', 'Multi-Tenant Systems', 'CI/CD Pipelines'],
-  },
-  {
-    icon: Icons.Code,
-    title: 'Enterprise Web Engineering',
-    description:
-      'Deliver blisteringly fast dashboards, database systems, dynamic content architectures, and CMS platforms built to convert.',
-    deliverables: ['Performance Dashboards', 'Transactional DBs', 'SEO-Optimized Web Apps'],
-  },
-  {
-    icon: Icons.Smartphone,
-    title: 'Cross-Platform Mobile Apps',
-    description:
-      'Create immersive applications for iOS and Android with premium user experiences, robust offline capabilities, and optimised performance.',
-    deliverables: ['iOS & Android Apps', 'Offline Sync Systems', 'Native User Experience'],
-  },
-  {
-    icon: Icons.Layout,
-    title: 'Futuristic UI/UX Design System',
-    description:
-      'Establish high-fidelity designs, rapid functional interactive mockups, brand kits, and modular, clean layout tokens.',
-    deliverables: ['Interactive Mockups', 'Custom UI Libraries', 'Design System Tokens'],
-  },
-  {
-    icon: Icons.Globe,
-    title: 'Global Branding & Product Strategy',
-    description:
-      'Refine value propositions, identity kits, global expansion guidelines, and structural design blueprints for your software.',
-    deliverables: ['Market Positioning', 'Brand Identity Kits', 'Go-To-Market Plans'],
-  },
-];
-
-// ─── Card sub-component ───────────────────────────────────────────────────
+// ─── Capability Card sub-component ────────────────────────────────────────
 interface CardProps {
   cap: Capability;
   isDark: boolean;
@@ -114,141 +69,188 @@ interface CardProps {
   border: string;
   primary: string;
   sub: string;
-  index: number;
+  dim: string;
 }
 
 const CapabilityCard: React.FC<CardProps> = ({
-  cap, isDark, cardBg, border, primary, sub, index,
+  cap, isDark, cardBg, border, primary, sub, dim,
 }) => {
   const [hovered, setHovered] = useState(false);
   const IconComp = cap.icon;
+
+  const hoverBg          = isDark ? '#1F1F1F' : '#F8FAFC';
+  const hoverBorderColor = isDark ? 'rgba(234,179,8,0.30)' : 'rgba(202,138,4,0.30)';
+  const hoverShadowColor = isDark ? 'rgba(234,179,8,0.08)' : 'rgba(202,138,4,0.06)';
+  const hoverIconColor   = isDark ? '#EAB308' : '#CA8A04';
+  const hoverIconBg      = isDark ? 'rgba(234,179,8,0.10)' : 'rgba(202,138,4,0.08)';
 
   return (
     <article
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className={cn(
-        'group flex flex-col gap-5 rounded-2xl border p-6 md:p-7',
-        'transition-all duration-300 ease-in-out',
+        'group relative flex flex-col gap-5 rounded-2xl border p-6 transition-all duration-300 ease-in-out h-full justify-between',
         hovered ? '-translate-y-1' : 'translate-y-0'
       )}
       style={{
-        background:  cardBg,
-        borderColor: hovered
-          ? isDark ? 'rgba(234,179,8,0.30)' : 'rgba(202,138,4,0.30)'
-          : border,
+        background:  hovered ? hoverBg : cardBg,
+        borderColor: hovered ? hoverBorderColor : border,
         boxShadow: hovered
-          ? `0 16px 40px -8px ${isDark ? 'rgba(234,179,8,0.08)' : 'rgba(202,138,4,0.06)'}`
-          : '0 2px 8px -2px rgba(0,0,0,0.06)',
-        transitionDelay: `${index * 60}ms`,
+          ? `0 12px 24px -6px ${hoverShadowColor}`
+          : '0 2px 6px -2px rgba(0,0,0,0.03)',
       }}
     >
-      {/* Icon container */}
-      <div
-        className="w-14 h-14 rounded-xl flex items-center justify-center border transition-all duration-300 flex-shrink-0"
-        style={{
-          background:  hovered
-            ? isDark ? 'rgba(234,179,8,0.10)' : 'rgba(202,138,4,0.08)'
-            : isDark ? '#0F0F10' : '#F8FAFC',
-          borderColor: hovered
-            ? isDark ? 'rgba(234,179,8,0.30)' : 'rgba(202,138,4,0.30)'
-            : border,
-        }}
-      >
-        <IconComp
-          className="w-6 h-6 transition-colors duration-300"
-        />
+      <div className="space-y-4">
+        {/* Header row with Icon + Title + Index */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center border transition-all duration-300 flex-shrink-0"
+              style={{
+                background:  hovered ? hoverIconBg : isDark ? '#0F0F10' : '#F8FAFC',
+                borderColor: hovered ? hoverBorderColor : border,
+              }}
+            >
+              <IconComp className="w-6 h-6 transition-colors duration-300" style={{ color: hovered ? hoverIconColor : dim } as React.CSSProperties} />
+            </div>
+
+            <h3
+              className="text-base font-black tracking-tight leading-snug"
+              style={{ color: primary }}
+            >
+              {cap.title}
+            </h3>
+          </div>
+
+          <span 
+            className="font-mono text-xs font-bold tracking-widest flex-shrink-0"
+            style={{ color: hovered ? hoverIconColor : dim }}
+          >
+            {cap.id}
+          </span>
+        </div>
+
+        {/* Description */}
+        <p
+          className="text-xs font-light leading-relaxed"
+          style={{ color: sub }}
+        >
+          {cap.description}
+        </p>
       </div>
 
-      {/* Title */}
-      <h3
-        className="text-lg font-black tracking-tight leading-snug"
-        style={{ color: primary }}
+      {/* SLA Progress Track footer */}
+      <div 
+        className="border-t pt-4 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider transition-colors duration-300"
+        style={{
+          borderColor: border,
+          color: hovered ? (isDark ? '#EAB308' : '#CA8A04') : dim
+        }}
       >
-        {cap.title}
-      </h3>
-
-      {/* Description */}
-      <p
-        className="text-sm leading-relaxed flex-grow"
-        style={{ color: sub }}
-      >
-        {cap.description}
-      </p>
-
-      {/* Business deliverables check grid */}
-      <div className="flex flex-wrap gap-1.5 mt-auto pt-2">
-        {cap.deliverables.map(item => (
-          <span
-            key={item}
-            className="px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide flex items-center gap-1.5"
-            style={{
-              background:  isDark ? '#1F1F1F' : '#F8FAFC',
-              borderColor: isDark ? '#2A2A2A' : '#E2E8F0',
-              color:       isDark ? '#D4D4D4' : '#475569',
-            }}
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
-            {item}
-          </span>
-        ))}
+        <span>Practice Core</span>
+        <span>Enterprise SLA</span>
       </div>
     </article>
   );
 };
 
 // ─── Main section ─────────────────────────────────────────────────────────
-export const CapabilitiesSection: React.FC<CapabilitiesSectionProps> = ({ 
-  theme,
-  tagline = "Expertise",
-  title = "Premium solutions, engineered for scale.",
-  subtitle = "We implement custom development workflows to build fast and highly maintainable web applications."
-}) => {
+export function OurCapabilitiesSection({ theme }: OurCapabilitiesSectionProps) {
   const isDark = theme === 'dark';
 
-  // color shortcuts
   const bg      = isDark ? '#0F0F10' : '#FAFAFA';
   const cardBg  = isDark ? '#171717' : '#FFFFFF';
   const border  = isDark ? '#2A2A2A' : '#E2E8F0';
   const accent  = isDark ? '#FACC15' : '#CA8A04';
   const primary = isDark ? '#FFFFFF' : '#0F172A';
   const sub     = isDark ? '#D4D4D4' : '#475569';
+  const dim     = isDark ? '#6B7280' : '#94A3B8';
+
+  const capabilities: Capability[] = [
+    {
+      id: '01',
+      icon: Icon.Layers,
+      title: 'Product Engineering',
+      description:
+        'Scalable web applications, SaaS platforms, enterprise systems, and modern digital products built for long-term growth.',
+    },
+    {
+      id: '02',
+      icon: Icon.BrainCircuit,
+      title: 'AI & Intelligent Systems',
+      description:
+        'Machine learning solutions, workflow automation, intelligent assistants, and AI-powered product experiences.',
+    },
+    {
+      id: '03',
+      icon: Icon.Palette,
+      title: 'Product Design',
+      description:
+        'User-centered design systems, research-driven experiences, and interfaces that balance usability with business objectives.',
+    },
+    {
+      id: '04',
+      icon: Icon.CloudCog,
+      title: 'Cloud & Infrastructure',
+      description:
+        'Cloud-native architectures, deployment pipelines, infrastructure automation, and scalable environments.',
+    },
+    {
+      id: '05',
+      icon: Icon.Smartphone,
+      title: 'Mobile Experiences',
+      description:
+        'Cross-platform and native mobile applications engineered for performance, reliability, and growth.',
+    },
+    {
+      id: '06',
+      icon: Icon.Rocket,
+      title: 'Digital Transformation',
+      description:
+        'Helping organizations modernize processes, adopt new technologies, and create sustainable competitive advantages.',
+    },
+  ];
 
   return (
-    <Section
-      background={isDark ? 'primary' : 'light'}
-      padding="lg"
+    <section 
       style={{ background: bg }}
+      className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto transition-colors duration-300"
+      aria-label="Our Capabilities"
     >
-      <Container size="lg">
-        {/* Header Block */}
-        <div className="max-w-3xl mb-16 md:mb-24 flex flex-col items-start">
-          {tagline && (
-            <span className="text-caption font-semibold tracking-wider uppercase mb-3 block" style={{ color: accent }}>
-              {tagline}
+      <div className="space-y-16">
+        {/* Centered Header */}
+        <div className="text-center space-y-4">
+          <div className="inline-flex justify-center">
+            <span 
+              className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border"
+              style={{
+                background:  isDark ? '#1F1F1F' : '#F1F5F9',
+                borderColor: isDark ? '#2A2A2A' : '#E2E8F0',
+                color:       accent,
+              }}
+            >
+              Our Capabilities
             </span>
-          )}
-          <Heading
-            variant="h2"
-            className="mb-4 text-3xl md:text-4xl font-medium tracking-tight"
+          </div>
+
+          <h2
+            className="text-3xl sm:text-4xl font-black leading-tight tracking-tight mt-2"
             style={{ color: primary }}
           >
-            {title}
-          </Heading>
-          {subtitle && (
-            <Text
-              variant="body-large"
-              className="text-base md:text-lg"
-              style={{ color: sub }}
-            >
-              {subtitle}
-            </Text>
-          )}
+            The Capabilities Behind Every Solution We Build
+          </h2>
+
+          <p
+            className="text-base font-light leading-relaxed max-w-xl mx-auto mt-2"
+            style={{ color: sub }}
+          >
+            We combine strategy, design, engineering, and emerging technologies to help organizations build, scale, and transform digital products.
+          </p>
         </div>
 
         {/* Capabilities Grid */}
-        <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {CAPABILITIES.map((cap, index) => (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {capabilities.map((cap) => (
             <CapabilityCard
               key={cap.title}
               cap={cap}
@@ -257,13 +259,14 @@ export const CapabilitiesSection: React.FC<CapabilitiesSectionProps> = ({
               border={border}
               primary={primary}
               sub={sub}
-              index={index}
+              dim={dim}
             />
           ))}
         </div>
-      </Container>
-    </Section>
+      </div>
+    </section>
   );
-};
+}
 
-export default CapabilitiesSection;
+export { OurCapabilitiesSection as CapabilitiesSection };
+export default OurCapabilitiesSection;

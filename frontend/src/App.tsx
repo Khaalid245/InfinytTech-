@@ -29,7 +29,7 @@ import { useEffect } from 'react';
 // Sections
 import HeroSection from './sections/HeroSection';
 import FeaturedCaseStudies from './sections/FeaturedCaseStudies';
-import CapabilitiesSection from './sections/CapabilitiesSection';
+import ServiceExplorer from './sections/ServiceExplorer';
 import WorkflowTimeline from './sections/WorkflowTimeline';
 import WhyChooseUs from './sections/WhyChooseUs';
 import TechStackSection from './sections/TechStackSection';
@@ -42,6 +42,7 @@ import InteractiveCtaSection from './sections/InteractiveCtaSection';
 import ContactSection from './sections/ContactSection';
 import CTASection from './sections/CTASection';
 import AboutPage from './pages/AboutPage';
+import ServicesPage from './pages/ServicesPage';
 
 // Constants & Data
 import { SITE_INFO } from './constants';
@@ -418,7 +419,7 @@ const HomePage: FC<{ theme: 'dark' | 'light' }> = ({ theme }) => (
       <HeroSection theme={theme} />
     </div>
     <div id="services">
-      <CapabilitiesSection theme={theme} />
+      <ServiceExplorer theme={theme} />
     </div>
     <div id="portfolio">
       <FeaturedCaseStudies theme={theme} />
@@ -466,6 +467,7 @@ export const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<HomePage theme={theme} />} />
           <Route path="/about" element={<AboutPage theme={theme} />} />
+          <Route path="/services" element={<ServicesPage theme={theme} />} />
           <Route path="/showcase" element={<Showcase />} />
           <Route path="*" element={<HomePage theme={theme} />} />
         </Routes>

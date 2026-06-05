@@ -13,7 +13,7 @@ interface NavbarProps {
 // ─── Navigation Items Definition ───
 const NAV_ITEMS = [
   { label: 'Home', href: '/', id: 'home', sectionId: 'hero' },
-  { label: 'Services', href: '/services', id: 'services', sectionId: 'services' },
+  { label: 'Services', href: '/services', id: 'services', sectionId: undefined },
   { label: 'Portfolio', href: '/work', id: 'portfolio', sectionId: 'portfolio' },
   { label: 'About', href: '/about', id: 'about', sectionId: undefined },
   { label: 'Blog', href: '/insights', id: 'blog', sectionId: 'blog' },
@@ -119,7 +119,6 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
     
     const pathRouteMap: Record<string, string> = {
       '/': 'hero',
-      '/services': 'services',
       '/work': 'portfolio',
       '/process': 'process',
       '/insights': 'blog',

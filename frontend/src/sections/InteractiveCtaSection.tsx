@@ -31,9 +31,9 @@ export default function InteractiveCtaSection({ theme, onNavigate }: Interactive
 
   const steps: Step[] = [
     { num: '1', title: 'Discovery Call', desc: 'We learn about your goals, requirements, and timeline.' },
-    { num: '2', title: 'Project Assessment', desc: 'Our team evaluates scope, technical requirements, and opportunities.' },
-    { num: '3', title: 'Proposal & Roadmap', desc: 'Receive a clear plan, timeline, and project estimate.' },
-    { num: '4', title: 'Build & Launch', desc: 'Development begins with structured milestones and updates.' },
+    { num: '2', title: 'Product Assessment', desc: 'Our team evaluates scope, technical requirements, and opportunities.' },
+    { num: '3', title: 'Roadmap & Proposal', desc: 'Receive a clear plan, timeline, and project estimate.' },
+    { num: '4', title: 'Build & Scale', desc: 'Engineering scalable systems with continuous optimization and growth.' },
   ];
 
   // Color Mapping Tokens
@@ -71,13 +71,12 @@ export default function InteractiveCtaSection({ theme, onNavigate }: Interactive
 
           {/* Section Title */}
           <h2 className={cn('text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight', textPrimary)}>
-            Ready to Build Something Exceptional?
+            Ready to Work With a Long-Term Technology Partner?
           </h2>
 
           {/* Supporting Narrative */}
           <p className={cn('text-base font-light leading-relaxed max-w-xl', textSecondary)}>
-            Whether you're launching a startup, scaling a business, or exploring AI-powered solutions, 
-            our team is ready to help turn your vision into a reliable, scalable digital product.
+            We partner with ambitious startups, businesses, and organizations to transform ideas into scalable digital products through strategy, engineering, and long-term collaboration.
           </p>
 
           {/* Action Buttons Row */}
@@ -128,6 +127,12 @@ export default function InteractiveCtaSection({ theme, onNavigate }: Interactive
               <span className="h-2 w-2 rounded-full bg-[#EAB308]"></span>
               <span className={textSecondary}>Let's discuss your goals, timeline, and requirements.</span>
             </div>
+
+            {/* Trust Line 3 */}
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[#3B82F6]"></span>
+              <span className={textSecondary}>No-obligation consultation.</span>
+            </div>
           </div>
         </div>
 
@@ -145,10 +150,10 @@ export default function InteractiveCtaSection({ theme, onNavigate }: Interactive
             {/* Card Title */}
             <div>
               <h3 className={cn('text-lg font-bold tracking-tight', textPrimary)}>
-                What Happens Next
+                How We Start Every Partnership
               </h3>
               <p className="text-xs opacity-50 mt-1 select-none">
-                Our structured path to launching your project.
+                Our structured path from initial outreach to product scale.
               </p>
             </div>
 

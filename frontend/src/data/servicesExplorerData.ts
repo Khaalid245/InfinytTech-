@@ -1,0 +1,260 @@
+import type { ServiceExplorerItem } from '../types';
+
+export const servicesExplorerData: ServiceExplorerItem[] = [
+  {
+    category: "Product Engineering",
+    whatWeBuild: [
+      "Custom SaaS Applications",
+      "Secure E-Commerce Platforms",
+      "Web & Desktop Software",
+      "Scalable Backend Architectures"
+    ],
+    techEcosystem: [
+      "TypeScript",
+      "Go",
+      "GraphQL",
+      "PostgreSQL",
+      "Node.js"
+    ],
+    typicalEngagements: [
+      "New Product Development",
+      "Legacy Software Modernization",
+      "API Integration & Migration",
+      "Feature Expansion & Scaling"
+    ],
+    businessImpact: [
+      "Faster time-to-market",
+      "Reduced maintenance costs",
+      "Highly secure & compliant systems",
+      "Seamless user onboarding"
+    ],
+    caseStudyHook: "Helping a Logistics Startup Scale Platform Capacity by 400%",
+    timeline: "8–16 Weeks",
+    engagementModel: "Dedicated Team / Agile Sprint",
+    support: "3 Months Post-Launch"
+  },
+  {
+    category: "AI & Intelligent Systems",
+    whatWeBuild: [
+      "Intelligent Workflow Automation",
+      "Customer Support Assistants (AI)",
+      "Predictive Forecasting Models",
+      "Smart Document Processing Tools"
+    ],
+    techEcosystem: [
+      "Python",
+      "PyTorch",
+      "LangChain",
+      "OpenAI API",
+      "Vector Databases"
+    ],
+    typicalEngagements: [
+      "Process Automation Audits",
+      "AI Strategy & Feasibility",
+      "Model Tuning & Integration",
+      "Conversational AI Implementation"
+    ],
+    businessImpact: [
+      "Up to 60% time saved on repetitive tasks",
+      "24/7 automated customer support",
+      "Data-driven sales forecasting",
+      "Faster document review cycles"
+    ],
+    caseStudyHook: "Reducing Customer Support Response Times by 70% with AI",
+    timeline: "6–12 Weeks",
+    engagementModel: "Fixed Scope / Proof of Concept",
+    support: "Ongoing Maintenance"
+  },
+  {
+    category: "Mobile Experiences",
+    whatWeBuild: [
+      "iOS & Android Applications",
+      "Offline-Capable Mobile Tools",
+      "Mobile E-Commerce Stores",
+      "Connected Device App Interfaces"
+    ],
+    techEcosystem: [
+      "React Native",
+      "Flutter",
+      "Swift",
+      "Kotlin",
+      "SQLite"
+    ],
+    typicalEngagements: [
+      "Mobile Product Launch",
+      "Legacy App Performance Optimization",
+      "Cross-Platform Migration",
+      "App Store Strategy & Optimization"
+    ],
+    businessImpact: [
+      "Direct mobile customer acquisition",
+      "High user engagement and retention",
+      "Seamless offline operations for field staff",
+      "Fast, native-like user experience"
+    ],
+    caseStudyHook: "Increasing Mobile Conversion Rates by 45% for a Retail Brand",
+    timeline: "8–14 Weeks",
+    engagementModel: "Dedicated Team / Fixed Price",
+    support: "Ongoing App Store Updates"
+  },
+  {
+    category: "Cloud & Infrastructure",
+    whatWeBuild: [
+      "Secure Cloud Environments",
+      "Automated Deployment Pipelines",
+      "Disaster Recovery Systems",
+      "Cloud Cost Optimization Tools"
+    ],
+    techEcosystem: [
+      "AWS",
+      "Google Cloud",
+      "Terraform",
+      "Docker",
+      "Kubernetes"
+    ],
+    typicalEngagements: [
+      "Cloud Migration & Setup",
+      "Security & Compliance Auditing",
+      "Infrastructure Cost Reduction",
+      "DevOps Pipeline Automation"
+    ],
+    businessImpact: [
+      "99.99% system uptime guarantee",
+      "Zero-friction developer workflows",
+      "Up to 40% reduction in cloud hosting bills",
+      "Enterprise-grade data security"
+    ],
+    caseStudyHook: "Slashing Hosting Costs by 35% While Improving Load Speed",
+    timeline: "4–10 Weeks",
+    engagementModel: "Milestone-Based / Support Retainer",
+    support: "24/7 SLA Monitoring"
+  },
+  {
+    category: "Product Design & UX",
+    whatWeBuild: [
+      "User Research & Journey Maps",
+      "Interactive App Prototypes",
+      "Custom Brand & UI Assets",
+      "Unified Enterprise Design Systems"
+    ],
+    techEcosystem: [
+      "Figma",
+      "Storybook",
+      "TailwindCSS",
+      "Framer Motion",
+      "Adobe Suite"
+    ],
+    typicalEngagements: [
+      "UX Audits & Heatmap Analysis",
+      "Legacy Software Visual Redesign",
+      "Interactive MVP Prototyping",
+      "Design Token Consolidation"
+    ],
+    businessImpact: [
+      "Higher user conversion and retention",
+      "Lower customer support ticket volume",
+      "Unified brand identity across products",
+      "3x faster frontend development speed"
+    ],
+    caseStudyHook: "Redesigning a Fintech Portal to Double Daily Active Users",
+    timeline: "4–8 Weeks",
+    engagementModel: "Fixed Scope / Design Sprint",
+    support: "Design Handover Support"
+  },
+  {
+    category: "Data & Analytics",
+    whatWeBuild: [
+      "Business Intelligence Dashboards",
+      "Data Warehousing Solutions",
+      "Performance Analytics Engines",
+      "Custom Reporting Systems"
+    ],
+    techEcosystem: [
+      "Snowflake",
+      "dbt",
+      "Apache Spark",
+      "Tableau / Looker",
+      "Python"
+    ],
+    typicalEngagements: [
+      "Data Infrastructure Modernization",
+      "Self-Service Analytics Dashboard Setup",
+      "KPI Tracking & Measurement Setup",
+      "Data Governance & Auditing"
+    ],
+    businessImpact: [
+      "Better, faster decision making",
+      "Reduced manual reporting overhead",
+      "Centralized, unified business data",
+      "Real-time operational business insights"
+    ],
+    caseStudyHook: "Reducing Reporting Time by 80% for an Enterprise Client",
+    timeline: "6–12 Weeks",
+    engagementModel: "Time & Materials / Fixed Price",
+    support: "Ongoing Data Support"
+  },
+  {
+    category: "Digital Transformation",
+    whatWeBuild: [
+      "Internal Operations Portals",
+      "Customer Portals & Dashboards",
+      "Automated Workflow Tools",
+      "Third-Party Software Integrations"
+    ],
+    techEcosystem: [
+      "Node.js",
+      "React",
+      "REST/gRPC APIs",
+      "Zapier / Make",
+      "Docker"
+    ],
+    typicalEngagements: [
+      "Workflow Digitization Audit",
+      "Legacy Process Replacement",
+      "Cross-Department System Integration",
+      "Customer Portal Launch"
+    ],
+    businessImpact: [
+      "Eliminated manual data entry errors",
+      "Consolidated tech stack and licenses",
+      "Improved customer satisfaction and self-service",
+      "Streamlined team productivity and speed"
+    ],
+    caseStudyHook: "Reducing Operational Processing Times by 64% for a Service Agency",
+    timeline: "8–16 Weeks",
+    engagementModel: "Dedicated Team / Managed Project",
+    support: "Ongoing Iteration Retainer"
+  },
+  {
+    category: "Technology Consulting",
+    whatWeBuild: [
+      "IT Roadmap & Growth Strategies",
+      "Software Architecture Blueprints",
+      "Security & Compliance Checklists",
+      "Tech Stack Evaluation Reports"
+    ],
+    techEcosystem: [
+      "Lucidchart",
+      "Jira & Confluence",
+      "SonarQube",
+      "OWASP ZAP",
+      "GitHub"
+    ],
+    typicalEngagements: [
+      "CTO-as-a-Service Advisory",
+      "M&A Tech Due Diligence",
+      "Cybersecurity Vulnerability Audits",
+      "Cloud Cost FinOps Planning"
+    ],
+    businessImpact: [
+      "Clear roadmap for engineering growth",
+      "Minimization of technical debt",
+      "Mitigated cybersecurity and downtime risks",
+      "Informed budgeting for technology purchases"
+    ],
+    caseStudyHook: "Identifying $1.2M in Annual Cloud Savings via Strategic FinOps Audit",
+    timeline: "2–6 Weeks",
+    engagementModel: "Advisory / Retainer",
+    support: "Ad-hoc Consulting"
+  }
+];

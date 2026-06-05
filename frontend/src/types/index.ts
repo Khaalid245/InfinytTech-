@@ -59,3 +59,16 @@ export interface HeroAction extends Omit<ButtonProps, 'children'> {
   label: string;
   href?: string;
 }
+
+// Service Explorer Item Interface
+export interface ServiceExplorerItem {
+  category: string;
+  whatWeBuild: string[];
+  techEcosystem: string[];
+  typicalEngagements: string[];
+  caseStudyHook: string;
+  businessImpact: string[];
+  timeline: string;
+  engagementModel: string;
+  support: string;
+}

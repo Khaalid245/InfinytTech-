@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Check } from 'lucide-react';
 import { Container } from '../components/layout/Container';
 import { Section } from '../components/layout/Section';
 import { Heading } from '../components/ui/Heading';
@@ -9,31 +10,36 @@ import { Select } from '../components/ui/Select';
 import { Checkbox } from '../components/ui/Checkbox';
 import { Button } from '../components/ui/Button';
 import { FormWrapper } from '../components/ui/FormWrapper';
+import { cn } from '../utils/cn';
 
 export interface OfficeLocation {
   city: string;
-  address: string[];
+  address: readonly string[];
   email: string;
   phone?: string;
 }
 
 export interface ContactSectionProps {
+  id?: string;
   tagline?: string;
   title: string;
   subtitle: string;
-  locations?: OfficeLocation[];
+  locations?: readonly OfficeLocation[];
   onSubmitSuccess?: (data: Record<string, string>) => void;
   background?: 'primary' | 'light';
+  premiumDark?: boolean;
   className?: string;
 }
 
 export const ContactSection: React.FC<ContactSectionProps> = ({
+  id,
   tagline,
   title,
   subtitle,
   locations = [],
   onSubmitSuccess,
   background = 'primary',
+  premiumDark = false,
   className,
 }) => {
   const [formData, setFormData] = useState({
@@ -103,6 +109,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
 
   return (
     <Section
+      id={id}
       background={background}
       padding="lg"
       className={className}
@@ -163,22 +170,16 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
           </div>
 
           {/* Form Column */}
-          <div className="lg:col-span-7 bg-surface-light border border-border-primary rounded-xl p-6 md:p-10 shadow-elegant">
+          <div
+            className={cn(
+              'lg:col-span-7 bg-surface-light border border-border-primary rounded-xl p-6 md:p-10 shadow-elegant',
+              premiumDark && 'bg-primary-bg rounded-2xl shadow-none'
+            )}
+          >
             {isSubmitted ? (
               <div className="h-full flex flex-col items-center justify-center text-center py-12 animate-fade-in">
-                <div className="w-12 h-12 bg-neutral-900 text-white rounded-full flex items-center justify-center mb-6">
-                  <svg
-                    className="w-6 h-6 stroke-[2]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
+                <div className="w-12 h-12 bg-primary-text text-primary-bg rounded-full flex items-center justify-center mb-6">
+                  <Check className="w-6 h-6" aria-hidden="true" />
                 </div>
                 <Heading
                   variant="h3"
@@ -197,17 +198,18 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
               <FormWrapper
                 onSubmit={handleSubmit}
                 title="Start a Conversation"
-                description="Share details about your upcoming project and our engineering architects will prepare a proposal."
+                description="Share details about your upcoming project and our engineering team will prepare a proposal."
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Input
                     name="name"
-                    label="Your Name"
+                    label="Name"
                     required
                     placeholder="Jane Doe"
                     value={formData.name}
                     onChange={handleInputChange}
                     error={errors.name}
+                    className={premiumDark ? 'bg-primary-bg focus:border-accent-primary focus:bg-primary-bg' : undefined}
                   />
                   <Input
                     name="email"
@@ -218,6 +220,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                     value={formData.email}
                     onChange={handleInputChange}
                     error={errors.email}
+                    className={premiumDark ? 'bg-primary-bg focus:border-accent-primary focus:bg-primary-bg' : undefined}
                   />
                 </div>
 
@@ -228,6 +231,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                   options={serviceOptions}
                   value={formData.service}
                   onChange={handleInputChange}
+                  className={premiumDark ? 'bg-primary-bg focus:border-accent-primary focus:bg-primary-bg' : undefined}
                 />
 
                 <TextArea
@@ -238,11 +242,12 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                   value={formData.message}
                   onChange={handleInputChange}
                   error={errors.message}
+                  className={premiumDark ? 'bg-primary-bg focus:border-accent-primary focus:bg-primary-bg' : undefined}
                 />
 
                 <Checkbox
                   name="privacy"
-                  label="I consent to the privacy policy and agree that InfinytTech can reach out regarding project options."
+                  label="I consent to the privacy policy and agree that InfinityTech can reach out regarding project options."
                   checked={formData.privacy}
                   onChange={handleCheckboxChange}
                   error={errors.privacy}

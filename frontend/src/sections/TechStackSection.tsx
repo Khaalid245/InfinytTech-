@@ -129,8 +129,14 @@ export default function TechStackSection({ theme }: TechStackSectionProps) {
   const [visibleTech, setVisibleTech] = useState<TechItem[]>(TECH_STACK);
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
 
-  useEffect(() => {
+  const handleTechFilterChange = (filter: string) => {
+    if (filter === activeTechFilter) return;
+
     setIsTransitioning(true);
+    setActiveTechFilter(filter);
+  };
+
+  useEffect(() => {
     const timer = setTimeout(() => {
       setVisibleTech(
         activeTechFilter === 'all'
@@ -188,7 +194,7 @@ export default function TechStackSection({ theme }: TechStackSectionProps) {
                 <button
                   key={cat.key}
                   type="button"
-                  onClick={() => setActiveTechFilter(cat.key)}
+                  onClick={() => handleTechFilterChange(cat.key)}
                   className={cn(
                     'px-4 py-2 text-xs font-bold rounded-lg whitespace-nowrap transition-all duration-200 active:scale-95 cursor-pointer',
                     isActive

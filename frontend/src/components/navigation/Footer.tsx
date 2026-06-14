@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 import { Container } from '../layout/Container';
 import { Text } from '../ui/Text';
+import { Logo } from '../ui/Logo';
 import { SITE_INFO, SOCIAL_LINKS, FOOTER_LINKS } from '../../constants';
 
 export const Footer: React.FC = () => {
@@ -16,9 +18,9 @@ export const Footer: React.FC = () => {
           <div className="lg:col-span-2 space-y-4">
             <Link
               to="/"
-              className="text-body font-bold text-primary-text uppercase tracking-widest block mb-4"
+              className="block mb-4 transition-opacity hover:opacity-80 w-fit"
             >
-              {SITE_INFO.name}
+              <Logo className="h-10 md:h-12" />
             </Link>
             <Text
               variant="body"
@@ -39,9 +41,14 @@ export const Footer: React.FC = () => {
                   <li key={link.label}>
                     <Link
                       to={link.href}
-                      className="text-small text-secondary-text hover:text-primary-text transition-colors"
+                      className="group flex items-center text-small text-secondary-text hover:text-brand-gold transition-colors duration-300"
                     >
-                      {link.label}
+                      <div className="overflow-hidden flex items-center transition-all duration-300 ease-out w-0 opacity-0 -translate-x-2 group-hover:w-3.5 group-hover:mr-1.5 group-hover:translate-x-0 group-hover:opacity-100">
+                        <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                      </div>
+                      <span className="transition-transform duration-300 ease-out">
+                        {link.label}
+                      </span>
                     </Link>
                   </li>
                 ))}
@@ -63,7 +70,7 @@ export const Footer: React.FC = () => {
               href={SOCIAL_LINKS.twitter}
               target="_blank; noreferrer"
               rel="noopener noreferrer"
-              className="text-caption text-secondary-text hover:text-primary-text transition-colors uppercase tracking-wider font-semibold"
+              className="text-caption text-secondary-text hover:text-brand-gold transition-colors uppercase tracking-wider font-semibold"
             >
               Twitter
             </a>
@@ -71,7 +78,7 @@ export const Footer: React.FC = () => {
               href={SOCIAL_LINKS.linkedin}
               target="_blank; noreferrer"
               rel="noopener noreferrer"
-              className="text-caption text-secondary-text hover:text-primary-text transition-colors uppercase tracking-wider font-semibold"
+              className="text-caption text-secondary-text hover:text-brand-gold transition-colors uppercase tracking-wider font-semibold"
             >
               LinkedIn
             </a>
@@ -79,7 +86,7 @@ export const Footer: React.FC = () => {
               href={SOCIAL_LINKS.github}
               target="_blank; noreferrer"
               rel="noopener noreferrer"
-              className="text-caption text-secondary-text hover:text-primary-text transition-colors uppercase tracking-wider font-semibold"
+              className="text-caption text-secondary-text hover:text-brand-gold transition-colors uppercase tracking-wider font-semibold"
             >
               GitHub
             </a>

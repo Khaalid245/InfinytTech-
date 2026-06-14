@@ -1,5 +1,6 @@
-import { Link } from 'react-router-dom';
+
 import { cn } from '../utils/cn';
+import { Button } from '../components/ui/Button';
 
 // ─── Standard, thin-stroke (2px) inline SVGs ─────────────────────────────
 const Icon = {
@@ -82,33 +83,35 @@ export default function InteractiveCtaSection({ theme, onNavigate }: Interactive
           {/* Action Buttons Row */}
           <div className="flex flex-col sm:flex-row gap-4 pt-2 w-full sm:w-auto">
             {/* Primary CTA (Contact Route) */}
-            <Link
+            <Button
               to="/contact"
+              variant="primary"
               onClick={() => onNavigate?.('contact')}
               className={cn(
-                'inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold border transition-all duration-200 active:scale-95 shadow-md w-full sm:w-auto',
+                'gap-2 px-6 py-3.5 shadow-md w-full sm:w-auto border-none',
                 isDark
-                  ? 'bg-[#FACC15] text-[#0F0F10] border-[#FACC15] hover:bg-[#EAB308] hover:border-[#EAB308] shadow-yellow-500/5'
-                  : 'bg-[#0F172A] text-white border-[#0F172A] hover:bg-slate-800 shadow-slate-900/10'
+                  ? 'bg-[#FACC15] text-[#0F0F10] hover:bg-[#EAB308] shadow-yellow-500/5'
+                  : 'bg-[#0F172A] text-white hover:bg-slate-800 shadow-slate-900/10'
               )}
             >
               Start Your Project
               <Icon.ArrowRight className="w-4 h-4" />
-            </Link>
+            </Button>
 
             {/* Secondary CTA (Bespoke Scheduler Modal Trigger) */}
-            <button
+            <Button
               type="button"
+              variant="secondary"
               onClick={handleOpenScheduler}
               className={cn(
-                'inline-flex items-center justify-center px-6 py-3.5 rounded-xl text-sm font-semibold border transition-all duration-200 active:scale-95 w-full sm:w-auto cursor-pointer',
+                'px-6 py-3.5 w-full sm:w-auto',
                 isDark
                   ? 'bg-[#171717] text-white border-[#2A2A2A] hover:bg-[#1F1F1F]'
                   : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
               )}
             >
               Book a Discovery Call
-            </button>
+            </Button>
           </div>
 
           {/* Support Metadata Trust Lines */}

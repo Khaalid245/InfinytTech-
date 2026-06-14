@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '../utils/cn';
+import { Button } from '../components/ui/Button';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface HeroSectionProps {
@@ -41,6 +42,7 @@ const TELEMETRY = [42, 68, 55, 80, 63, 91, 74];
 // ─── Component ────────────────────────────────────────────────────────────────
 export const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
   const isDark = theme === 'dark';
+  const navigate = useNavigate();
   const [cpuLoad, setCpuLoad]       = useState(52);
   const [logs, setLogs]             = useState<LogEntry[]>([
     { id: 0, type: 'info',    text: '🟢  [SYSTEM]: All services operational' },
@@ -194,9 +196,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
               )}
             >
               {/* Primary CTA */}
-              <Link
+              <Button
                 to="/contact"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-extrabold transition-all duration-200 active:scale-95 shadow-lg"
+                variant="primary"
+                className="px-6 py-3 shadow-lg border-none"
                 style={{
                   background: accent,
                   color: '#0F0F10',
@@ -206,16 +209,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
                 onMouseLeave={e => (e.currentTarget.style.background = accent)}
               >
                 Start Your Project
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" aria-hidden>
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                 </svg>
-              </Link>
+              </Button>
 
               {/* Secondary CTA */}
-              <button
+              <Button
                 type="button"
+                variant="secondary"
                 onClick={() => window.dispatchEvent(new CustomEvent('open-booking-modal'))}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold border transition-all duration-200 active:scale-95 cursor-pointer"
+                className="px-6 py-3 border"
                 style={{
                   background: isDark ? '#171717' : '#FFFFFF',
                   color: isDark ? '#FFFFFF' : '#334155',
@@ -231,7 +235,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
                 }}
               >
                 Book a Discovery Call
-              </button>
+              </Button>
             </div>
 
             {/* Trust metrics strip */}
@@ -457,6 +461,35 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
 
         </div>
       </div>
+
+      {/* ── Scroll Indicator ── */}
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          navigate('/contact');
+        }}
+        className={cn(
+          "absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2",
+          "opacity-0 transition-all duration-1000 z-20 cursor-pointer",
+          mounted && "opacity-100 delay-1000",
+          isDark ? "text-white/40 hover:text-white" : "text-slate-400 hover:text-slate-900"
+        )}
+        style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
+        aria-label="Open contact page"
+      >
+        <div className="h-14 flex items-start justify-center overflow-hidden pt-1 w-6">
+          <svg 
+            className="w-4 h-10" 
+            viewBox="0 0 16 40" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth={1.5}
+          >
+            <path className="animate-scroll-line" strokeLinecap="round" d="M8 0v32" />
+            <path className="animate-scroll-chevron" strokeLinecap="round" strokeLinejoin="round" d="M2 26l6 6 6-6" />
+          </svg>
+        </div>
+      </button>
     </section>
   );
 };

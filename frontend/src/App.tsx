@@ -42,6 +42,7 @@ import InteractiveCtaSection from './sections/InteractiveCtaSection';
 import ContactSection from './sections/ContactSection';
 import CTASection from './sections/CTASection';
 import AboutPage from './pages/AboutPage';
+import ContactPage from './pages/ContactPage';
 import ServicesPage from './pages/ServicesPage';
 
 // Constants & Data
@@ -404,7 +405,7 @@ const Showcase: React.FC = () => {
             tagline="Contact Us"
             title="Partner with InfinytTech"
             subtitle="Have questions about code quality, setup timelines, or project budgeting? Write to our core team in London or Zurich."
-            locations={SITE_INFO.locations as any}
+            locations={SITE_INFO.locations}
           />
         </div>
       )}
@@ -446,7 +447,7 @@ const HomePage: FC<{ theme: 'dark' | 'light' }> = ({ theme }) => (
         tagline="Contact Us"
         title="Partner with InfinytTech"
         subtitle="Have questions about timelines or budgeting? Write to our core team."
-        locations={SITE_INFO.locations as any}
+        locations={SITE_INFO.locations}
       />
     </div>
   </div>
@@ -468,6 +469,7 @@ export const App: React.FC = () => {
           <Route path="/" element={<HomePage theme={theme} />} />
           <Route path="/about" element={<AboutPage theme={theme} />} />
           <Route path="/services" element={<ServicesPage theme={theme} />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route path="/showcase" element={<Showcase />} />
           <Route path="*" element={<HomePage theme={theme} />} />
         </Routes>

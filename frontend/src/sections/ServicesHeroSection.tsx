@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { cn } from '../utils/cn';
+import { Button } from '../components/ui/Button';
 
 interface ServicesHeroProps {
   theme: 'dark' | 'light';
@@ -58,31 +58,33 @@ export const ServicesHero: React.FC<ServicesHeroProps> = ({ theme, setCurrentPag
 
       {/* 4. Flex Row CTAs with tactile scale transitions */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2 w-full sm:w-auto">
-        <Link
+        <Button
           to="/contact"
+          variant="primary"
           onClick={() => setCurrentPage?.('contact')}
           className={cn(
-            'inline-flex items-center justify-center px-8 py-4 rounded-xl text-sm font-extrabold transition-all duration-200 active:scale-95 w-full sm:w-auto shadow-xl cursor-pointer',
+            'px-8 py-4 w-full sm:w-auto shadow-xl border-none',
             isDark
               ? 'bg-[#FACC15] text-[#0F0F10] shadow-yellow-500/10 hover:bg-[#EAB308]'
               : 'bg-[#CA8A04] text-white shadow-amber-600/10 hover:bg-[#B45309]'
           )}
         >
           Start Your Project
-        </Link>
+        </Button>
 
-        <Link
+        <Button
           to="/work"
+          variant="secondary"
           onClick={() => setCurrentPage?.('portfolio')}
           className={cn(
-            'inline-flex items-center justify-center px-8 py-4 rounded-xl font-bold text-sm transition-all duration-200 active:scale-95 w-full sm:w-auto cursor-pointer',
+            'px-8 py-4 w-full sm:w-auto',
             isDark
-              ? 'border border-[#2A2A2A] bg-[#171717] text-white hover:bg-[#1F1F1F]'
-              : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+              ? 'border-[#2A2A2A] bg-[#171717] text-white hover:bg-[#1F1F1F]'
+              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
           )}
         >
           View Our Work
-        </Link>
+        </Button>
       </div>
 
       {/* 5. Service Indicators */}

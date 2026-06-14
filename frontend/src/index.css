@@ -88,6 +88,7 @@
   --color-border-primary: #2A2A2A;
 }
 
+
 @layer base {
   body {
     background-color: var(--color-primary-bg);
@@ -122,6 +123,28 @@
 }
 .animate-fade-in-right {
   animation: fade-in-right 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes scroll-line {
+  0% { transform: scaleY(0); transform-origin: top; opacity: 0; }
+  20% { transform: scaleY(1); transform-origin: top; opacity: 1; }
+  80% { transform: scaleY(1); transform-origin: bottom; opacity: 1; }
+  100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
+}
+
+@keyframes scroll-chevron {
+  0% { transform: translateY(-10px); opacity: 0; }
+  20% { transform: translateY(0); opacity: 1; }
+  80% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(10px); opacity: 0; }
+}
+
+.animate-scroll-line {
+  animation: scroll-line 2.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+.animate-scroll-chevron {
+  animation: scroll-chevron 2.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
 }
 
 /* Custom Scrollbar for Premium Look */

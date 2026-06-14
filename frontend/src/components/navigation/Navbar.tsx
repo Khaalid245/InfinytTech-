@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Sun, Moon } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { Button } from '../ui/Button';
+import { Logo } from '../ui/Logo';
 
 interface NavbarProps {
   currentTheme?: 'dark' | 'light';
@@ -17,7 +19,7 @@ const NAV_ITEMS = [
   { label: 'Portfolio', href: '/work', id: 'portfolio', sectionId: 'portfolio' },
   { label: 'About', href: '/about', id: 'about', sectionId: undefined },
   { label: 'Blog', href: '/insights', id: 'blog', sectionId: 'blog' },
-  { label: 'Contact', href: '/contact', id: 'contact', sectionId: 'contact' },
+  { label: 'Contact', href: '/contact', id: 'contact', sectionId: undefined },
 ] as const;
 
 export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate }: NavbarProps) {
@@ -25,6 +27,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>('home');
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
+  const [isNavHovered, setIsNavHovered] = useState(false);
   
   // Underline state styling coordinates
   const [underlineStyle, setUnderlineStyle] = useState<React.CSSProperties>({
@@ -41,10 +44,15 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
   const activeTheme = currentTheme || theme || 'dark';
   const isDark = activeTheme === 'dark';
 
+  const isContactPage = location.pathname === '/contact';
+  const useHeroText = isContactPage && !isScrolled;
+  const routeActiveTab = NAV_ITEMS.find((item) => item.href === location.pathname)?.id ?? '';
+  const visibleActiveTab = location.pathname === '/' ? activeTab : routeActiveTab;
+
   // 1. Hook up window scroll event listener
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      setIsScrolled(window.scrollY > 30);
     };
     window.addEventListener('scroll', handleScroll);
     handleScroll(); // Initial check
@@ -55,8 +63,6 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
   useEffect(() => {
     const isHomePage = location.pathname === '/';
     if (!isHomePage) {
-      const matchingItem = NAV_ITEMS.find((item) => item.href === location.pathname);
-      setActiveTab(matchingItem ? matchingItem.id : '');
       return;
     }
 
@@ -92,7 +98,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
 
   // 3. Dynamic positioning calculations for the sliding hover underline
   const updateUnderlinePosition = useCallback(() => {
-    const targetTab = hoveredTab || activeTab;
+    const targetTab = hoveredTab || visibleActiveTab;
     const targetEl = itemRefs.current[targetTab];
     if (targetEl && navRef.current) {
       const left = targetEl.offsetLeft;
@@ -105,7 +111,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
     } else {
       setUnderlineStyle((prev) => ({ ...prev, opacity: 0 }));
     }
-  }, [activeTab, hoveredTab]);
+  }, [visibleActiveTab, hoveredTab]);
 
   useEffect(() => {
     updateUnderlinePosition();
@@ -122,7 +128,6 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
       '/work': 'portfolio',
       '/process': 'process',
       '/insights': 'blog',
-      '/contact': 'contact',
     };
 
     const targetSectionId = pathRouteMap[path];
@@ -130,7 +135,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
       const timer = setTimeout(() => {
         const element = document.getElementById(targetSectionId);
         if (element) {
-          const headerOffset = isScrolled ? 90 : 120;
+          const headerOffset = window.scrollY > 30 ? 90 : 120;
           const elementPosition = element.getBoundingClientRect().top;
           const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
           window.scrollTo({
@@ -152,7 +157,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
   }, [isMobileMenuOpen]);
 
   // 4. Premium Smooth Scroll Click Handler
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, item: typeof NAV_ITEMS[number]) => {
+  const handleLinkClick = (e: React.MouseEvent<HTMLElement>, item: typeof NAV_ITEMS[number]) => {
     setActiveTab(item.id);
     onNavigate?.(item.id);
     setIsMobileMenuOpen(false);
@@ -178,13 +183,14 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
   };
 
   // Color Mapping Tokens
-  const accentColor = isDark ? '#FACC15' : '#CA8A04'; // Neon Yellow vs Contrast Amber
   const underlineColor = isDark ? 'bg-[#EAB308]' : 'bg-[#CA8A04]'; // Golden vs Amber
   
   return (
     <>
       {/* ── HEADER SHELL ── */}
       <header
+        onMouseEnter={() => setIsNavHovered(true)}
+        onMouseLeave={() => setIsNavHovered(false)}
         className={cn(
           'fixed top-0 left-0 right-0 z-40 w-full flex items-center justify-center',
           'transition-all duration-500'
@@ -204,9 +210,11 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
                 )
               : cn(
                   'px-6 md:px-12',
-                  isDark ? 'bg-transparent border-b border-transparent' : 'bg-transparent border-b border-transparent'
+                  isNavHovered
+                    ? (isDark ? 'bg-[#171717]/80 backdrop-blur-md border-b border-[#2A2A2A]' : 'bg-white/40 backdrop-blur-md border-b border-slate-200/30')
+                    : 'bg-transparent border-b border-transparent'
                 ),
-            isScrolled ? 'h-16' : 'h-24'
+            isScrolled ? 'h-14' : 'h-20'
           )}
           style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
         >
@@ -215,11 +223,10 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
             to="/"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             className={cn(
-              'font-bold uppercase tracking-widest text-sm select-none transition-all duration-200 active:scale-95',
-              isDark ? 'text-white' : 'text-slate-900'
+              'flex items-center select-none transition-all duration-200 active:scale-95 hover:opacity-80'
             )}
           >
-            Infinyt<span style={{ color: accentColor }}>Tech</span>
+            <Logo className="h-8 md:h-9" />
           </Link>
 
           {/* ── DESKTOP NAV ── */}
@@ -244,7 +251,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
             />
 
             {NAV_ITEMS.map((item) => {
-              const isItemActive = activeTab === item.id;
+              const isItemActive = visibleActiveTab === item.id;
               return (
                 <Link
                   key={item.id}
@@ -256,13 +263,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
                   onClick={(e) => handleLinkClick(e, item)}
                   className={cn(
                     'relative text-sm font-medium py-1.5 transition-colors duration-200 active:scale-95 select-none',
-                    isDark
-                      ? isItemActive
-                        ? 'text-white'
-                        : 'text-[#D4D4D4] hover:text-white'
-                      : isItemActive
-                        ? 'text-[#0F172A]'
-                        : 'text-slate-500 hover:text-[#0F172A]'
+                    useHeroText ? (isItemActive ? 'text-white' : 'text-white/80 hover:text-white') : (isDark ? (isItemActive ? 'text-white' : 'text-[#D4D4D4] hover:text-white') : (isItemActive ? 'text-[#0F172A]' : 'text-slate-500 hover:text-[#0F172A]'))
                   )}
                 >
                   {item.label}
@@ -280,11 +281,9 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
                 onClick={onThemeToggle}
                 aria-label="Toggle theme"
                 className={cn(
-                  'w-10 h-10 flex items-center justify-center rounded-full border transition-all duration-300',
+                  'w-9 h-9 flex items-center justify-center rounded-full border transition-all duration-300',
                   'active:scale-95 cursor-pointer',
-                  isDark
-                    ? 'border-[#2A2A2A] text-[#FACC15] hover:bg-[#2A2A2A] hover:rotate-12 hover:scale-110'
-                    : 'border-slate-200 text-[#CA8A04] hover:bg-slate-100 hover:-rotate-12 hover:scale-110'
+                  useHeroText ? 'border-white/30 text-white hover:bg-white/10 hover:rotate-12 hover:scale-110' : (isDark ? 'border-[#2A2A2A] text-[#FACC15] hover:bg-[#2A2A2A] hover:rotate-12 hover:scale-110' : 'border-slate-200 text-[#CA8A04] hover:bg-slate-100 hover:-rotate-12 hover:scale-110')
                 )}
               >
                 {isDark ? (
@@ -296,35 +295,33 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
             )}
 
             {/* CTA Book a Call Button */}
-            <button
+            <Button
               type="button"
+              variant="secondary"
               onClick={() => window.dispatchEvent(new CustomEvent('open-booking-modal'))}
               className={cn(
-                'px-5 py-2.5 text-sm font-semibold rounded-xl border transition-all duration-200 active:scale-95 select-none cursor-pointer',
-                isDark
-                  ? 'bg-transparent text-white border-[#2A2A2A] hover:bg-[#1F1F1F]'
-                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                'px-4 py-2',
+                useHeroText ? 'bg-transparent text-white border-white/30 hover:bg-white/10' : (isDark ? 'bg-transparent text-white border-[#2A2A2A] hover:bg-[#1F1F1F]' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50')
               )}
             >
               Book a Call
-            </button>
+            </Button>
 
             {/* CTA Start Project Button */}
-            <Link
+            <Button
               to="/contact"
+              variant="primary"
               onClick={(e) => {
                 const contactItem = NAV_ITEMS.find((i) => i.id === 'contact');
                 if (contactItem) handleLinkClick(e, contactItem);
               }}
               className={cn(
-                'px-5 py-2.5 text-sm font-semibold rounded-xl border transition-all duration-200 active:scale-95 select-none',
-                isDark
-                  ? 'bg-[#FACC15] text-[#0F0F10] border-[#FACC15] hover:bg-[#EAB308] hover:border-[#EAB308]'
-                  : 'bg-[#0F172A] text-white border-[#0F172A] hover:bg-slate-800'
+                'px-4 py-2',
+                useHeroText ? 'bg-white text-[#0F0F10] border-white hover:bg-white/90 hover:border-white/90' : (isDark ? 'bg-[#FACC15] text-[#0F0F10] border-[#FACC15] hover:bg-[#EAB308] hover:border-[#EAB308]' : 'bg-[#0F172A] text-white border-[#0F172A] hover:bg-slate-800')
               )}
             >
               Start Project
-            </Link>
+            </Button>
           </div>
 
           {/* ── MOBILE HAMBURGER / X MORPH BUTTON ── */}
@@ -333,15 +330,15 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
             onClick={() => setIsMobileMenuOpen((prev) => !prev)}
             aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             className={cn(
-              'md:hidden w-11 h-11 flex flex-col items-center justify-center gap-[5px] rounded-xl border transition-all duration-200 active:scale-95 cursor-pointer',
-              isDark ? 'border-[#2A2A2A] hover:bg-[#1F1F1F]' : 'border-slate-200 hover:bg-slate-50'
+              'md:hidden w-10 h-10 flex flex-col items-center justify-center gap-[5px] rounded-xl border transition-all duration-200 active:scale-95 cursor-pointer',
+              useHeroText ? 'border-white/30 hover:bg-white/10' : (isDark ? 'border-[#2A2A2A] hover:bg-[#1F1F1F]' : 'border-slate-200 hover:bg-slate-50')
             )}
           >
             {/* Top Bar */}
             <span
               className={cn(
                 'block h-[1.5px] w-5 rounded-full transition-all duration-300 origin-center',
-                isDark ? 'bg-white' : 'bg-[#0F172A]',
+                useHeroText ? 'bg-white' : (isDark ? 'bg-white' : 'bg-[#0F172A]'),
                 isMobileMenuOpen && 'rotate-45 translate-y-[6.5px]'
               )}
             />
@@ -349,7 +346,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
             <span
               className={cn(
                 'block h-[1.5px] w-5 rounded-full transition-all duration-300',
-                isDark ? 'bg-white' : 'bg-[#0F172A]',
+                useHeroText ? 'bg-white' : (isDark ? 'bg-white' : 'bg-[#0F172A]'),
                 isMobileMenuOpen && 'opacity-0 scale-x-0'
               )}
             />
@@ -357,7 +354,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
             <span
               className={cn(
                 'block h-[1.5px] w-5 rounded-full transition-all duration-300 origin-center',
-                isDark ? 'bg-white' : 'bg-[#0F172A]',
+                useHeroText ? 'bg-white' : (isDark ? 'bg-white' : 'bg-[#0F172A]'),
                 isMobileMenuOpen && '-rotate-45 -translate-y-[6.5px]'
               )}
             />
@@ -400,11 +397,10 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             className={cn(
-              'text-sm font-bold uppercase tracking-widest',
-              isDark ? 'text-white' : 'text-slate-900'
+              'flex items-center select-none transition-all duration-200 active:scale-95 hover:opacity-80'
             )}
           >
-            Infinyt<span style={{ color: accentColor }}>Tech</span>
+            <Logo className="h-8" />
           </Link>
 
           {/* Theme Switcher inside Drawer Header */}
@@ -426,7 +422,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
         {/* Navigation Links inside Drawer (Thumb-Friendly 48px target & Staggered delay fade-in) */}
         <nav className="flex-grow flex flex-col justify-center px-6 gap-1.5">
           {NAV_ITEMS.map((item, i) => {
-            const isItemActive = activeTab === item.id;
+            const isItemActive = visibleActiveTab === item.id;
             
             // Staggered transitions
             const staggerStyles = isMobileMenuOpen
@@ -471,37 +467,39 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
 
         {/* Drawer Footer CTA */}
         <div className={cn('p-6 border-t flex flex-col gap-3', isDark ? 'border-[#2A2A2A]' : 'border-slate-100')}>
-          <button
+          <Button
             type="button"
+            variant="primary"
             onClick={() => {
               setIsMobileMenuOpen(false);
               window.dispatchEvent(new CustomEvent('open-booking-modal'));
             }}
             className={cn(
-              'flex items-center justify-center w-full min-h-[48px] rounded-xl text-sm font-bold border transition-all duration-200 active:scale-95 select-none cursor-pointer',
+              'w-full min-h-[48px]',
               isDark
                 ? 'bg-[#FACC15] text-[#0F0F10] border-[#FACC15] hover:bg-[#EAB308]'
                 : 'bg-[#0F172A] text-white border-[#0F172A] hover:bg-slate-800'
             )}
           >
             Book a Discovery Call
-          </button>
+          </Button>
           
-          <Link
+          <Button
             to="/contact"
+            variant="secondary"
             onClick={(e) => {
               const contactItem = NAV_ITEMS.find((i) => i.id === 'contact');
               if (contactItem) handleLinkClick(e, contactItem);
             }}
             className={cn(
-              'flex items-center justify-center w-full min-h-[48px] rounded-xl text-sm font-semibold border transition-all duration-200 active:scale-95 select-none',
+              'w-full min-h-[48px]',
               isDark
                 ? 'bg-transparent text-white border-[#2A2A2A] hover:bg-[#1F1F1F]'
                 : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
             )}
           >
             Start Project
-          </Link>
+          </Button>
           <p className={cn('text-center text-[10px] uppercase tracking-wider font-semibold mt-2 opacity-40')}>
             © {new Date().getFullYear()} InfinytTech
           </p>

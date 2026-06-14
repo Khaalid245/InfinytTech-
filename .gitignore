@@ -48,6 +48,27 @@ replace_modal.js
 
 # AI tooling (internal only)
 .claude/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+backend/.venv/
+frontend/.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+.installed.cfg
+*.egg
+*.log
+db.sqlite3
+/media
+/staticfiles
 CLAUDE.md
 AGENTS.md
 infnyt/CLAUDE.md

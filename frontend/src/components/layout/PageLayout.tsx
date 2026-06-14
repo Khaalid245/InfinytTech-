@@ -25,7 +25,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({ children, theme, onTheme
   return (
     <div className="flex flex-col min-h-screen bg-primary-bg select-text">
       <Navbar currentTheme={theme} onThemeToggle={onThemeToggle} />
-      <main className="flex-grow pt-24">
+      <main className={`flex-grow ${pathname === '/contact' ? 'pt-0' : 'pt-24'}`}>
         {children}
       </main>
       <Footer />

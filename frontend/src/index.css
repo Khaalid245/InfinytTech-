@@ -3,12 +3,12 @@
 @theme {
   /* Brand Color Tokens */
   --color-primary-bg: #FFFFFF;
-  --color-primary-text: #111111;
-  --color-secondary-text: #555555;
-  --color-accent-primary: #EAB308;
-  --color-accent-secondary: #FACC15;
-  --color-surface-light: #FAFAFA;
-  --color-border-primary: #E5E5E5;
+  --color-primary-text: #0F172A;
+  --color-secondary-text: #475569;
+  --color-accent-primary: #B8860B;
+  --color-accent-secondary: #B8860B;
+  --color-surface-light: #F1F5F9;
+  --color-border-primary: #E2E8F0;
 
   /* Typography Fonts */
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
@@ -79,13 +79,14 @@
 
 /* ── Dark Mode Overrides ── */
 .dark {
-  --color-primary-bg: #0F0F10;
-  --color-primary-text: #FFFFFF;
-  --color-secondary-text: #D4D4D4;
-  --color-accent-primary: #EAB308;
-  --color-accent-secondary: #FACC15;
-  --color-surface-light: #171717;
-  --color-border-primary: #2A2A2A;
+  --color-primary-bg: #0B0D0F;
+  --color-primary-text: #F8FAFC;
+  --color-secondary-text: #94A3B8;
+  --color-accent-primary: #D4A017;
+  --color-accent-secondary: #E6B325;
+  --color-surface-light: #121417;
+  --color-surface-elevated: #181B1F;
+  --color-border-primary: #23262D;
 }
 
 
@@ -160,4 +161,13 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-secondary-text);
+}
+
+/* ── Hero Project Showcase Progress Bar ── */
+@keyframes hero-progress {
+  from { transform: scaleX(0); transform-origin: left; }
+  to   { transform: scaleX(1); transform-origin: left; }
+}
+.animate-hero-progress {
+  animation: hero-progress 5s linear forwards;
 }

@@ -16,12 +16,12 @@ export default function AboutHero({ theme }: AboutHeroProps) {
   ];
 
   // Theme-specific style tokens
-  const bgSection = isDark ? 'bg-[#0F0F10]' : 'bg-[#FAFAFA]';
-  const textPrimary = isDark ? 'text-white' : 'text-[#0F172A]';
-  const textSecondary = isDark ? 'text-[#D4D4D4]' : 'text-[#475569]';
-  const borderBase = isDark ? 'border-[#2A2A2A]' : 'border-[#E2E8F0]';
-  const cardBg = isDark ? 'bg-[#171717]' : 'bg-white';
-  const accentColor = isDark ? '#EAB308' : '#CA8A04'; // Golden vs Amber
+  const bgSection = isDark ? 'bg-[#0B0D0F]' : 'bg-[#FAFAFA]';
+  const textPrimary = isDark ? 'text-[#F8FAFC]' : 'text-[#0F172A]';
+  const textSecondary = isDark ? 'text-[#94A3B8]' : 'text-[#475569]';
+  const borderBase = isDark ? 'border-[#23262D]' : 'border-[#E2E8F0]';
+  const cardBg = isDark ? 'bg-[#121417]' : 'bg-white';
+  const accentColor = isDark ? '#D4A017' : '#B8860B'; // Golden vs Amber
 
   return (
     <section className={cn('py-24 px-4 sm:px-6 lg:px-8 transition-colors duration-300', bgSection)}>
@@ -36,8 +36,8 @@ export default function AboutHero({ theme }: AboutHeroProps) {
             className={cn(
               'inline-flex items-center text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full border transition-all duration-300',
               isDark 
-                ? 'border-[#2A2A2A] text-[#FACC15] bg-[#171717]' 
-                : 'border-[#E2E8F0] text-[#CA8A04] bg-white shadow-sm'
+                ? 'border-[#23262D] text-[#D4A017] bg-[#121417]' 
+                : 'border-[#E2E8F0] text-[#B8860B] bg-white shadow-sm'
             )}
           >
             LET'S BUILD TOGETHER
@@ -95,16 +95,16 @@ export default function AboutHero({ theme }: AboutHeroProps) {
             />
 
             {/* Header Bar */}
-            <div className="flex items-center justify-between border-b pb-4 mb-6" style={{ borderColor: isDark ? '#2A2A2A' : '#E2E8F0' }}>
+            <div className="flex items-center justify-between border-b pb-4 mb-6" style={{ borderColor: isDark ? '#23262D' : '#E2E8F0' }}>
               <span className={cn('text-xs font-mono font-bold uppercase tracking-wider', textPrimary)}>
                 THE MANIFESTO
               </span>
               <span 
                 className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border select-none"
                 style={{
-                  borderColor: isDark ? '#2A2A2A' : '#E2E8F0',
+                  borderColor: isDark ? '#23262D' : '#E2E8F0',
                   color: accentColor,
-                  background: isDark ? '#1F1F1F' : '#F8FAFC'
+                  background: isDark ? '#181B1F' : '#F8FAFC'
                 }}
               >
                 Our Creed
@@ -118,7 +118,7 @@ export default function AboutHero({ theme }: AboutHeroProps) {
                 return (
                   <div 
                     key={item.title} 
-                    className="group/row flex items-start gap-4 p-3 rounded-2xl transition-all duration-300 hover:bg-[#EAB308]/5 dark:hover:bg-[#EAB308]/[0.02]"
+                    className="group/row flex items-start gap-4 p-3 rounded-2xl transition-all duration-300 hover:bg-[#E6B325]/5 dark:hover:bg-[#E6B325]/[0.02]"
                   >
                     {/* Index Badge */}
                     <div 
@@ -126,8 +126,8 @@ export default function AboutHero({ theme }: AboutHeroProps) {
                         'w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 flex-shrink-0 border',
                         'group-hover/row:scale-115',
                         isDark 
-                          ? 'bg-[#1F1F1F] border-[#2A2A2A] text-zinc-400 group-hover/row:border-[#EAB308] group-hover/row:text-[#FACC15] group-hover/row:shadow-[0_0_12px_rgba(234,179,8,0.2)]'
-                          : 'bg-[#F1F5F9] border-[#E2E8F0] text-slate-500 group-hover/row:border-[#CA8A04] group-hover/row:text-[#CA8A04]'
+                          ? 'bg-[#181B1F] border-[#23262D] text-[#94A3B8] group-hover/row:border-[#E6B325] group-hover/row:text-[#D4A017] group-hover/row:shadow-[0_0_12px_rgba(212,160,23,0.2)]'
+                          : 'bg-[#F1F5F9] border-[#E2E8F0] text-slate-500 group-hover/row:border-[#B8860B] group-hover/row:text-[#B8860B]'
                       )}
                     >
                       {num}
@@ -139,7 +139,7 @@ export default function AboutHero({ theme }: AboutHeroProps) {
                         className={cn(
                           'text-sm font-bold tracking-tight transition-colors duration-200',
                           textPrimary,
-                          isDark ? 'group-hover/row:text-[#FACC15]' : 'group-hover/row:text-[#CA8A04]'
+                          isDark ? 'group-hover/row:text-[#D4A017]' : 'group-hover/row:text-[#B8860B]'
                         )}
                       >
                         {item.title}

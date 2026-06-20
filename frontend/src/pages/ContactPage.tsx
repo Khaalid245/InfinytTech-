@@ -34,7 +34,7 @@ export default function ContactPage() {
           />
           {/* Dynamic dark overlay reusing existing theme mechanism.
               Light mode -> lighter overlay, Dark mode -> darker overlay */}
-          <div className="absolute inset-0 bg-black/15 dark:bg-[#0F0F10]/60 transition-colors duration-500" />
+          <div className="absolute inset-0 bg-black/15 dark:bg-[#0B0D0F]/60 transition-colors duration-500" />
         </div>
 
         <Container size="lg" className="relative z-10 w-full">

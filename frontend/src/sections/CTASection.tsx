@@ -24,7 +24,7 @@ export const CTASection: React.FC<CTASectionProps> = ({
   title,
   subtitle,
   ctas = [],
-  background = 'accent-light', // Usually accent-light gives it a subtle yellow backdrop highlight
+  background = 'accent-light', // Usually accent-light gives it a subtle gold/amber backdrop highlight
   className,
 }) => {
   return (

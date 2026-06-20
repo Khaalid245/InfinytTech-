@@ -103,10 +103,10 @@ export default function BookingModal({ theme }: BookingModalProps) {
   if (!isOpen) return null;
 
   // Design Tokens
-  const bgPanel = isDark ? 'bg-[#0F0F10] border-[#2A2A2A] text-white' : 'bg-white border-slate-200 text-[#0F172A]';
-  const textSecondary = isDark ? 'text-[#D4D4D4]' : 'text-[#475569]';
-  const accentColor = isDark ? '#FACC15' : '#CA8A04';
-  const inputBg = isDark ? 'bg-[#171717] border-[#2A2A2A] focus:border-[#EAB308]' : 'bg-slate-50 border-slate-200 focus:border-[#CA8A04]';
+  const bgPanel = isDark ? 'bg-[#0B0D0F] border-[#23262D] text-[#F8FAFC]' : 'bg-white border-slate-200 text-[#0F172A]';
+  const textSecondary = isDark ? 'text-[#94A3B8]' : 'text-[#475569]';
+  const accentColor = isDark ? '#D4A017' : '#B8860B';
+  const inputBg = isDark ? 'bg-[#121417] border-[#23262D] focus:border-[#E6B325]' : 'bg-slate-50 border-slate-200 focus:border-[#B8860B]';
 
   return (
     <div 
@@ -128,7 +128,7 @@ export default function BookingModal({ theme }: BookingModalProps) {
           aria-label="Close scheduler"
           className={cn(
             'absolute top-5 right-5 w-8 h-8 rounded-full border flex items-center justify-center transition-all duration-200 active:scale-95 cursor-pointer',
-            isDark ? 'border-[#2A2A2A] hover:bg-[#1F1F1F] text-zinc-400' : 'border-slate-200 hover:bg-slate-50 text-slate-500'
+            isDark ? 'border-[#23262D] hover:bg-[#181B1F] text-zinc-400' : 'border-slate-200 hover:bg-slate-50 text-slate-500'
           )}
         >
           <Icon.X className="w-4 h-4" />
@@ -139,9 +139,9 @@ export default function BookingModal({ theme }: BookingModalProps) {
           <span 
             className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border select-none inline-block mb-2"
             style={{
-              borderColor: isDark ? '#2A2A2A' : '#E2E8F0',
+              borderColor: isDark ? '#23262D' : '#E2E8F0',
               color: accentColor,
-              background: isDark ? '#171717' : '#F8FAFC'
+              background: isDark ? '#121417' : '#F8FAFC'
             }}
           >
             Onboarding Scheduler
@@ -177,8 +177,8 @@ export default function BookingModal({ theme }: BookingModalProps) {
                       className={cn(
                         'flex flex-col items-center justify-center p-2 rounded-xl border text-center transition-all duration-200 active:scale-95 cursor-pointer',
                         isSelected
-                          ? isDark ? 'bg-[#EAB308]/10 border-[#EAB308]' : 'bg-[#CA8A04]/10 border-[#CA8A04]'
-                          : isDark ? 'bg-[#171717] border-[#2A2A2A] hover:bg-[#1F1F1F]' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
+                          ? isDark ? 'bg-[#D4A017]/10 border-[#D4A017]' : 'bg-[#B8860B]/10 border-[#B8860B]'
+                          : isDark ? 'bg-[#121417] border-[#23262D] hover:bg-[#181B1F]' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
                       )}
                     >
                       <span 
@@ -213,8 +213,8 @@ export default function BookingModal({ theme }: BookingModalProps) {
                       className={cn(
                         'py-2 px-3 rounded-lg border text-center text-xs font-bold transition-all duration-200 active:scale-95 cursor-pointer',
                         isSelected
-                          ? isDark ? 'bg-[#EAB308]/10 border-[#EAB308]' : 'bg-[#CA8A04]/10 border-[#CA8A04]'
-                          : isDark ? 'bg-[#171717] border-[#2A2A2A] hover:bg-[#1F1F1F]' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
+                          ? isDark ? 'bg-[#D4A017]/10 border-[#D4A017]' : 'bg-[#B8860B]/10 border-[#B8860B]'
+                          : isDark ? 'bg-[#121417] border-[#23262D] hover:bg-[#181B1F]' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
                       )}
                     >
                       {time}
@@ -232,7 +232,7 @@ export default function BookingModal({ theme }: BookingModalProps) {
               className={cn(
                 'w-full py-3.5 rounded-xl text-sm font-bold transition-all duration-200 active:scale-95 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed select-none mt-2',
                 isDark 
-                  ? 'bg-[#FACC15] text-[#0F0F10] hover:bg-[#EAB308]' 
+                  ? 'bg-[#D4A017] text-[#0B0D0F] hover:bg-[#E6B325]' 
                   : 'bg-[#0F172A] text-white hover:bg-slate-800'
               )}
             >
@@ -286,7 +286,7 @@ export default function BookingModal({ theme }: BookingModalProps) {
             <div 
               className={cn(
                 'p-3 rounded-lg border text-xs leading-normal select-none flex flex-col gap-1',
-                isDark ? 'bg-[#171717]/60 border-[#2A2A2A]' : 'bg-slate-50 border-slate-100'
+                isDark ? 'bg-[#121417]/60 border-[#23262D]' : 'bg-slate-50 border-slate-100'
               )}
             >
               <div className="flex justify-between">
@@ -306,7 +306,7 @@ export default function BookingModal({ theme }: BookingModalProps) {
                 onClick={() => setSchedulerStep(1)}
                 className={cn(
                   'flex-1 py-3.5 rounded-xl text-sm font-semibold border transition-all duration-200 active:scale-95 cursor-pointer',
-                  isDark ? 'bg-transparent border-[#2A2A2A] hover:bg-[#1F1F1F]' : 'bg-white border-slate-200 hover:bg-slate-50'
+                  isDark ? 'bg-transparent border-[#23262D] hover:bg-[#181B1F]' : 'bg-white border-slate-200 hover:bg-slate-50'
                 )}
               >
                 Back
@@ -316,7 +316,7 @@ export default function BookingModal({ theme }: BookingModalProps) {
                 className={cn(
                   'flex-1 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 active:scale-95 cursor-pointer',
                   isDark 
-                    ? 'bg-[#FACC15] text-[#0F0F10] hover:bg-[#EAB308]' 
+                    ? 'bg-[#D4A017] text-[#0B0D0F] hover:bg-[#E6B325]' 
                     : 'bg-[#0F172A] text-white hover:bg-slate-800'
                 )}
               >
@@ -342,7 +342,7 @@ export default function BookingModal({ theme }: BookingModalProps) {
             <div 
               className={cn(
                 'p-4 rounded-xl border text-xs max-w-sm leading-relaxed space-y-2',
-                isDark ? 'bg-[#171717]/60 border-[#2A2A2A]' : 'bg-slate-50 border-slate-100'
+                isDark ? 'bg-[#121417]/60 border-[#23262D]' : 'bg-slate-50 border-slate-100'
               )}
             >
               <p>
@@ -362,7 +362,7 @@ export default function BookingModal({ theme }: BookingModalProps) {
               onClick={handleClose}
               className={cn(
                 'w-full py-3.5 rounded-xl text-sm font-bold transition-all duration-200 active:scale-95 cursor-pointer mt-4 select-none',
-                isDark ? 'bg-[#1F1F1F] hover:bg-[#2A2A2A] border border-[#2A2A2A]' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                isDark ? 'bg-[#181B1F] hover:bg-[#23262D] border border-[#23262D]' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
               )}
             >
               Done

@@ -16,7 +16,7 @@ interface NavbarProps {
 const NAV_ITEMS = [
   { label: 'Home', href: '/', id: 'home', sectionId: 'hero' },
   { label: 'Services', href: '/services', id: 'services', sectionId: undefined },
-  { label: 'Portfolio', href: '/work', id: 'portfolio', sectionId: 'portfolio' },
+  { label: 'Portfolio', href: '/work', id: 'portfolio', sectionId: undefined },
   { label: 'About', href: '/about', id: 'about', sectionId: undefined },
   { label: 'Blog', href: '/insights', id: 'blog', sectionId: 'blog' },
   { label: 'Contact', href: '/contact', id: 'contact', sectionId: undefined },
@@ -125,7 +125,6 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
     
     const pathRouteMap: Record<string, string> = {
       '/': 'hero',
-      '/work': 'portfolio',
       '/process': 'process',
       '/insights': 'blog',
     };
@@ -179,11 +178,18 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
           behavior: 'smooth',
         });
       }
+    } else if (location.pathname === item.href) {
+      // Smooth scroll to top if already on the active page
+      e.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
     }
   };
 
   // Color Mapping Tokens
-  const underlineColor = isDark ? 'bg-[#EAB308]' : 'bg-[#CA8A04]'; // Golden vs Amber
+  const underlineColor = isDark ? 'bg-[#D4A017]' : 'bg-[#B8860B]'; // Gold vs DarkGoldenrod
   
   return (
     <>
@@ -205,13 +211,13 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
               ? cn(
                   'max-w-7xl mx-4 my-3 rounded-2xl border px-6 shadow-lg backdrop-blur-md',
                   isDark
-                    ? 'bg-[#171717]/80 border-[#2A2A2A] shadow-yellow-500/[0.02]'
+                    ? 'bg-[#121417]/80 border-[#23262D] shadow-amber-600/[0.02]'
                     : 'bg-white/85 border-slate-200 shadow-slate-200/40'
                 )
               : cn(
                   'px-6 md:px-12',
                   isNavHovered
-                    ? (isDark ? 'bg-[#171717]/80 backdrop-blur-md border-b border-[#2A2A2A]' : 'bg-white/40 backdrop-blur-md border-b border-slate-200/30')
+                    ? (isDark ? 'bg-[#121417]/80 backdrop-blur-md border-b border-[#23262D]' : 'bg-white/40 backdrop-blur-md border-b border-slate-200/30')
                     : 'bg-transparent border-b border-transparent'
                 ),
             isScrolled ? 'h-14' : 'h-20'
@@ -263,7 +269,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
                   onClick={(e) => handleLinkClick(e, item)}
                   className={cn(
                     'relative text-sm font-medium py-1.5 transition-colors duration-200 active:scale-95 select-none',
-                    useHeroText ? (isItemActive ? 'text-white' : 'text-white/80 hover:text-white') : (isDark ? (isItemActive ? 'text-white' : 'text-[#D4D4D4] hover:text-white') : (isItemActive ? 'text-[#0F172A]' : 'text-slate-500 hover:text-[#0F172A]'))
+                    useHeroText ? (isItemActive ? 'text-white' : 'text-white/80 hover:text-white') : (isDark ? (isItemActive ? 'text-[#F8FAFC]' : 'text-[#94A3B8] hover:text-[#F8FAFC]') : (isItemActive ? 'text-[#0F172A]' : 'text-slate-500 hover:text-[#0F172A]'))
                   )}
                 >
                   {item.label}
@@ -283,7 +289,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
                 className={cn(
                   'w-9 h-9 flex items-center justify-center rounded-full border transition-all duration-300',
                   'active:scale-95 cursor-pointer',
-                  useHeroText ? 'border-white/30 text-white hover:bg-white/10 hover:rotate-12 hover:scale-110' : (isDark ? 'border-[#2A2A2A] text-[#FACC15] hover:bg-[#2A2A2A] hover:rotate-12 hover:scale-110' : 'border-slate-200 text-[#CA8A04] hover:bg-slate-100 hover:-rotate-12 hover:scale-110')
+                  useHeroText ? 'border-white/30 text-white hover:bg-white/10 hover:rotate-12 hover:scale-110' : (isDark ? 'border-[#23262D] text-[#D4A017] hover:bg-[#23262D] hover:rotate-12 hover:scale-110' : 'border-slate-200 text-[#B8860B] hover:bg-slate-100 hover:-rotate-12 hover:scale-110')
                 )}
               >
                 {isDark ? (
@@ -301,12 +307,12 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
               onClick={() => window.dispatchEvent(new CustomEvent('open-booking-modal'))}
               className={cn(
                 'px-4 py-2',
-                useHeroText ? 'bg-transparent text-white border-white/30 hover:bg-white/10' : (isDark ? 'bg-transparent text-white border-[#2A2A2A] hover:bg-[#1F1F1F]' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50')
+                useHeroText ? 'bg-transparent text-white border-white/30 hover:bg-white/10' : (isDark ? 'bg-transparent text-white border-[#23262D] hover:bg-[#181B1F]' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50')
               )}
             >
               Book a Call
             </Button>
-
+ 
             {/* CTA Start Project Button */}
             <Button
               to="/contact"
@@ -317,7 +323,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
               }}
               className={cn(
                 'px-4 py-2',
-                useHeroText ? 'bg-white text-[#0F0F10] border-white hover:bg-white/90 hover:border-white/90' : (isDark ? 'bg-[#FACC15] text-[#0F0F10] border-[#FACC15] hover:bg-[#EAB308] hover:border-[#EAB308]' : 'bg-[#0F172A] text-white border-[#0F172A] hover:bg-slate-800')
+                useHeroText ? 'bg-white text-[#0B0D0F] border-white hover:bg-white/90 hover:border-white/90' : (isDark ? 'bg-[#D4A017] text-[#0B0D0F] border-[#D4A017] hover:bg-[#E6B325] hover:border-[#E6B325]' : 'bg-[#0F172A] text-white border-[#0F172A] hover:bg-slate-800')
               )}
             >
               Start Project
@@ -331,7 +337,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
             aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             className={cn(
               'md:hidden w-10 h-10 flex flex-col items-center justify-center gap-[5px] rounded-xl border transition-all duration-200 active:scale-95 cursor-pointer',
-              useHeroText ? 'border-white/30 hover:bg-white/10' : (isDark ? 'border-[#2A2A2A] hover:bg-[#1F1F1F]' : 'border-slate-200 hover:bg-slate-50')
+              useHeroText ? 'border-white/30 hover:bg-white/10' : (isDark ? 'border-[#23262D] hover:bg-[#181B1F]' : 'border-slate-200 hover:bg-slate-50')
             )}
           >
             {/* Top Bar */}
@@ -377,7 +383,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
         className={cn(
           'fixed top-0 right-0 bottom-0 z-50 w-[300px] flex flex-col transition-transform duration-500 md:hidden',
           'shadow-2xl',
-          isDark ? 'bg-[#171717] border-l border-[#2A2A2A]' : 'bg-white border-l border-slate-200',
+          isDark ? 'bg-[#121417] border-l border-[#23262D]' : 'bg-white border-l border-slate-200',
           isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
         )}
         style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
@@ -387,7 +393,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
         <div
           className={cn(
             'flex items-center justify-between px-6 py-5 border-b',
-            isDark ? 'border-[#2A2A2A]' : 'border-slate-100'
+            isDark ? 'border-[#23262D]' : 'border-slate-100'
           )}
         >
           <Link
@@ -411,7 +417,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
               aria-label="Toggle theme"
               className={cn(
                 'w-9 h-9 flex items-center justify-center rounded-full border transition-all duration-200 active:scale-95 cursor-pointer',
-                isDark ? 'border-[#2A2A2A] text-[#FACC15]' : 'border-slate-200 text-[#CA8A04]'
+                isDark ? 'border-[#23262D] text-[#D4A017]' : 'border-slate-200 text-[#B8860B]'
               )}
             >
               {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -452,10 +458,10 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
                   'flex items-center min-h-[48px] px-4 rounded-xl text-base font-semibold transition-all duration-200 active:scale-95 select-none',
                   isDark
                     ? isItemActive
-                      ? 'text-[#FACC15] bg-[#FACC15]/10'
-                      : 'text-[#D4D4D4] hover:text-white hover:bg-white/5'
+                      ? 'text-[#D4A017] bg-[#D4A017]/10'
+                      : 'text-[#94A3B8] hover:text-white hover:bg-white/5'
                     : isItemActive
-                      ? 'text-[#CA8A04] bg-[#CA8A04]/10'
+                      ? 'text-[#B8860B] bg-[#B8860B]/10'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 )}
               >
@@ -466,7 +472,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
         </nav>
 
         {/* Drawer Footer CTA */}
-        <div className={cn('p-6 border-t flex flex-col gap-3', isDark ? 'border-[#2A2A2A]' : 'border-slate-100')}>
+        <div className={cn('p-6 border-t flex flex-col gap-3', isDark ? 'border-[#23262D]' : 'border-slate-100')}>
           <Button
             type="button"
             variant="primary"
@@ -477,7 +483,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
             className={cn(
               'w-full min-h-[48px]',
               isDark
-                ? 'bg-[#FACC15] text-[#0F0F10] border-[#FACC15] hover:bg-[#EAB308]'
+                ? 'bg-[#D4A017] text-[#0B0D0F] border-[#D4A017] hover:bg-[#E6B325]'
                 : 'bg-[#0F172A] text-white border-[#0F172A] hover:bg-slate-800'
             )}
           >
@@ -494,7 +500,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
             className={cn(
               'w-full min-h-[48px]',
               isDark
-                ? 'bg-transparent text-white border-[#2A2A2A] hover:bg-[#1F1F1F]'
+                ? 'bg-transparent text-white border-[#23262D] hover:bg-[#181B1F]'
                 : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
             )}
           >

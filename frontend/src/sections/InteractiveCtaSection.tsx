@@ -39,12 +39,12 @@ export default function InteractiveCtaSection({ theme, onNavigate }: Interactive
 
   // Color Mapping Tokens
   const bgSection = isDark 
-    ? 'bg-[#171717]/30 border-t border-[#2A2A2A]' 
+    ? 'bg-[#121417]/30 border-t border-[#23262D]' 
     : 'bg-[#F1F5F9]/40 border-t border-slate-200';
-  const bgPanel = isDark ? 'bg-[#0F0F10]' : 'bg-white shadow-lg shadow-slate-100';
-  const textPrimary = isDark ? 'text-white' : 'text-[#0F172A]';
-  const textSecondary = isDark ? 'text-[#D4D4D4]' : 'text-[#475569]';
-  const borderBase = isDark ? 'border-[#2A2A2A]' : 'border-[#E2E8F0]';
+  const bgPanel = isDark ? 'bg-[#0B0D0F]' : 'bg-white shadow-lg shadow-slate-100';
+  const textPrimary = isDark ? 'text-[#F8FAFC]' : 'text-[#0F172A]';
+  const textSecondary = isDark ? 'text-[#94A3B8]' : 'text-[#475569]';
+  const borderBase = isDark ? 'border-[#23262D]' : 'border-[#E2E8F0]';
   
   const handleOpenScheduler = () => {
     window.dispatchEvent(new CustomEvent('open-booking-modal'));
@@ -63,8 +63,8 @@ export default function InteractiveCtaSection({ theme, onNavigate }: Interactive
             className={cn(
               'inline-flex items-center text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full border transition-all duration-300',
               isDark 
-                ? 'border-[#2A2A2A] text-[#FACC15] bg-[#0F0F10]' 
-                : 'border-[#E2E8F0] text-[#CA8A04] bg-white shadow-sm'
+                ? 'border-[#23262D] text-[#D4A017] bg-[#0B0D0F]' 
+                : 'border-[#E2E8F0] text-[#B8860B] bg-white shadow-sm'
             )}
           >
             LET'S BUILD TOGETHER
@@ -80,37 +80,42 @@ export default function InteractiveCtaSection({ theme, onNavigate }: Interactive
             We partner with ambitious startups, businesses, and organizations to transform ideas into scalable digital products through strategy, engineering, and long-term collaboration.
           </p>
 
-          {/* Action Buttons Row */}
-          <div className="flex flex-col sm:flex-row gap-4 pt-2 w-full sm:w-auto">
-            {/* Primary CTA (Contact Route) */}
+          {/* Action Buttons — primary first, clear hierarchy */}
+          <div className="flex flex-col gap-3 pt-2 w-full sm:w-auto">
+            {/* PRIMARY: Book a Discovery Call — lowest friction, clearest next step */}
             <Button
-              to="/contact"
+              type="button"
               variant="primary"
-              onClick={() => onNavigate?.('contact')}
+              onClick={handleOpenScheduler}
               className={cn(
-                'gap-2 px-6 py-3.5 shadow-md w-full sm:w-auto border-none',
+                'gap-2 px-8 py-4 shadow-md w-full sm:w-auto border-none font-bold text-base',
                 isDark
-                  ? 'bg-[#FACC15] text-[#0F0F10] hover:bg-[#EAB308] shadow-yellow-500/5'
+                  ? 'bg-[#D4A017] text-[#0B0D0F] hover:bg-[#E6B325] shadow-amber-500/5'
                   : 'bg-[#0F172A] text-white hover:bg-slate-800 shadow-slate-900/10'
               )}
             >
-              Start Your Project
+              Book a Free Discovery Call
               <Icon.ArrowRight className="w-4 h-4" />
             </Button>
 
-            {/* Secondary CTA (Bespoke Scheduler Modal Trigger) */}
+            {/* Micro-copy: removes hesitation */}
+            <p className={cn('text-xs font-light text-center sm:text-left', textSecondary)}>
+              No commitment required — we'll discuss your goals and recommend a path forward.
+            </p>
+
+            {/* SECONDARY: direct project start */}
             <Button
-              type="button"
+              to="/contact"
               variant="secondary"
-              onClick={handleOpenScheduler}
+              onClick={() => onNavigate?.('contact')}
               className={cn(
-                'px-6 py-3.5 w-full sm:w-auto',
+                'px-6 py-3 w-full sm:w-auto text-sm',
                 isDark
-                  ? 'bg-[#171717] text-white border-[#2A2A2A] hover:bg-[#1F1F1F]'
-                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                  ? 'bg-transparent text-[#94A3B8] border-[#23262D] hover:bg-[#121417] hover:border-[#23262D]'
+                  : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
               )}
             >
-              Book a Discovery Call
+              or send us a project brief →
             </Button>
           </div>
 
@@ -127,7 +132,7 @@ export default function InteractiveCtaSection({ theme, onNavigate }: Interactive
             
             {/* Trust Line 2 */}
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[#EAB308]"></span>
+              <span className="h-2 w-2 rounded-full bg-[#E6B325]"></span>
               <span className={textSecondary}>Let's discuss your goals, timeline, and requirements.</span>
             </div>
 
@@ -169,8 +174,8 @@ export default function InteractiveCtaSection({ theme, onNavigate }: Interactive
                 )}
                 style={{
                   backgroundImage: isDark
-                    ? 'linear-gradient(to bottom, #EAB308 0%, rgba(234,179,8,0) 100%)'
-                    : 'linear-gradient(to bottom, #CA8A04 0%, rgba(202,138,4,0) 100%)',
+                    ? 'linear-gradient(to bottom, #E6B325 0%, rgba(230,179,37,0) 100%)'
+                    : 'linear-gradient(to bottom, #B8860B 0%, rgba(184,134,11,0) 100%)',
                 }}
               />
 
@@ -183,8 +188,8 @@ export default function InteractiveCtaSection({ theme, onNavigate }: Interactive
                       'w-8 h-8 rounded-full border flex items-center justify-center text-xs font-bold transition-all duration-300 z-10 flex-shrink-0',
                       'group-hover:scale-110',
                       isDark
-                        ? 'bg-[#171717] border-[#2A2A2A] text-[#D4D4D4] group-hover:border-[#EAB308] group-hover:text-[#FACC15] group-hover:shadow-[0_0_12px_rgba(234,179,8,0.2)]'
-                        : 'bg-[#FAFAFA] border-[#E2E8F0] text-slate-500 group-hover:border-[#CA8A04] group-hover:text-[#CA8A04] group-hover:shadow-[0_0_12px_rgba(202,138,4,0.15)]'
+                        ? 'bg-[#121417] border-[#23262D] text-[#94A3B8] group-hover:border-[#E6B325] group-hover:text-[#D4A017] group-hover:shadow-[0_0_12px_rgba(212,160,23,0.2)]'
+                        : 'bg-[#FAFAFA] border-[#E2E8F0] text-slate-500 group-hover:border-[#B8860B] group-hover:text-[#B8860B] group-hover:shadow-[0_0_12px_rgba(184,134,11,0.15)]'
                     )}
                   >
                     {step.num}
@@ -207,7 +212,7 @@ export default function InteractiveCtaSection({ theme, onNavigate }: Interactive
             <div 
               className={cn(
                 'pt-6 border-t grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs leading-normal select-none',
-                isDark ? 'border-[#2A2A2A]' : 'border-slate-100'
+                 isDark ? 'border-[#23262D]' : 'border-slate-100'
               )}
             >
               {[

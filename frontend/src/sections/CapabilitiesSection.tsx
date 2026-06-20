@@ -78,11 +78,11 @@ const CapabilityCard: React.FC<CardProps> = ({
   const [hovered, setHovered] = useState(false);
   const IconComp = cap.icon;
 
-  const hoverBg          = isDark ? '#1F1F1F' : '#F8FAFC';
-  const hoverBorderColor = isDark ? 'rgba(234,179,8,0.30)' : 'rgba(202,138,4,0.30)';
-  const hoverShadowColor = isDark ? 'rgba(234,179,8,0.08)' : 'rgba(202,138,4,0.06)';
-  const hoverIconColor   = isDark ? '#EAB308' : '#CA8A04';
-  const hoverIconBg      = isDark ? 'rgba(234,179,8,0.10)' : 'rgba(202,138,4,0.08)';
+  const hoverBg          = isDark ? '#181B1F' : '#F8FAFC';
+  const hoverBorderColor = isDark ? 'rgba(212,160,23,0.30)' : 'rgba(184,134,11,0.30)';
+  const hoverShadowColor = isDark ? 'rgba(212,160,23,0.08)' : 'rgba(184,134,11,0.06)';
+  const hoverIconColor   = isDark ? '#E6B325' : '#B8860B';
+  const hoverIconBg      = isDark ? 'rgba(212,160,23,0.10)' : 'rgba(184,134,11,0.08)';
 
   return (
     <article
@@ -107,7 +107,7 @@ const CapabilityCard: React.FC<CardProps> = ({
             <div
               className="w-10 h-10 rounded-xl flex items-center justify-center border transition-all duration-300 flex-shrink-0"
               style={{
-                background:  hovered ? hoverIconBg : isDark ? '#0F0F10' : '#F8FAFC',
+                background:  hovered ? hoverIconBg : isDark ? '#0B0D0F' : '#F8FAFC',
                 borderColor: hovered ? hoverBorderColor : border,
               }}
             >
@@ -144,7 +144,7 @@ const CapabilityCard: React.FC<CardProps> = ({
         className="border-t pt-4 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider transition-colors duration-300"
         style={{
           borderColor: border,
-          color: hovered ? (isDark ? '#EAB308' : '#CA8A04') : dim
+          color: hovered ? (isDark ? '#E6B325' : '#B8860B') : dim
         }}
       >
         <span>Practice Core</span>
@@ -158,13 +158,13 @@ const CapabilityCard: React.FC<CardProps> = ({
 export function OurCapabilitiesSection({ theme }: OurCapabilitiesSectionProps) {
   const isDark = theme === 'dark';
 
-  const bg      = isDark ? '#0F0F10' : '#FAFAFA';
-  const cardBg  = isDark ? '#171717' : '#FFFFFF';
-  const border  = isDark ? '#2A2A2A' : '#E2E8F0';
-  const accent  = isDark ? '#FACC15' : '#CA8A04';
-  const primary = isDark ? '#FFFFFF' : '#0F172A';
-  const sub     = isDark ? '#D4D4D4' : '#475569';
-  const dim     = isDark ? '#6B7280' : '#94A3B8';
+  const bg      = isDark ? '#0B0D0F' : '#FAFAFA';
+  const cardBg  = isDark ? '#121417' : '#FFFFFF';
+  const border  = isDark ? '#23262D' : '#E2E8F0';
+  const accent  = isDark ? '#D4A017' : '#B8860B';
+  const primary = isDark ? '#F8FAFC' : '#0F172A';
+  const sub     = isDark ? '#94A3B8' : '#475569';
+  const dim     = isDark ? '#64748B' : '#94A3B8';
 
   const capabilities: Capability[] = [
     {
@@ -224,8 +224,8 @@ export function OurCapabilitiesSection({ theme }: OurCapabilitiesSectionProps) {
             <span 
               className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border"
               style={{
-                background:  isDark ? '#1F1F1F' : '#F1F5F9',
-                borderColor: isDark ? '#2A2A2A' : '#E2E8F0',
+                background:  isDark ? '#181B1F' : '#F1F5F9',
+                borderColor: isDark ? '#23262D' : '#E2E8F0',
                 color:       accent,
               }}
             >

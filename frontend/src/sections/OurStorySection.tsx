@@ -8,15 +8,15 @@ export default function OurStorySection({ theme }: OurStorySectionProps) {
   const isDark = theme === 'dark';
 
   // Theme-specific color classes
-  const eyebrowText = isDark ? 'text-[#EAB308]' : 'text-[#CA8A04]';
-  const borderHover = isDark ? 'group-hover:border-[#EAB308]/40' : 'group-hover:border-[#CA8A04]/40';
+  const eyebrowText = isDark ? 'text-[#D4A017]' : 'text-[#B8860B]';
+  const borderHover = isDark ? 'group-hover:border-[#E6B325]/40' : 'group-hover:border-[#B8860B]/40';
 
   return (
     <section 
       className={cn(
         'max-w-7xl mx-auto py-16 rounded-3xl p-8 lg:p-16 border transition-all duration-500 ease-in-out group my-16',
         isDark 
-          ? 'bg-[#171717]/40 border-[#2A2A2A] text-white' 
+          ? 'bg-[#121417]/40 border-[#23262D] text-[#F8FAFC]' 
           : 'bg-[#FAFAFA] border-[#E2E8F0] text-slate-900'
       )}
     >
@@ -37,7 +37,7 @@ export default function OurStorySection({ theme }: OurStorySectionProps) {
           <h2 
             className={cn(
               'text-2xl sm:text-3xl font-black mb-6 tracking-tight transition-colors duration-300',
-              isDark ? 'text-white' : 'text-slate-900'
+              isDark ? 'text-[#F8FAFC]' : 'text-slate-900'
             )}
           >
             Bridging Tech Corridors
@@ -48,8 +48,8 @@ export default function OurStorySection({ theme }: OurStorySectionProps) {
             className={cn(
               'text-base sm:text-lg font-semibold leading-relaxed mb-6 transition-colors duration-500 ease-out',
               isDark 
-                ? 'text-white group-hover:text-[#FACC15]' 
-                : 'text-slate-900 group-hover:text-[#CA8A04]'
+                ? 'text-[#F8FAFC] group-hover:text-[#D4A017]' 
+                : 'text-slate-900 group-hover:text-[#B8860B]'
             )}
           >
             We believe world-class technology talent exists everywhere. Yet too many organizations struggle to access reliable engineering partners capable of turning ambitious ideas into scalable digital products.
@@ -59,7 +59,7 @@ export default function OurStorySection({ theme }: OurStorySectionProps) {
           <div 
             className={cn(
               'text-sm font-light leading-relaxed space-y-4 transition-colors duration-300',
-              isDark ? 'text-[#D4D4D4]' : 'text-slate-600'
+              isDark ? 'text-[#94A3B8]' : 'text-slate-600'
             )}
           >
             <p>
@@ -77,8 +77,8 @@ export default function OurStorySection({ theme }: OurStorySectionProps) {
             className={cn(
               'w-28 h-28 rounded-full border flex items-center justify-center font-bold text-4xl shadow-sm transition-all duration-300 ease-out',
               isDark 
-                ? 'border-[#2A2A2A] bg-[#171717] hover:bg-[#1f1f1f] text-[#FACC15]' 
-                : 'border-[#E2E8F0] bg-white hover:bg-slate-50 text-[#CA8A04]',
+                ? 'border-[#23262D] bg-[#121417] hover:bg-[#181B1F] text-[#D4A017]' 
+                : 'border-[#E2E8F0] bg-white hover:bg-slate-50 text-[#B8860B]',
               'group-hover:-translate-y-1 cursor-pointer',
               borderHover
             )}

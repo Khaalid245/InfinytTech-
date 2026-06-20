@@ -11,6 +11,7 @@ import {
   RefreshCw,
   Compass,
   ArrowRight,
+  MoveRight,
   CheckCircle2,
   ChevronDown
 } from 'lucide-react';
@@ -35,14 +36,14 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [expandedMobileIndex, setExpandedMobileIndex] = useState<number | null>(0);
 
-  const bg = isDark ? 'bg-[#0F0F10]' : 'bg-[#FAFAFA]';
-  const cardBg = isDark ? 'bg-[#171717]' : 'bg-white';
-  const border = isDark ? 'border-[#2A2A2A]' : 'border-slate-200';
-  const textPrimary = isDark ? 'text-white' : 'text-slate-900';
-  const textSecondary = isDark ? 'text-zinc-400' : 'text-slate-500';
-  const textMuted = isDark ? 'text-zinc-500' : 'text-slate-400';
-  const accentText = isDark ? 'text-[#FACC15]' : 'text-[#CA8A04]';
-  const activeBg = isDark ? 'bg-[#1F1F1F]' : 'bg-slate-50';
+  const bg = isDark ? 'bg-[#0B0D0F]' : 'bg-[#FAFAFA]';
+  const cardBg = isDark ? 'bg-[#121417]' : 'bg-white';
+  const border = isDark ? 'border-[#23262D]' : 'border-slate-200';
+  const textPrimary = isDark ? 'text-[#F8FAFC]' : 'text-slate-900';
+  const textSecondary = isDark ? 'text-[#94A3B8]' : 'text-slate-500';
+  const textMuted = isDark ? 'text-[#64748B]' : 'text-slate-400';
+  const accentText = isDark ? 'text-[#D4A017]' : 'text-[#B8860B]';
+  const activeBg = isDark ? 'bg-[#181B1F]' : 'bg-slate-50';
 
   return (
     <section 
@@ -58,8 +59,8 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
               className={cn(
                 "px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border transition-all duration-300",
                 isDark 
-                  ? "bg-[#1F1F1F] border-[#2A2A2A] text-[#FACC15]" 
-                  : "bg-slate-100 border-slate-200 text-[#CA8A04]"
+                  ? "bg-[#181B1F] border-[#23262D] text-[#D4A017]" 
+                  : "bg-slate-100 border-slate-200 text-[#B8860B]"
               )}
             >
               Our Service Offerings
@@ -71,8 +72,34 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
           </h2>
 
           <p className={cn("text-base font-light leading-relaxed max-w-xl mx-auto mt-2", textSecondary)}>
-            Select a service drawer below to review what we build, key business impacts, technical stacks, and outcome-led case studies.
+            Choose a capability below to see what we build, the business impact we deliver, and how a typical engagement works.
           </p>
+
+          {/* Escape hatch for undecided visitors */}
+          <div
+            className={cn(
+              'inline-flex flex-col sm:flex-row items-center gap-3 mt-2 px-5 py-3 rounded-xl border text-sm',
+            )}
+            style={{
+              borderColor: isDark ? '#23262D' : '#E8EDF3',
+              backgroundColor: isDark ? 'rgba(212,160,23,0.03)' : 'rgba(184,134,11,0.03)',
+            }}
+          >
+            <span className={cn('font-light', textSecondary)}>
+              Not sure which service fits your project?
+            </span>
+            <a
+              href="/contact"
+              className={cn(
+                'inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider whitespace-nowrap',
+                'motion-safe:transition-colors motion-safe:duration-200',
+                isDark ? 'text-[#D4A017] hover:text-[#E6B325]' : 'text-[#B8860B] hover:text-[#8B6508]'
+              )}
+            >
+              Book a free discovery call
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
         </div>
 
         {/* Desktop Split-Screen Drawer Layout (lg and above) */}
@@ -92,13 +119,13 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                     "w-full text-left flex items-center justify-between p-5 rounded-xl border transition-all duration-300 group cursor-pointer",
                     isActive 
                       ? cn("shadow-lg", border, activeBg)
-                      : "border-transparent bg-transparent hover:bg-slate-100/50 dark:hover:bg-zinc-800/30"
+                      : "border-transparent bg-transparent hover:bg-slate-100/50 dark:hover:bg-[#121417]/30"
                   )}
                   style={{
                     boxShadow: isActive
                       ? isDark 
-                        ? '0 10px 25px -5px rgba(250,204,21,0.06)' 
-                        : '0 10px 25px -5px rgba(202,138,4,0.04)'
+                        ? '0 10px 25px -5px rgba(212,160,23,0.06)' 
+                        : '0 10px 25px -5px rgba(184,134,11,0.04)'
                       : 'none'
                   }}
                 >
@@ -109,9 +136,9 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                         "w-10 h-10 rounded-lg flex items-center justify-center border transition-all duration-300",
                         isActive 
                           ? isDark 
-                            ? "bg-[#2A2A2A] border-[#FACC15]/30 text-[#FACC15]" 
-                            : "bg-white border-[#CA8A04]/30 text-[#CA8A04]"
-                          : isDark ? "bg-[#171717] border-[#2A2A2A] text-zinc-500 group-hover:text-zinc-300" : "bg-white border-slate-200 text-slate-400 group-hover:text-slate-600"
+                            ? "bg-[#23262D] border-[#D4A017]/30 text-[#D4A017]" 
+                            : "bg-white border-[#B8860B]/30 text-[#B8860B]"
+                          : isDark ? "bg-[#121417] border-[#23262D] text-[#64748B] group-hover:text-zinc-300" : "bg-white border-slate-200 text-slate-400 group-hover:text-slate-600"
                       )}
                     >
                       <IconComp className="w-5 h-5" />
@@ -145,7 +172,7 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
             
             {/* Header section of detailed panel */}
             <div className="space-y-6">
-              <div className="flex items-center justify-between border-b pb-5" style={{ borderColor: isDark ? '#2A2A2A' : '#E2E8F0' }}>
+              <div className="flex items-center justify-between border-b pb-5" style={{ borderColor: isDark ? '#23262D' : '#E2E8F0' }}>
                 <div className="space-y-1">
                   <span className={cn("font-mono text-[11px] uppercase tracking-wider block", accentText)}>
                     Drawer 0{activeIndex + 1} Active Details
@@ -173,10 +200,10 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                         key={deliverable}
                         className={cn(
                           "flex items-start gap-2.5 p-3 rounded-lg border text-xs font-semibold leading-normal transition-colors duration-200",
-                          isDark ? "bg-[#1F1F1F]/40 border-[#2A2A2A]" : "bg-slate-50 border-slate-100"
+                          isDark ? "bg-[#181B1F]/40 border-[#23262D]" : "bg-slate-50 border-slate-100"
                         )}
                       >
-                        <span className={cn("text-xs leading-none select-none mt-0.5", accentText)}>➔</span>
+                        <MoveRight className={cn("w-3.5 h-3.5 flex-shrink-0 mt-0.5", accentText)} strokeWidth={2} />
                         <span className={textPrimary}>{deliverable}</span>
                       </div>
                     ))}
@@ -194,7 +221,7 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                         key={outcome}
                         className={cn(
                           "flex items-start gap-2.5 p-3 rounded-lg border text-xs font-semibold leading-normal transition-colors duration-200",
-                          isDark ? "bg-[#1F1F1F]/40 border-[#2A2A2A]" : "bg-slate-50 border-slate-100"
+                          isDark ? "bg-[#181B1F]/40 border-[#23262D]" : "bg-slate-50 border-slate-100"
                         )}
                       >
                         <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5 text-emerald-500" />
@@ -218,8 +245,8 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                       className={cn(
                         "text-xs font-mono px-3.5 py-1.5 rounded-full border transition-all duration-300",
                         isDark 
-                          ? "bg-[#1F1F1F] border-[#2A2A2A] text-zinc-300 hover:border-[#FACC15]/40 hover:text-[#FACC15]" 
-                          : "bg-slate-100 border-slate-200 text-slate-700 hover:border-[#CA8A04]/40 hover:text-[#CA8A04]"
+                          ? "bg-[#181B1F] border-[#23262D] text-zinc-300 hover:border-[#D4A017]/40 hover:text-[#D4A017]" 
+                          : "bg-slate-100 border-slate-200 text-slate-700 hover:border-[#B8860B]/40 hover:text-[#B8860B]"
                       )}
                     >
                       {tech}
@@ -245,13 +272,13 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
             </div>
 
             {/* Credibility Metric Strip & Case Study Wrapper */}
-            <div className="space-y-4 pt-4 border-t" style={{ borderColor: isDark ? '#2A2A2A' : '#E2E8F0' }}>
+            <div className="space-y-4 pt-4 border-t" style={{ borderColor: isDark ? '#23262D' : '#E2E8F0' }}>
               
               {/* Metric Strip */}
               <div 
                 className={cn(
                   "grid grid-cols-3 gap-2 py-4 px-4 border rounded-xl text-center font-mono text-[9px] sm:text-[10px] uppercase tracking-wider",
-                  isDark ? "bg-[#1F1F1F]/30 border-[#2A2A2A]" : "bg-slate-50 border-slate-100"
+                  isDark ? "bg-[#181B1F]/30 border-[#23262D]" : "bg-slate-50 border-slate-100"
                 )}
               >
                 <div>
@@ -260,7 +287,7 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                     {servicesExplorerData[activeIndex].timeline}
                   </span>
                 </div>
-                <div className={cn("border-x", isDark ? "border-[#2A2A2A]" : "border-slate-200")}>
+                <div className={cn("border-x", isDark ? "border-[#23262D]" : "border-slate-200")}>
                   <span className={textMuted}>Engagement Model</span>
                   <span className={cn("block font-bold mt-1 text-[10px] sm:text-[11px] truncate px-1", textPrimary)}>
                     {servicesExplorerData[activeIndex].engagementModel}
@@ -279,8 +306,8 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                 className={cn(
                   "border rounded-xl p-5 transition-all duration-300 relative overflow-hidden group cursor-pointer",
                   isDark 
-                    ? "bg-gradient-to-r from-[#1E1E20] to-[#171717] hover:border-[#FACC15]/40" 
-                    : "bg-gradient-to-r from-slate-50 to-white hover:border-[#CA8A04]/40"
+                    ? "bg-gradient-to-r from-[#181B1F] to-[#121417] hover:border-[#D4A017]/40" 
+                    : "bg-gradient-to-r from-slate-50 to-white hover:border-[#B8860B]/40"
                 )}
                 style={{
                   boxShadow: isDark 
@@ -291,7 +318,7 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                 <div className="relative z-10 flex items-center justify-between">
                   <div>
                     <span className={cn("font-mono text-[9px] uppercase tracking-widest block leading-none mb-1.5", accentText)}>
-                      Featured Case Study Hook
+                      Case Study
                     </span>
                     <h4 className={cn("text-sm font-black tracking-tight group-hover:underline", textPrimary)}>
                       {servicesExplorerData[activeIndex].caseStudyHook}
@@ -301,8 +328,8 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                     className={cn(
                       "w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-300 ml-4 flex-shrink-0",
                       isDark 
-                        ? "border-[#2A2A2A] bg-[#171717] group-hover:border-[#FACC15] group-hover:text-[#FACC15]" 
-                        : "border-slate-200 bg-white group-hover:border-[#CA8A04] group-hover:text-[#CA8A04]"
+                        ? "border-[#23262D] bg-[#121417] group-hover:border-[#D4A017] group-hover:text-[#D4A017]" 
+                        : "border-slate-200 bg-white group-hover:border-[#B8860B] group-hover:text-[#B8860B]"
                     )}
                   >
                     <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5" />
@@ -340,8 +367,8 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                       className={cn(
                         "w-9 h-9 rounded-lg flex items-center justify-center border transition-all duration-300",
                         isOpen
-                          ? isDark ? "bg-[#2A2A2A] border-[#FACC15]/30 text-[#FACC15]" : "bg-white border-[#CA8A04]/30 text-[#CA8A04]"
-                          : isDark ? "bg-[#171717] border-[#2A2A2A] text-zinc-500" : "bg-white border-slate-200 text-slate-400"
+                          ? isDark ? "bg-[#23262D] border-[#D4A017]/30 text-[#D4A017]" : "bg-white border-[#B8860B]/30 text-[#B8860B]"
+                          : isDark ? "bg-[#121417] border-[#23262D] text-[#64748B]" : "bg-white border-slate-200 text-slate-400"
                       )}
                     >
                       <IconComp className="w-4.5 h-4.5" />
@@ -373,7 +400,7 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                     isOpen ? "max-h-[1000px] pb-5 opacity-100" : "max-h-0 opacity-0"
                   )}
                 >
-                  <div className="space-y-6 pt-3 border-t" style={{ borderColor: isDark ? '#2A2A2A' : '#E2E8F0' }}>
+                  <div className="space-y-6 pt-3 border-t" style={{ borderColor: isDark ? '#23262D' : '#E2E8F0' }}>
                     
                     {/* What We Build */}
                     <div className="space-y-2">
@@ -386,10 +413,10 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                             key={deliverable}
                             className={cn(
                               "flex items-start gap-2.5 p-3 rounded-lg border text-xs font-semibold leading-normal",
-                              isDark ? "bg-[#171717] border-[#2A2A2A]" : "bg-white border-slate-100"
+                              isDark ? "bg-[#121417] border-[#23262D]" : "bg-white border-slate-100"
                             )}
                           >
-                            <span className={cn("text-xs leading-none select-none mt-0.5", accentText)}>➔</span>
+                            <MoveRight className={cn("w-3.5 h-3.5 flex-shrink-0 mt-0.5", accentText)} strokeWidth={2} />
                             <span className={textPrimary}>{deliverable}</span>
                           </div>
                         ))}
@@ -407,7 +434,7 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                             key={outcome}
                             className={cn(
                               "flex items-start gap-2.5 p-3 rounded-lg border text-xs font-semibold leading-normal",
-                              isDark ? "bg-[#171717] border-[#2A2A2A]" : "bg-white border-slate-100"
+                              isDark ? "bg-[#121417] border-[#23262D]" : "bg-white border-slate-100"
                             )}
                           >
                             <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-emerald-500" />
@@ -429,7 +456,7 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                             className={cn(
                               "text-[10px] font-mono px-2.5 py-1 rounded-full border",
                               isDark 
-                                ? "bg-[#171717] border-[#2A2A2A] text-zinc-300" 
+                                ? "bg-[#121417] border-[#23262D] text-zinc-300" 
                                 : "bg-white border-slate-200 text-slate-700"
                             )}
                           >
@@ -447,7 +474,7 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                       <ul className="space-y-1.5 list-none p-0 m-0 text-xs">
                         {item.typicalEngagements.map((scenario) => (
                           <li key={scenario} className="flex items-center gap-2 font-medium">
-                            <span className={cn("w-1 h-1 rounded-full flex-shrink-0", accentText)} />
+                            <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", accentText)} />
                             <span className={textSecondary}>{scenario}</span>
                           </li>
                         ))}
@@ -462,14 +489,14 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                       <div 
                         className={cn(
                           "grid grid-cols-3 gap-1 py-3 px-2 border rounded-lg text-center font-mono text-[9px] uppercase tracking-wider",
-                          isDark ? "bg-[#171717]/50 border-[#2A2A2A]" : "bg-slate-50 border-slate-100"
+                          isDark ? "bg-[#121417]/50 border-[#23262D]" : "bg-slate-50 border-slate-100"
                         )}
                       >
                         <div>
                           <span className={textMuted}>Timeline</span>
                           <span className={cn("block font-bold mt-0.5", textPrimary)}>{item.timeline}</span>
                         </div>
-                        <div className={cn("border-x", isDark ? "border-[#2A2A2A]" : "border-slate-200")}>
+                        <div className={cn("border-x", isDark ? "border-[#23262D]" : "border-slate-200")}>
                           <span className={textMuted}>Model</span>
                           <span className={cn("block font-bold mt-0.5 truncate px-0.5", textPrimary)}>{item.engagementModel}</span>
                         </div>
@@ -485,9 +512,9 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                       <h4 className={cn("text-[10px] font-bold uppercase tracking-wider", textMuted)}>
                         Case Study
                       </h4>
-                      <div className={cn("border rounded-lg p-4", isDark ? "bg-[#171717] border-[#2A2A2A]" : "bg-white border-slate-100")}>
+                      <div className={cn("border rounded-lg p-4", isDark ? "bg-[#121417] border-[#23262D]" : "bg-white border-slate-100")}>
                         <span className={cn("font-mono text-[8px] uppercase tracking-widest block leading-none mb-1", accentText)}>
-                          Featured Case Study Hook
+                          Case Study
                         </span>
                         <h4 className={cn("text-xs font-black tracking-tight", textPrimary)}>
                           {item.caseStudyHook}

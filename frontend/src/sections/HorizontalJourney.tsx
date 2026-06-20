@@ -13,11 +13,11 @@ interface HorizontalJourneyProps {
 export default function HorizontalJourney({ theme }: HorizontalJourneyProps) {
   const isDark = theme === 'dark';
 
-  const bg      = isDark ? '#0F0F10' : '#FAFAFA';
-  const border  = isDark ? '#2A2A2A' : '#E2E8F0';
-  const accent  = isDark ? '#FACC15' : '#CA8A04';
-  const primary = isDark ? '#FFFFFF' : '#0F172A';
-  const sub     = isDark ? '#D4D4D4' : '#475569';
+  const bg      = isDark ? '#0B0D0F' : '#FAFAFA';
+  const border  = isDark ? '#23262D' : '#E2E8F0';
+  const accent  = isDark ? '#D4A017' : '#B8860B';
+  const primary = isDark ? '#F8FAFC' : '#0F172A';
+  const sub     = isDark ? '#94A3B8' : '#475569';
 
   const steps: JourneyStep[] = [
     { id: '01', title: 'Discover', desc: 'Understand business goals, users, and opportunities.' },
@@ -39,7 +39,7 @@ export default function HorizontalJourney({ theme }: HorizontalJourneyProps) {
             <span 
               className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border"
               style={{
-                background:  isDark ? '#1F1F1F' : '#F1F5F9',
+                background:  isDark ? '#181B1F' : '#F1F5F9',
                 borderColor: border,
                 color:       accent,
               }}
@@ -90,7 +90,7 @@ export default function HorizontalJourney({ theme }: HorizontalJourneyProps) {
                     'w-8 h-8 rounded-full border flex items-center justify-center font-mono text-xs font-medium z-10 transition-all duration-300',
                     'absolute left-4 top-0 md:relative md:left-auto md:top-auto',
                     isDark 
-                      ? 'bg-[#0F0F10] border-[#2A2A2A] text-slate-500/80 group-hover:border-slate-700 group-hover:text-slate-400' 
+                      ? 'bg-[#0B0D0F] border-[#23262D] text-[#64748B] group-hover:border-[#94A3B8] group-hover:text-zinc-200' 
                       : 'bg-[#FAFAFA] border-[#E2E8F0] text-slate-400 group-hover:border-slate-300 group-hover:text-slate-600'
                   )}
                 >
@@ -103,8 +103,8 @@ export default function HorizontalJourney({ theme }: HorizontalJourneyProps) {
                     className={cn(
                       'text-lg md:text-xl font-bold transition-colors duration-300',
                       isDark 
-                        ? 'text-white group-hover:text-[#FACC15]' 
-                        : 'text-[#0F172A] group-hover:text-[#CA8A04]'
+                        ? 'text-[#F8FAFC] group-hover:text-[#D4A017]' 
+                        : 'text-[#0F172A] group-hover:text-[#B8860B]'
                     )}
                   >
                     {step.title}

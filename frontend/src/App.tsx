@@ -44,6 +44,7 @@ import CTASection from './sections/CTASection';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import ServicesPage from './pages/ServicesPage';
+import WorkPage from './pages/WorkPage';
 
 // Constants & Data
 import { SITE_INFO } from './constants';
@@ -469,6 +470,7 @@ export const App: React.FC = () => {
           <Route path="/" element={<HomePage theme={theme} />} />
           <Route path="/about" element={<AboutPage theme={theme} />} />
           <Route path="/services" element={<ServicesPage theme={theme} />} />
+          <Route path="/work" element={<WorkPage theme={theme} />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/showcase" element={<Showcase />} />
           <Route path="*" element={<HomePage theme={theme} />} />

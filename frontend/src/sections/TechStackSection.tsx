@@ -149,9 +149,9 @@ export default function TechStackSection({ theme }: TechStackSectionProps) {
   }, [activeTechFilter]);
 
   // Color mappings based on active theme
-  const bgColors = isDark ? 'bg-[#0F0F10] border-t border-[#2A2A2A]' : 'bg-[#FAFAFA] border-t border-[#E2E8F0]';
-  const textPrimary = isDark ? 'text-white' : 'text-[#0F172A]';
-  const textSecondary = isDark ? 'text-[#D4D4D4]' : 'text-[#475569]';
+  const bgColors = isDark ? 'bg-[#0B0D0F] border-t border-[#23262D]' : 'bg-[#FAFAFA] border-t border-[#E2E8F0]';
+  const textPrimary = isDark ? 'text-[#F8FAFC]' : 'text-[#0F172A]';
+  const textSecondary = isDark ? 'text-[#94A3B8]' : 'text-[#475569]';
 
   return (
     <section className={cn('py-24 px-4 sm:px-6 lg:px-8 transition-colors duration-300', bgColors)}>
@@ -163,8 +163,8 @@ export default function TechStackSection({ theme }: TechStackSectionProps) {
             className={cn(
               'inline-flex items-center text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full border transition-all duration-300',
               isDark 
-                ? 'border-[#2A2A2A] text-[#FACC15] bg-[#171717]' 
-                : 'border-[#E2E8F0] text-[#CA8A04] bg-white shadow-sm'
+                ? 'border-[#23262D] text-[#D4A017] bg-[#121417]' 
+                : 'border-[#E2E8F0] text-[#B8860B] bg-white shadow-sm'
             )}
           >
             Technology Stack
@@ -185,7 +185,7 @@ export default function TechStackSection({ theme }: TechStackSectionProps) {
           <div 
             className={cn(
               'flex items-center gap-1.5 p-1.5 rounded-xl border max-w-full overflow-x-auto no-scrollbar scroll-smooth',
-              isDark ? 'bg-[#171717]/60 border-[#2A2A2A]' : 'bg-white border-slate-200 shadow-sm'
+              isDark ? 'bg-[#121417]/60 border-[#23262D]' : 'bg-white border-slate-200 shadow-sm'
             )}
           >
             {CATEGORIES.map((cat) => {
@@ -199,10 +199,10 @@ export default function TechStackSection({ theme }: TechStackSectionProps) {
                     'px-4 py-2 text-xs font-bold rounded-lg whitespace-nowrap transition-all duration-200 active:scale-95 cursor-pointer',
                     isActive
                       ? isDark
-                        ? 'bg-[#EAB308] text-[#0F0F10] shadow-md shadow-yellow-500/10'
-                        : 'bg-[#CA8A04] text-white shadow-md shadow-amber-600/10'
+                        ? 'bg-[#E6B325] text-[#0B0D0F] shadow-md shadow-amber-600/10'
+                        : 'bg-[#B8860B] text-white shadow-md shadow-amber-600/10'
                       : isDark
-                        ? 'text-[#D4D4D4] hover:text-white hover:bg-white/5'
+                        ? 'text-[#94A3B8] hover:text-white hover:bg-white/5'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                   )}
                 >
@@ -230,13 +230,13 @@ export default function TechStackSection({ theme }: TechStackSectionProps) {
                   'group relative flex flex-col justify-start rounded-2xl border p-5 md:p-6 overflow-hidden select-none min-h-[160px]',
                   'transition-all duration-300 ease-in-out hover:-translate-y-1',
                   isDark 
-                    ? 'bg-[#171717] border-[#2A2A2A] hover:bg-[#1F1F1F] hover:border-[#EAB308]/30 hover:shadow-lg hover:shadow-yellow-500/[0.02]' 
-                    : 'bg-white border-[#E2E8F0] hover:bg-[#F8FAFC] hover:border-[#CA8A04]/30 hover:shadow-lg hover:shadow-slate-200/50'
+                    ? 'bg-[#121417] border-[#23262D] hover:bg-[#181B1F] hover:border-[#E6B325]/30 hover:shadow-lg hover:shadow-amber-500/[0.02]' 
+                    : 'bg-white border-[#E2E8F0] hover:bg-[#F8FAFC] hover:border-[#B8860B]/30 hover:shadow-lg hover:shadow-slate-200/50'
                 )}
               >
                 {/* Dark Mode Specific Radial Glow */}
                 {isDark && (
-                  <div className="absolute -top-10 -right-10 w-24 h-24 rounded-full pointer-events-none blur-xl transition-all duration-300 bg-[#EAB308]/[0.02] group-hover:bg-[#EAB308]/[0.06]" />
+                  <div className="absolute -top-10 -right-10 w-24 h-24 rounded-full pointer-events-none blur-xl transition-all duration-300 bg-[#E6B325]/[0.02] group-hover:bg-[#E6B325]/[0.06]" />
                 )}
 
                 <div className="space-y-4">
@@ -246,8 +246,8 @@ export default function TechStackSection({ theme }: TechStackSectionProps) {
                       className={cn(
                         'w-10 h-10 rounded-xl flex items-center justify-center border transition-all duration-300',
                         isDark 
-                          ? 'border-[#2A2A2A] bg-[#0F0F10] text-[#D4D4D4] group-hover:bg-[#EAB308]/10 group-hover:border-[#EAB308]/30 group-hover:text-[#FACC15]' 
-                          : 'border-slate-200 bg-slate-50 text-slate-600 group-hover:bg-[#CA8A04]/10 group-hover:border-[#CA8A04]/30 group-hover:text-[#CA8A04]'
+                          ? 'border-[#23262D] bg-[#0B0D0F] text-[#94A3B8] group-hover:bg-[#E6B325]/10 group-hover:border-[#E6B325]/30 group-hover:text-[#D4A017]' 
+                          : 'border-slate-200 bg-slate-50 text-slate-600 group-hover:bg-[#B8860B]/10 group-hover:border-[#B8860B]/30 group-hover:text-[#B8860B]'
                       )}
                     >
                       <IconComponent className="w-5 h-5" />
@@ -257,7 +257,7 @@ export default function TechStackSection({ theme }: TechStackSectionProps) {
                       className={cn(
                         'text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border select-none',
                         isDark 
-                          ? 'border-[#2A2A2A] bg-[#1F1F1F] text-[#D4D4D4]' 
+                          ? 'border-[#23262D] bg-[#181B1F] text-[#94A3B8]' 
                           : 'border-slate-100 bg-slate-50 text-slate-500'
                       )}
                     >

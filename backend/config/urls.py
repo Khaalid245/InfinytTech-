@@ -8,14 +8,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # API
-    path('api/auth/', include('apps.accounts.urls')),
+    path('api/auth/', include('apps.accounts.urls_auth')),
+    path('api/accounts/', include('apps.accounts.urls_accounts')),
     path('api/services/', include('apps.services.urls')),
     path('api/portfolio/', include('apps.portfolio.urls')),
-    path('api/blog/', include('apps.blog.urls')),
-    path('api/contacts/', include('apps.contacts.urls')),
-    path('api/testimonials/', include('apps.testimonials.urls')),
-    path('api/dashboard/', include('apps.dashboard.urls')),
-
+    path('api/leads/', include('apps.leads.urls')),
     # Docs
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

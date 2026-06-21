@@ -110,13 +110,31 @@ backend/
 | GET | /api/auth/me/ | Yes | Get current user profile |
 
 ### Services
+
+#### Public Endpoints (Read-Only)
 | Method | URL | Auth | Description |
 |--------|-----|------|-------------|
-| GET | /api/services/ | No | List all active services |
-| GET | /api/services/:slug/ | No | Service detail |
-| POST | /api/services/ | Admin | Create service |
-| PUT | /api/services/:slug/ | Admin | Update service |
-| DELETE | /api/services/:slug/ | Admin | Delete service |
+| GET | /api/services/categories/ | No | List active service categories |
+| GET | /api/services/ | No | List active services (optional filter by `category` slug, or `search` query) |
+| GET | /api/services/industries/ | No | List active industries served |
+| GET | /api/services/process/ | No | List active process/methodology steps |
+| GET | /api/services/faqs/ | No | List active FAQs |
+
+#### Admin CRUD Endpoints (JWT Bearer Auth Required)
+| Method | URL | Auth | Description |
+|--------|-----|------|-------------|
+| GET / POST | /api/services/admin/categories/ | Admin | List / Create service categories |
+| GET / PUT / PATCH / DELETE | /api/services/admin/categories/:slug/ | Admin | Retrieve / Update / Delete service category |
+| GET / POST | /api/services/admin/services/ | Admin | List / Create services |
+| GET / PUT / PATCH / DELETE | /api/services/admin/services/:slug/ | Admin | Retrieve / Update / Delete service |
+| GET / POST | /api/services/admin/features/ | Admin | List / Create service features |
+| GET / PUT / PATCH / DELETE | /api/services/admin/features/:id/ | Admin | Retrieve / Update / Delete service feature |
+| GET / POST | /api/services/admin/industries/ | Admin | List / Create industries |
+| GET / PUT / PATCH / DELETE | /api/services/admin/industries/:slug/ | Admin | Retrieve / Update / Delete industry |
+| GET / POST | /api/services/admin/process/ | Admin | List / Create process steps |
+| GET / PUT / PATCH / DELETE | /api/services/admin/process/:id/ | Admin | Retrieve / Update / Delete process step |
+| GET / POST | /api/services/admin/faqs/ | Admin | List / Create FAQs |
+| GET / PUT / PATCH / DELETE | /api/services/admin/faqs/:id/ | Admin | Retrieve / Update / Delete FAQ |
 
 ### Portfolio
 | Method | URL | Auth | Description |
@@ -246,7 +264,12 @@ JWT_REFRESH_TOKEN_LIFETIME_DAYS=7
 | Table | App | Description |
 |-------|-----|-------------|
 | accounts_users | accounts | Custom user model |
+| service_categories | services | Service Category listings |
 | services | services | Service listings |
+| service_features | services | Features included under services |
+| industries | services | Industries served listings |
+| process_steps | services | Delivery methodology process steps |
+| faqs | services | Service FAQs list |
 | portfolio_projects | portfolio | Portfolio projects |
 | blog_categories | blog | Blog categories |
 | blog_posts | blog | Blog posts |

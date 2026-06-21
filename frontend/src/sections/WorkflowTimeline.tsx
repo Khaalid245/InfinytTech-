@@ -139,7 +139,6 @@ interface WorkflowTimelineProps {
 export const WorkflowTimeline: React.FC<WorkflowTimelineProps> = ({ theme }) => {
   const isDark = theme === 'dark';
   const [activeStep, setActiveStep] = useState<number>(0);
-  const [prevStep, setPrevStep] = useState<number>(0);
   const panelRef = useRef<HTMLDivElement>(null);
 
   // Colour tokens
@@ -166,10 +165,9 @@ export const WorkflowTimeline: React.FC<WorkflowTimelineProps> = ({ theme }) => 
 
   const goToStep = useCallback(
     (idx: number) => {
-      setPrevStep(activeStep);
       setActiveStep(idx);
     },
-    [activeStep]
+    []
   );
 
   // Keyboard navigation on the step-list

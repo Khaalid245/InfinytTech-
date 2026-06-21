@@ -25,7 +25,6 @@ export const ServicesHero: React.FC<ServicesHeroProps> = ({ theme }) => {
   const bg      = isDark ? 'bg-[#0B0D0F]'  : 'bg-[#F8FAFC]';
   const textPri = isDark ? 'text-[#F8FAFC]' : 'text-[#0F172A]';
   const textSec = isDark ? 'text-[#94A3B8]' : 'text-[#475569]';
-  const divider = isDark ? '#23262D'        : '#E8EDF3';
 
   // Smooth fade-up on mount
   useEffect(() => {

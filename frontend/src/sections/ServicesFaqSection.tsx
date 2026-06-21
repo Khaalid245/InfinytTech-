@@ -116,7 +116,6 @@ const AccordionItem: React.FC<AccordionItemProps> = ({
   const panelId  = `faq-p-${uid}`;
   const gold     = '#D4A017';
 
-  const textPrimary   = isDark ? 'text-[#F8FAFC]' : 'text-[#0F172A]';
   const textSecondary = isDark ? 'text-[#94A3B8]' : 'text-[#475569]';
   const bulletDot     = isDark ? '#23262D'        : '#CBD5E1';
 
@@ -248,7 +247,6 @@ export const ServicesFaqSection: React.FC<ServicesFaqSectionProps> = ({ theme })
   const bg            = isDark ? 'bg-[#0B0D0F]'  : 'bg-[#FAFAFA]';
   const textPrimary   = isDark ? 'text-[#F8FAFC]'     : 'text-[#0F172A]';
   const textSecondary = isDark ? 'text-[#94A3B8]' : 'text-[#475569]';
-  const divider       = isDark ? '#23262D'        : '#E2E8F0';
 
   const toggle = useCallback(
     (idx: number) => setOpenIndex(prev => (prev === idx ? null : idx)),

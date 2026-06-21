@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+from apps.core.models import UUIDModel, TimeStampedModel
 
 
 class UserManager(BaseUserManager):
@@ -15,20 +16,33 @@ class UserManager(BaseUserManager):
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('role', User.Role.SUPER_ADMIN)
         return self.create_user(email, password, **extra_fields)
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(UUIDModel, TimeStampedModel, AbstractBaseUser, PermissionsMixin):
+    class Role(models.TextChoices):
+        SUPER_ADMIN = 'super_admin', 'Super Admin'
+        ADMIN = 'admin', 'Admin'
+        CONTENT_MANAGER = 'content_manager', 'Content Manager'
+        DEVELOPER = 'developer', 'Developer'
+        DESIGNER = 'designer', 'Designer'
+
     email = models.EmailField(unique=True)
-    full_name = models.CharField(max_length=150)
+    first_name = models.CharField(max_length=150, blank=True)
+    last_name = models.CharField(max_length=150, blank=True)
+    role = models.CharField(
+        max_length=20,
+        choices=Role.choices,
+        default=Role.ADMIN
+    )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['full_name']
+    REQUIRED_FIELDS = []
 
     class Meta:
         db_table = 'accounts_users'

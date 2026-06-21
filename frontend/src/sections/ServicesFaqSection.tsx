@@ -1,103 +1,13 @@
 import React, { useState, useCallback, useId } from 'react';
 import { cn } from '../utils/cn';
 import { Plus, Minus, Calendar, ArrowRight } from 'lucide-react';
-
-// ─── Types ─────────────────────────────────────────────────────────────────────
-
-interface AnswerBlock {
-  intro: string;
-  bullets?: string[];
-  outro?: string;
-}
-
-interface FaqItem {
-  question: string;
-  answer: AnswerBlock;
-}
-
-// ─── Data ─────────────────────────────────────────────────────────────────────
-
-const FAQS: FaqItem[] = [
-  {
-    question: 'How long does a typical project take?',
-    answer: {
-      intro: 'Most projects take 8–14 weeks from discovery to launch. Timelines vary based on scope, complexity, and your team\'s availability.',
-      bullets: [
-        'Discovery & planning',
-        'Design & engineering',
-        'Testing & deployment',
-        'Regular milestone reviews',
-      ],
-      outro: 'Larger enterprise platforms with multiple integrations typically span 4–6 months. Every engagement starts with a scoped roadmap before development begins.',
-    },
-  },
-  {
-    question: 'Do you work with startups and enterprises?',
-    answer: {
-      intro: 'Yes. We adapt our process to your stage and size.',
-      bullets: [
-        'Startups — rapid MVP development with lean, scalable architecture',
-        'Growing businesses — structured feature expansion and platform scaling',
-        'Enterprises — digital transformation and legacy system modernisation',
-      ],
-      outro: 'Our team treats your context as the primary design constraint.',
-    },
-  },
-  {
-    question: 'Can you improve or rebuild an existing product?',
-    answer: {
-      intro: 'Absolutely. We regularly step into existing projects without disrupting what is already working.',
-      bullets: [
-        'Technical audits and codebase reviews',
-        'User experience redesigns',
-        'Legacy system modernisation',
-        'Platform scaling and performance tuning',
-      ],
-    },
-  },
-  {
-    question: 'What technologies do you use?',
-    answer: {
-      intro: 'We select technologies based on your business requirements, not trends.',
-      bullets: [
-        'Frontend — React, Next.js, TypeScript',
-        'Backend — Node.js, Python, REST & GraphQL APIs',
-        'Infrastructure — AWS, GCP, Vercel, Docker',
-        'Data — PostgreSQL, MongoDB, Redis',
-      ],
-      outro: 'Every selection prioritises long-term maintainability, security, and scalability.',
-    },
-  },
-  {
-    question: 'How do you communicate during development?',
-    answer: {
-      intro: 'You have full visibility throughout the project — never a black box.',
-      bullets: [
-        'Weekly progress updates and sprint reviews',
-        'Shared project management and staging environments',
-        'Direct access to your engineering team',
-        'Structured documentation at every milestone',
-      ],
-    },
-  },
-  {
-    question: 'Do you provide support after launch?',
-    answer: {
-      intro: 'Yes. We offer structured post-launch support so your product keeps improving.',
-      bullets: [
-        'Ongoing maintenance and bug resolution',
-        'Cloud monitoring and performance optimisation',
-        'Feature expansion and roadmap execution',
-        'SLA-backed technical partnership',
-      ],
-    },
-  },
-];
+import { useFaqs } from '../hooks/useServices';
+import type { FAQ } from '../types/services';
 
 // ─── Accordion Item ────────────────────────────────────────────────────────────
 
 interface AccordionItemProps {
-  item: FaqItem;
+  item: FAQ;
   isOpen: boolean;
   onToggle: () => void;
   isDark: boolean;
@@ -198,13 +108,13 @@ const AccordionItem: React.FC<AccordionItemProps> = ({
           <div className="pb-7 pt-0 pl-0 pr-2 space-y-4">
             {/* Intro sentence */}
             <p className={cn('text-[15px] font-light leading-[1.8]', textSecondary)}>
-              {item.answer.intro}
+              {item.answer_intro}
             </p>
 
             {/* Bullet list */}
-            {item.answer.bullets && (
+            {item.answer_bullets && item.answer_bullets.length > 0 && (
               <ul className="space-y-2.5" aria-label="Details">
-                {item.answer.bullets.map((bullet) => (
+                {item.answer_bullets.map((bullet) => (
                   <li key={bullet} className="flex items-start gap-3">
                     {/* Dot */}
                     <span
@@ -221,9 +131,9 @@ const AccordionItem: React.FC<AccordionItemProps> = ({
             )}
 
             {/* Closing sentence */}
-            {item.answer.outro && (
+            {item.answer_outro && (
               <p className={cn('text-[14px] font-light leading-relaxed italic', textSecondary)}>
-                {item.answer.outro}
+                {item.answer_outro}
               </p>
             )}
           </div>
@@ -243,6 +153,9 @@ export const ServicesFaqSection: React.FC<ServicesFaqSectionProps> = ({ theme })
   const isDark = theme === 'dark';
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
+  const { data: rawFaqs = [], isLoading, isError } = useFaqs();
+  const faqs = [...rawFaqs].sort((a, b) => a.order - b.order);
+
   const gold          = '#D4A017';
   const bg            = isDark ? 'bg-[#0B0D0F]'  : 'bg-[#FAFAFA]';
   const textPrimary   = isDark ? 'text-[#F8FAFC]'     : 'text-[#0F172A]';
@@ -256,6 +169,54 @@ export const ServicesFaqSection: React.FC<ServicesFaqSectionProps> = ({ theme })
   const handleDiscoveryCall = () => {
     window.dispatchEvent(new CustomEvent('open-booking-modal'));
   };
+
+  if (isLoading) {
+    return (
+      <section
+        className={cn('w-full py-28 lg:py-36 transition-colors duration-300 relative overflow-hidden', bg)}
+        aria-label="Frequently Asked Questions"
+      >
+        <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-20 animate-pulse">
+          <div className="text-center space-y-6 max-w-2xl mx-auto">
+            <div className="h-6 w-44 bg-slate-200 dark:bg-zinc-800 rounded-full mx-auto" />
+            <div className="h-12 w-2/3 bg-slate-200 dark:bg-zinc-800 rounded-md mx-auto" />
+            <div className="h-6 w-1/2 bg-slate-200 dark:bg-zinc-800 rounded-md mx-auto" />
+          </div>
+          <div className="max-w-[860px] mx-auto space-y-4">
+            <div className="h-16 bg-slate-100 dark:bg-[#121417] border border-slate-200 dark:border-[#23262D] rounded-2xl" />
+            <div className="h-16 bg-slate-100 dark:bg-[#121417] border border-slate-200 dark:border-[#23262D] rounded-2xl" />
+            <div className="h-16 bg-slate-100 dark:bg-[#121417] border border-slate-200 dark:border-[#23262D] rounded-2xl" />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (isError) {
+    return (
+      <section
+        className={cn('w-full py-28 lg:py-36 transition-colors duration-300 relative overflow-hidden', bg)}
+        aria-label="Frequently Asked Questions"
+      >
+        <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-center py-20">
+          <p className={textSecondary}>Error loading FAQs. Please try again later.</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (faqs.length === 0) {
+    return (
+      <section
+        className={cn('w-full py-28 lg:py-36 transition-colors duration-300 relative overflow-hidden', bg)}
+        aria-label="Frequently Asked Questions"
+      >
+        <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-center py-20">
+          <p className={textSecondary}>No FAQs available at the moment.</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -315,14 +276,14 @@ export const ServicesFaqSection: React.FC<ServicesFaqSectionProps> = ({ theme })
             )}
           >
             <div className="px-6 sm:px-10">
-              {FAQS.map((faq, idx) => (
+              {faqs.map((faq, idx) => (
                 <AccordionItem
-                  key={idx}
+                  key={faq.id}
                   item={faq}
                   isOpen={openIndex === idx}
                   onToggle={() => toggle(idx)}
                   isDark={isDark}
-                  isLast={idx === FAQS.length - 1}
+                  isLast={idx === faqs.length - 1}
                 />
               ))}
             </div>

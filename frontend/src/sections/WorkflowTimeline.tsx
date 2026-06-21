@@ -1,134 +1,8 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '../utils/cn';
-import {
-  Search,
-  Blocks,
-  Code2,
-  ShieldCheck,
-  Rocket,
-  Check,
-} from 'lucide-react';
-
-// ─── Data ────────────────────────────────────────────────────────────────────
-
-interface ProcessStep {
-  num: string;
-  shortTitle: string;
-  fullTitle: string;
-  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
-  description: string;
-  deliverables: string[];
-  outcomes: string[];
-  duration: string;
-}
-
-const PROCESS_STEPS: ProcessStep[] = [
-  {
-    num: '01',
-    shortTitle: 'Discover',
-    fullTitle: 'Product Discovery',
-    icon: Search,
-    description:
-      'We learn about your business goals, target audience, challenges, and technical requirements before writing a single line of code — so we build the right product, not just a product.',
-    deliverables: [
-      'Stakeholder Workshops',
-      'Business Analysis & Goals',
-      'Product Scope & Vision',
-      'Success Metrics Scoping',
-    ],
-    outcomes: [
-      'Shared Product Understanding',
-      'Reduced Scope Creep',
-      'Aligned Stakeholder Expectations',
-      'Clear Investment Roadmap',
-    ],
-    duration: '1–2 Weeks',
-  },
-  {
-    num: '02',
-    shortTitle: 'Plan',
-    fullTitle: 'Architecture & Planning',
-    icon: Blocks,
-    description:
-      'We translate your scope into a detailed technical specification — selecting the optimal architecture, infrastructure, database schemas, and delivery schedule to minimise risk and maximise velocity.',
-    deliverables: [
-      'System Architecture Design',
-      'Technology Stack Selection',
-      'Sprint Planning & Milestones',
-      'Detailed Delivery Roadmap',
-    ],
-    outcomes: [
-      'Predictable Project Timelines',
-      'Risk-Mitigated Architecture',
-      'Scalable Technical Foundation',
-      'Full Cost Transparency',
-    ],
-    duration: '2–3 Weeks',
-  },
-  {
-    num: '03',
-    shortTitle: 'Build',
-    fullTitle: 'Design & Development',
-    icon: Code2,
-    description:
-      'Our designers craft exceptional user experiences while our engineers write clean, modular, and scalable code — iterating rapidly in two-week sprints with continuous client visibility.',
-    deliverables: [
-      'UI/UX High-Fidelity Design',
-      'Frontend Development (React/Vite)',
-      'Robust API & Backend Architecture',
-      'Continuous Cloud Integrations',
-    ],
-    outcomes: [
-      'Production-Grade Codebase',
-      'Faster Time to Market',
-      'High User Adoption Rates',
-      'Maintainable Technical Debt',
-    ],
-    duration: '6–12 Weeks',
-  },
-  {
-    num: '04',
-    shortTitle: 'Validate',
-    fullTitle: 'Quality Assurance',
-    icon: ShieldCheck,
-    description:
-      'Every interface, API endpoint, and security configuration undergoes rigorous validation to guarantee performance, security compliance, and full accessibility standards before launch.',
-    deliverables: [
-      'Comprehensive QA Testing',
-      'Vulnerability & Security Reviews',
-      'Lighthouse Performance Audits',
-      'Cross-Browser Bug Resolution',
-    ],
-    outcomes: [
-      'Zero Critical Bugs at Launch',
-      'WCAG Accessibility Compliance',
-      'Optimised Core Web Vitals',
-      'Full Security Clearance',
-    ],
-    duration: '2–3 Weeks',
-  },
-  {
-    num: '05',
-    shortTitle: 'Scale',
-    fullTitle: 'Launch & Growth',
-    icon: Rocket,
-    description:
-      'We deploy with zero downtime, establish active telemetry monitoring, and partner with your team long-term to continuously scale performance, expand features, and support sustainable product growth.',
-    deliverables: [
-      'Zero-Downtime Cloud Deployment',
-      'Active Monitoring & Telemetry',
-      'Continuous Performance Optimisation',
-      'Ongoing Technical & SLA Support',
-    ],
-    outcomes: [
-      'Reliable Production Environment',
-      'Faster Feature Releases',
-      'Stable & Measurable Performance',
-      'Long-Term Product Growth',
-    ],
-    duration: 'Ongoing Partnership',
-  },
-];
+import { useProcessSteps } from '../hooks/useServices';
+import { getLucideIcon } from '../utils/iconHelper';
+import { Search, Check } from 'lucide-react';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -140,6 +14,10 @@ export const WorkflowTimeline: React.FC<WorkflowTimelineProps> = ({ theme }) => 
   const isDark = theme === 'dark';
   const [activeStep, setActiveStep] = useState<number>(0);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  // Fetch process steps via React Query hook
+  const { data: rawSteps = [], isLoading, isError } = useProcessSteps();
+  const processSteps = [...rawSteps].sort((a, b) => a.order - b.order);
 
   // Colour tokens
   const bg = isDark ? 'bg-[#0B0D0F]' : 'bg-[#FAFAFA]';
@@ -160,35 +38,65 @@ export const WorkflowTimeline: React.FC<WorkflowTimelineProps> = ({ theme }) => 
 
   const gold = '#D4A017';
 
-  const activeData = PROCESS_STEPS[activeStep];
-  const progressPercent = (activeStep / (PROCESS_STEPS.length - 1)) * 100;
+  if (isLoading) {
+    return (
+      <section className={cn('w-full py-28 lg:py-36 transition-colors duration-300 relative overflow-hidden', bg)} aria-label="Our Delivery Process">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20 animate-pulse">
+          <div className="text-center space-y-6 max-w-3xl mx-auto">
+            <div className="h-6 w-36 bg-slate-200 dark:bg-zinc-800 rounded-full mx-auto" />
+            <div className="h-12 w-2/3 bg-slate-200 dark:bg-zinc-800 rounded-md mx-auto" />
+            <div className="h-6 w-1/2 bg-slate-200 dark:bg-zinc-800 rounded-md mx-auto" />
+          </div>
+          <div className="h-32 bg-slate-100 dark:bg-[#121417] border border-slate-200 dark:border-[#23262D] rounded-2xl max-w-5xl mx-auto" />
+          <div className="h-96 bg-slate-100 dark:bg-[#121417] border border-slate-200 dark:border-[#23262D] rounded-2xl max-w-5xl mx-auto" />
+        </div>
+      </section>
+    );
+  }
 
-  const goToStep = useCallback(
-    (idx: number) => {
-      setActiveStep(idx);
-    },
-    []
-  );
+  if (isError) {
+    return (
+      <section className={cn('w-full py-28 lg:py-36 transition-colors duration-300 relative overflow-hidden', bg)} aria-label="Our Delivery Process">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-20">
+          <p className={textSecondary}>Error loading delivery process. Please try again later.</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (processSteps.length === 0) {
+    return (
+      <section className={cn('w-full py-28 lg:py-36 transition-colors duration-300 relative overflow-hidden', bg)} aria-label="Our Delivery Process">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-20">
+          <p className={textSecondary}>No delivery process steps available.</p>
+        </div>
+      </section>
+    );
+  }
+
+  const activeData = processSteps[activeStep];
+  const progressPercent = processSteps.length > 1 ? (activeStep / (processSteps.length - 1)) * 100 : 0;
+
+  const goToStep = (idx: number) => {
+    setActiveStep(idx);
+  };
 
   // Keyboard navigation on the step-list
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLDivElement>) => {
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        e.preventDefault();
-        goToStep(Math.min(activeStep + 1, PROCESS_STEPS.length - 1));
-      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        e.preventDefault();
-        goToStep(Math.max(activeStep - 1, 0));
-      } else if (e.key === 'Home') {
-        e.preventDefault();
-        goToStep(0);
-      } else if (e.key === 'End') {
-        e.preventDefault();
-        goToStep(PROCESS_STEPS.length - 1);
-      }
-    },
-    [activeStep, goToStep]
-  );
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      goToStep(Math.min(activeStep + 1, processSteps.length - 1));
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      goToStep(Math.max(activeStep - 1, 0));
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      goToStep(0);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      goToStep(processSteps.length - 1);
+    }
+  };
 
   // Scroll panel into view on mobile after step change
   useEffect(() => {
@@ -268,14 +176,14 @@ export const WorkflowTimeline: React.FC<WorkflowTimelineProps> = ({ theme }) => 
             className="flex lg:grid lg:grid-cols-5 gap-3 overflow-x-auto lg:overflow-visible pb-4 lg:pb-0 scrollbar-none relative z-10"
             onKeyDown={handleKeyDown}
           >
-            {PROCESS_STEPS.map((step, idx) => {
-              const StepIcon = step.icon;
+            {processSteps.map((step, idx) => {
+              const StepIcon = getLucideIcon(step.icon, Search);
               const isActive = activeStep === idx;
               const isCompleted = idx < activeStep;
 
               return (
                 <button
-                  key={step.num}
+                  key={step.id}
                   role="tab"
                   aria-selected={isActive}
                   aria-controls="process-panel"
@@ -332,7 +240,7 @@ export const WorkflowTimeline: React.FC<WorkflowTimelineProps> = ({ theme }) => 
                       )}
                       style={{ color: isActive ? gold : undefined }}
                     >
-                      {step.num}
+                      {step.step_number}
                     </span>
                     <span
                       className={cn(
@@ -345,7 +253,7 @@ export const WorkflowTimeline: React.FC<WorkflowTimelineProps> = ({ theme }) => 
                           : 'text-slate-500 group-hover:text-slate-700'
                       )}
                     >
-                      {step.shortTitle}
+                      {step.short_title}
                     </span>
                   </div>
                 </button>
@@ -377,9 +285,9 @@ export const WorkflowTimeline: React.FC<WorkflowTimelineProps> = ({ theme }) => 
                 className="font-mono text-[10px] font-bold tracking-[0.18em] uppercase px-3 py-1 rounded-md"
                 style={{ color: gold, backgroundColor: isDark ? 'rgba(212,160,23,0.08)' : 'rgba(184,134,11,0.08)' }}
               >
-                Stage {activeData.num}
+                Stage {activeData.step_number}
               </span>
-              {React.createElement(activeData.icon, {
+              {React.createElement(getLucideIcon(activeData.icon, Search), {
                 className: 'w-4 h-4',
                 style: { color: gold, opacity: 0.7 },
               })}
@@ -402,7 +310,7 @@ export const WorkflowTimeline: React.FC<WorkflowTimelineProps> = ({ theme }) => 
             <div className="flex flex-col gap-8">
               <div className="space-y-4">
                 <h3 className={cn('text-2xl sm:text-3xl font-black tracking-tight leading-tight', textPrimary)}>
-                  {activeData.fullTitle}
+                  {activeData.full_title}
                 </h3>
                 <p className={cn('text-base sm:text-[17px] leading-[1.75] font-light', textSecondary)}>
                   {activeData.description}

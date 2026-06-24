@@ -19,6 +19,13 @@ export const WorkflowTimeline: React.FC<WorkflowTimelineProps> = ({ theme }) => 
   const { data: rawSteps = [], isLoading, isError } = useProcessSteps();
   const processSteps = [...rawSteps].sort((a, b) => a.order - b.order);
 
+  // Scroll panel into view on mobile after step change
+  useEffect(() => {
+    if (panelRef.current && window.innerWidth < 1024) {
+      panelRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [activeStep]);
+
   // Colour tokens
   const bg = isDark ? 'bg-[#0B0D0F]' : 'bg-[#FAFAFA]';
   const textPrimary = isDark ? 'text-[#F8FAFC]' : 'text-[#0F172A]';
@@ -97,13 +104,6 @@ export const WorkflowTimeline: React.FC<WorkflowTimelineProps> = ({ theme }) => 
       goToStep(processSteps.length - 1);
     }
   };
-
-  // Scroll panel into view on mobile after step change
-  useEffect(() => {
-    if (panelRef.current && window.innerWidth < 1024) {
-      panelRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-  }, [activeStep]);
 
   return (
     <section

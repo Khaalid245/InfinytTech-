@@ -1,74 +1,32 @@
 import React from 'react';
 import { cn } from '../utils/cn';
-import {
-  HeartPulse,
-  Landmark,
-  GraduationCap,
-  ShoppingCart,
-  Truck,
-  Building2,
-  ArrowRight
-} from 'lucide-react';
-
-interface IndustryCard {
-  id: string;
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  description: string;
-  tags: string[];
-}
-
-const INDUSTRIES: IndustryCard[] = [
-  {
-    id: 'healthcare',
-    icon: HeartPulse,
-    title: 'Healthcare',
-    description: 'Secure digital health platforms, patient management systems, telemedicine solutions, and healthcare automation.',
-    tags: ['Telemedicine', 'Hospital Systems', 'Patient Portals'],
-  },
-  {
-    id: 'fintech',
-    icon: Landmark,
-    title: 'FinTech',
-    description: 'Modern financial platforms, payment solutions, digital banking applications, and secure transaction systems.',
-    tags: ['Payments', 'Digital Banking', 'Finance Automation'],
-  },
-  {
-    id: 'education',
-    icon: GraduationCap,
-    title: 'Education',
-    description: 'Interactive learning platforms, student management systems, and AI-powered educational experiences.',
-    tags: ['E-Learning', 'LMS', 'Student Portals'],
-  },
-  {
-    id: 'ecommerce',
-    icon: ShoppingCart,
-    title: 'E-Commerce',
-    description: 'Scalable online stores, marketplace platforms, inventory management, and customer experience solutions.',
-    tags: ['Online Store', 'Marketplace', 'Inventory'],
-  },
-  {
-    id: 'logistics',
-    icon: Truck,
-    title: 'Logistics',
-    description: 'Supply chain management, fleet tracking, logistics automation, and operational dashboards.',
-    tags: ['Fleet Tracking', 'Supply Chain', 'Operations'],
-  },
-  {
-    id: 'enterprise',
-    icon: Building2,
-    title: 'Enterprise',
-    description: 'Internal business systems, workflow automation, enterprise software, and digital transformation initiatives.',
-    tags: ['ERP', 'Automation', 'Business Intelligence'],
-  },
-];
+import { useIndustries } from '../hooks/useServices';
+import { getLucideIcon } from '../utils/iconHelper';
+import { Landmark, ArrowRight } from 'lucide-react';
 
 interface IndustriesSectionProps {
   theme: 'dark' | 'light';
 }
 
+const defaultIndustryTags: Record<string, string[]> = {
+  "healthcare": ['Telemedicine', 'Hospital Systems', 'Patient Portals'],
+  "fintech": ['Payments', 'Digital Banking', 'Finance Automation'],
+  "education": ['E-Learning', 'LMS', 'Student Portals'],
+  "ecommerce": ['Online Store', 'Marketplace', 'Inventory'],
+  "e-commerce": ['Online Store', 'Marketplace', 'Inventory'],
+  "logistics": ['Fleet Tracking', 'Supply Chain', 'Operations'],
+  "enterprise": ['ERP', 'Automation', 'Business Intelligence'],
+};
+
+const getIndustryTags = (slug: string, name: string): string[] => {
+  return defaultIndustryTags[slug.toLowerCase()] || [name, 'Systems', 'Digital Solution'];
+};
+
 export const IndustriesSection: React.FC<IndustriesSectionProps> = ({ theme }) => {
   const isDark = theme === 'dark';
+
+  // Fetch industries list via React Query hook
+  const { data: industries = [], isLoading, isError } = useIndustries();
 
   // Theme-specific styling tokens
   const bg = isDark ? 'bg-[#0B0D0F]' : 'bg-[#FAFAFA]';
@@ -85,6 +43,45 @@ export const IndustriesSection: React.FC<IndustriesSectionProps> = ({ theme }) =
       capabilitiesSec.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  if (isLoading) {
+    return (
+      <section className={cn("w-full py-24 transition-colors duration-300 relative overflow-hidden", bg)} aria-label="Industries We Serve">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 animate-pulse">
+          <div className="text-center space-y-4">
+            <div className="h-6 w-32 bg-slate-200 dark:bg-zinc-800 rounded-full mx-auto" />
+            <div className="h-10 w-2/3 bg-slate-200 dark:bg-zinc-800 rounded-md mx-auto" />
+            <div className="h-4 w-1/2 bg-slate-200 dark:bg-zinc-800 rounded-md mx-auto" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-72 bg-slate-100 dark:bg-[#121417] border border-slate-200 dark:border-[#23262D] rounded-2xl" />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (isError) {
+    return (
+      <section className={cn("w-full py-24 transition-colors duration-300 relative overflow-hidden", bg)} aria-label="Industries We Serve">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-20">
+          <p className={textSecondary}>Error loading industries. Please try again later.</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (industries.length === 0) {
+    return (
+      <section className={cn("w-full py-24 transition-colors duration-300 relative overflow-hidden", bg)} aria-label="Industries We Serve">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-20">
+          <p className={textSecondary}>No industries available.</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section 
@@ -120,8 +117,9 @@ export const IndustriesSection: React.FC<IndustriesSectionProps> = ({ theme }) =
 
         {/* Industry Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {INDUSTRIES.map((industry) => {
-            const IconComponent = industry.icon;
+          {industries.map((industry) => {
+            const IconComponent = getLucideIcon(industry.icon, Landmark);
+            const tags = getIndustryTags(industry.slug, industry.name);
             return (
               <div
                 key={industry.id}
@@ -154,7 +152,7 @@ export const IndustriesSection: React.FC<IndustriesSectionProps> = ({ theme }) =
 
                   {/* Industry Title */}
                   <h3 className={cn("text-xl font-bold tracking-tight", textPrimary)}>
-                    {industry.title}
+                    {industry.name}
                   </h3>
 
                   {/* Short professional description */}
@@ -169,7 +167,7 @@ export const IndustriesSection: React.FC<IndustriesSectionProps> = ({ theme }) =
                     Typical Solutions
                   </span>
                   <div className="flex flex-wrap gap-2">
-                    {industry.tags.map((tag) => (
+                    {tags.map((tag) => (
                       <span
                         key={tag}
                         className={cn(

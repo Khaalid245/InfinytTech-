@@ -1,31 +1,15 @@
 import React, { useState } from 'react';
 import { cn } from '../utils/cn';
-import { servicesExplorerData } from '../data/servicesExplorerData';
+import { useServices } from '../hooks/useServices';
+import { getLucideIcon } from '../utils/iconHelper';
 import {
   Layers,
-  BrainCircuit,
-  Smartphone,
-  Cloud,
-  Palette,
-  Database,
-  RefreshCw,
-  Compass,
   ArrowRight,
   MoveRight,
   CheckCircle2,
   ChevronDown
 } from 'lucide-react';
-
-const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
-  "Product Engineering": Layers,
-  "AI & Intelligent Systems": BrainCircuit,
-  "Mobile Experiences": Smartphone,
-  "Cloud & Infrastructure": Cloud,
-  "Product Design & UX": Palette,
-  "Data & Analytics": Database,
-  "Digital Transformation": RefreshCw,
-  "Technology Consulting": Compass,
-};
+import type { Service } from '../types/services';
 
 interface ServiceExplorerProps {
   theme: 'dark' | 'light';
@@ -36,6 +20,53 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [expandedMobileIndex, setExpandedMobileIndex] = useState<number | null>(0);
 
+  // Fetch Services via React Query
+  const { data, isLoading, isError } = useServices();
+  const servicesList = data?.results ?? [];
+
+  // Sane mapper helper to match CMS records to the premium UX card layout
+  const mapServiceToExplorerItem = (service: Service | undefined) => {
+    if (!service) return null;
+    
+    // Fallbacks if features list is empty
+    const buildItems = service.features?.length > 0
+      ? service.features.map(f => f.title)
+      : ["SaaS Applications", "Cloud Architectures", "Custom Integrations"];
+
+    const techStack = service.features?.length > 0
+      ? service.features.map(f => f.description).filter(d => d && d.length < 20).slice(0, 5)
+      : ["React", "TypeScript", "Node.js", "Python"];
+    
+    const impacts = service.features?.length > 0
+      ? service.features.map(f => f.description).filter(d => d && d.length >= 20).slice(0, 4)
+      : ["Reduced latency", "Faster velocity", "Secure applications"];
+    
+    return {
+      category: service.category?.name ?? "Service",
+      title: service.title,
+      description: service.description,
+      whatWeBuild: buildItems,
+      techEcosystem: techStack.length > 0 ? techStack : ["React", "TypeScript", "Tailwind", "Node.js"],
+      typicalEngagements: [
+        "New Product Development",
+        "Legacy Software Modernization",
+        "API Integration & Migration",
+        "Feature Expansion & Scaling"
+      ],
+      businessImpact: impacts.length > 0 ? impacts : [
+        "Faster time-to-market",
+        "Reduced maintenance costs",
+        "Highly secure & compliant systems",
+        "Seamless user onboarding"
+      ],
+      caseStudyHook: `Helping an enterprise scale their ${service.title} capacity by 400%`,
+      timeline: "8–16 Weeks",
+      engagementModel: "Dedicated Team / Agile Sprint",
+      support: "3 Months Post-Launch",
+      icon: service.icon
+    };
+  };
+
   const bg = isDark ? 'bg-[#0B0D0F]' : 'bg-[#FAFAFA]';
   const cardBg = isDark ? 'bg-[#121417]' : 'bg-white';
   const border = isDark ? 'border-[#23262D]' : 'border-slate-200';
@@ -44,6 +75,54 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
   const textMuted = isDark ? 'text-[#64748B]' : 'text-slate-400';
   const accentText = isDark ? 'text-[#D4A017]' : 'text-[#B8860B]';
   const activeBg = isDark ? 'bg-[#181B1F]' : 'bg-slate-50';
+
+  if (isLoading) {
+    return (
+      <section className={cn("py-24 transition-colors duration-300", bg)} aria-label="Capabilities Service Explorer">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 animate-pulse">
+          <div className="text-center space-y-4">
+            <div className="h-6 w-32 bg-slate-200 dark:bg-zinc-800 rounded-full mx-auto" />
+            <div className="h-10 w-2/3 bg-slate-200 dark:bg-zinc-800 rounded-md mx-auto" />
+            <div className="h-4 w-1/2 bg-slate-200 dark:bg-zinc-800 rounded-md mx-auto" />
+          </div>
+          <div className="hidden lg:grid lg:grid-cols-12 gap-8 items-start min-h-[640px]">
+            <div className="lg:col-span-5 space-y-3">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-20 bg-slate-100 dark:bg-[#121417] border border-slate-200 dark:border-[#23262D] rounded-xl" />
+              ))}
+            </div>
+            <div className="lg:col-span-7 h-[640px] bg-slate-100 dark:bg-[#121417] border border-slate-200 dark:border-[#23262D] rounded-2xl" />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (isError) {
+    return (
+      <section className={cn("py-24 transition-colors duration-300", bg)} aria-label="Capabilities Service Explorer">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-20 space-y-4">
+          <p className={cn("text-base font-light", textSecondary)}>Error loading services. Please try again later.</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (servicesList.length === 0) {
+    return (
+      <section className={cn("py-24 transition-colors duration-300", bg)} aria-label="Capabilities Service Explorer">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-20 space-y-4">
+          <p className={cn("text-base font-light", textSecondary)}>No services available.</p>
+        </div>
+      </section>
+    );
+  }
+
+  const activeData = mapServiceToExplorerItem(servicesList[activeIndex]);
+
+  if (!activeData) {
+    return null;
+  }
 
   return (
     <section 
@@ -107,13 +186,13 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
           
           {/* Left Drawer Selection List */}
           <div className="lg:col-span-5 space-y-3">
-            {servicesExplorerData.map((item, idx) => {
-              const IconComp = categoryIcons[item.category] || Layers;
+            {servicesList.map((service, idx) => {
+              const IconComp = getLucideIcon(service.icon, Layers);
               const isActive = activeIndex === idx;
 
               return (
                 <button
-                  key={item.category}
+                  key={service.id}
                   onClick={() => setActiveIndex(idx)}
                   className={cn(
                     "w-full text-left flex items-center justify-between p-5 rounded-xl border transition-all duration-300 group cursor-pointer",
@@ -146,10 +225,10 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
 
                     <div>
                       <span className={cn("font-mono text-[10px] tracking-wider block leading-none mb-1.5", isActive ? accentText : textMuted)}>
-                        0{idx + 1} // CAPABILITY
+                        0{idx + 1} // SERVICE
                       </span>
                       <h3 className={cn("text-base font-extrabold tracking-tight transition-colors duration-200", isActive ? textPrimary : isDark ? "text-zinc-300 group-hover:text-white" : "text-slate-700 group-hover:text-slate-900")}>
-                        {item.category}
+                        {service.title}
                       </h3>
                     </div>
                   </div>
@@ -175,13 +254,13 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
               <div className="flex items-center justify-between border-b pb-5" style={{ borderColor: isDark ? '#23262D' : '#E2E8F0' }}>
                 <div className="space-y-1">
                   <span className={cn("font-mono text-[11px] uppercase tracking-wider block", accentText)}>
-                    Drawer 0{activeIndex + 1} Active Details
+                    Drawer 0{activeIndex + 1} Active Details — {activeData.category}
                   </span>
                   <h2 className={cn("text-2xl font-black tracking-tight", textPrimary)}>
-                    {servicesExplorerData[activeIndex].category}
+                    {activeData.title}
                   </h2>
                 </div>
-                {React.createElement(categoryIcons[servicesExplorerData[activeIndex].category] || Layers, {
+                {React.createElement(getLucideIcon(activeData.icon, Layers), {
                   className: cn("w-8 h-8 opacity-40", accentText)
                 })}
               </div>
@@ -195,7 +274,7 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                     What We Build
                   </h4>
                   <div className="space-y-2">
-                    {servicesExplorerData[activeIndex].whatWeBuild.map((deliverable) => (
+                    {activeData.whatWeBuild.map((deliverable) => (
                       <div 
                         key={deliverable}
                         className={cn(
@@ -216,7 +295,7 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                     Business Impact
                   </h4>
                   <div className="space-y-2">
-                    {servicesExplorerData[activeIndex].businessImpact.map((outcome) => (
+                    {activeData.businessImpact.map((outcome) => (
                       <div 
                         key={outcome}
                         className={cn(
@@ -239,7 +318,7 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                   Technologies & Ecosystem
                 </h4>
                 <div className="flex flex-wrap gap-2">
-                  {servicesExplorerData[activeIndex].techEcosystem.map((tech) => (
+                  {activeData.techEcosystem.map((tech) => (
                     <span
                       key={tech}
                       className={cn(
@@ -261,7 +340,7 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                   Typical Engagements
                 </h4>
                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 list-none p-0 m-0">
-                  {servicesExplorerData[activeIndex].typicalEngagements.map((scenario) => (
+                  {activeData.typicalEngagements.map((scenario) => (
                     <li key={scenario} className="flex items-center gap-2 text-xs font-medium">
                       <span className={cn("w-1.5 h-1.5 rounded-full", accentText)} />
                       <span className={textSecondary}>{scenario}</span>
@@ -284,19 +363,19 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                 <div>
                   <span className={textMuted}>Timeline</span>
                   <span className={cn("block font-bold mt-1 text-[10px] sm:text-[11px]", textPrimary)}>
-                    {servicesExplorerData[activeIndex].timeline}
+                    {activeData.timeline}
                   </span>
                 </div>
                 <div className={cn("border-x", isDark ? "border-[#23262D]" : "border-slate-200")}>
                   <span className={textMuted}>Engagement Model</span>
                   <span className={cn("block font-bold mt-1 text-[10px] sm:text-[11px] truncate px-1", textPrimary)}>
-                    {servicesExplorerData[activeIndex].engagementModel}
+                    {activeData.engagementModel}
                   </span>
                 </div>
                 <div>
                   <span className={textMuted}>Support</span>
                   <span className={cn("block font-bold mt-1 text-[10px] sm:text-[11px]", textPrimary)}>
-                    {servicesExplorerData[activeIndex].support}
+                    {activeData.support}
                   </span>
                 </div>
               </div>
@@ -321,7 +400,7 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                       Case Study
                     </span>
                     <h4 className={cn("text-sm font-black tracking-tight group-hover:underline", textPrimary)}>
-                      {servicesExplorerData[activeIndex].caseStudyHook}
+                      {activeData.caseStudyHook}
                     </h4>
                   </div>
                   <div 
@@ -344,8 +423,10 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
 
         {/* Mobile Accordion Drawer Layout (under lg) */}
         <div className="lg:hidden space-y-4">
-          {servicesExplorerData.map((item, idx) => {
-            const IconComp = categoryIcons[item.category] || Layers;
+          {servicesList.map((service, idx) => {
+            const item = mapServiceToExplorerItem(service);
+            if (!item) return null;
+            const IconComp = getLucideIcon(item.icon, Layers);
             const isOpen = expandedMobileIndex === idx;
 
             return (

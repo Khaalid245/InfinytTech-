@@ -23,6 +23,7 @@ The recent redesign focuses on:
 - An **evolved dark‑mode palette** that replaces neon yellow with a sophisticated gold/amber accent.
 - **Accessibility‑friendly** colour tokens and contrast ratios.
 - **Featured case‑study carousel** with a CSS‑driven progress bar and deep‑linking to project pages.
+- **Full Django CMS Integration** for dynamically loading and rendering all Portfolio, Services, Industry Taxonomy, Workflow Process Steps, and FAQ data.
 
 ---
 
@@ -30,6 +31,9 @@ The recent redesign focuses on:
 - **Responsive layout** built with React + TypeScript.
 - **Premium design system** (dark & light themes, CSS variables, micro‑animations).
 - **Hero section** with trust indicators, dual CTA buttons, and auto‑rotating case‑study showcase.
+- **Portfolio & Services CMS Integration**: All case studies, capabilities, industries, process timeline steps, and FAQs are loaded dynamically from the backend Django REST Framework APIs.
+- **Axios & TanStack Query (React Query) Caching**: Optimised data fetching layer in frontend.
+- **Dynamic Icon Resolver**: Maps CMS-configured icon strings directly to premium Lucide React SVG components.
 - **Portfolio deep‑linking** (`/work?project={id}`).
 - **Accessibility**: proper ARIA labels, focus‑trapping for modals, sufficient colour contrast.
 - **Performance optimisations**: lazy‑loaded images, CSS‑only animations, minimal external dependencies.

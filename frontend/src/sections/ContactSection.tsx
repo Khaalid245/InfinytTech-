@@ -11,6 +11,7 @@ import { Checkbox } from '../components/ui/Checkbox';
 import { Button } from '../components/ui/Button';
 import { FormWrapper } from '../components/ui/FormWrapper';
 import { cn } from '../utils/cn';
+import { submitLead } from '../services/leads.service';
 
 export interface OfficeLocation {
   city: string;
@@ -53,6 +54,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const serviceOptions = [
     { value: 'design', label: 'Product & Experience Design' },
@@ -76,19 +78,44 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
     setIsSubmitting(true);
-    // Simulate API Submission
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setSubmitError(null);
+
+    const nameParts = formData.name.trim().split(/\s+/);
+    const first_name = nameParts[0] || 'Anonymous';
+    const last_name = nameParts.slice(1).join(' ') || 'Lead';
+    const project_type = serviceOptions.find(o => o.value === formData.service)?.label || formData.service;
+
+    try {
+      await submitLead({
+        first_name,
+        last_name,
+        email: formData.email,
+        message: formData.message,
+        project_type,
+        source: 'Contact Form'
+      });
       setIsSubmitted(true);
       if (onSubmitSuccess) {
         onSubmitSuccess({ ...formData, privacy: String(formData.privacy) });
       }
-    }, 1500);
+    } catch (err: any) {
+      console.error(err);
+      if (err.response?.status === 429) {
+        setSubmitError('Too many submissions. Please try again in an hour.');
+      } else {
+        setSubmitError(
+          err.response?.data?.message ||
+          'Failed to send inquiry. Please check your connection and try again.'
+        );
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -252,6 +279,12 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                   onChange={handleCheckboxChange}
                   error={errors.privacy}
                 />
+
+                {submitError && (
+                  <div className="p-3.5 rounded-lg border border-red-500/20 bg-red-500/05 text-red-500 text-xs font-medium text-center">
+                    {submitError}
+                  </div>
+                )}
 
                 <Button
                   type="submit"

@@ -26,8 +26,6 @@ export const PortfolioProcessTrustSection: React.FC<PortfolioProcessTrustProps> 
 
   const gold    = '#D4A017';
   const bg      = isDark ? 'bg-[#0B0D0F]'  : 'bg-[#F8FAFC]';
-  const cardBg  = isDark ? 'bg-[#121417]'  : 'bg-[#FFFFFF]';
-  const border  = isDark ? 'border-[#23262D]' : 'border-[#E2E8F0]';
   const textPri = isDark ? 'text-[#F8FAFC]'     : 'text-[#0F172A]';
   const textSec = isDark ? 'text-[#94A3B8]' : 'text-[#475569]';
 
@@ -63,7 +61,7 @@ export const PortfolioProcessTrustSection: React.FC<PortfolioProcessTrustProps> 
             style={{ backgroundColor: isDark ? '#23262D' : '#E2E8F0' }}
           />
 
-          {PROCESS_STEPS.map((step, idx) => (
+          {PROCESS_STEPS.map((step) => (
             <div key={step.title} className="relative z-10 flex flex-col items-start p-4">
               {/* Step indicator */}
               <div

@@ -1,24 +1,41 @@
 from rest_framework import serializers
-from .models import Inquiry
+from .models import Lead
 
 
-class InquiryCreateSerializer(serializers.ModelSerializer):
-    """Public form submission — maps frontend field names to model fields."""
-    name = serializers.CharField(source='full_name', max_length=150)
-    service = serializers.CharField(source='service_interest', max_length=100, required=False, allow_blank=True)
-
+class LeadCreateSerializer(serializers.ModelSerializer):
+    """
+    Public lead submission serializer.
+    Only exposes input fields required for contact form submission.
+    """
     class Meta:
-        model = Inquiry
-        fields = ('id', 'name', 'email', 'company', 'service', 'message')
-        read_only_fields = ('id',)
-
-
-class InquiryAdminSerializer(serializers.ModelSerializer):
-    """Full serializer for admin — all fields, internal naming."""
-    class Meta:
-        model = Inquiry
+        model = Lead
         fields = (
-            'id', 'full_name', 'email', 'phone', 'company',
-            'service_interest', 'subject', 'message', 'status', 'created_at',
+            'id', 'first_name', 'last_name', 'email', 'phone', 
+            'company', 'country', 'project_type', 'budget_range', 
+            'message', 'source', 'created_at'
         )
         read_only_fields = ('id', 'created_at')
+
+    def validate_email(self, value):
+        # Perform basic email validation (can be expanded if needed)
+        if not value:
+            raise serializers.ValidationError("Email is required.")
+        return value.lower()
+
+
+class LeadAdminSerializer(serializers.ModelSerializer):
+    """
+    Full Lead serializer for Admin CRUD operations.
+    Includes status workflow management, staff assignments, and internal notes.
+    """
+    assigned_to_email = serializers.EmailField(source='assigned_to.email', read_only=True)
+
+    class Meta:
+        model = Lead
+        fields = (
+            'id', 'first_name', 'last_name', 'email', 'phone', 
+            'company', 'country', 'project_type', 'budget_range', 
+            'message', 'source', 'status', 'assigned_to', 
+            'assigned_to_email', 'notes', 'created_at', 'updated_at'
+        )
+        read_only_fields = ('id', 'created_at', 'updated_at', 'assigned_to_email')

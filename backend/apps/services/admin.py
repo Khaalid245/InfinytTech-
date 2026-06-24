@@ -13,7 +13,7 @@ class FAQAdminForm(forms.ModelForm):
 
     class Meta:
         model = FAQ
-        fields = '__all__'
+        exclude = ('answer_bullets',)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,12 +23,13 @@ class FAQAdminForm(forms.ModelForm):
             else:
                 self.initial['answer_bullets_text'] = str(self.instance.answer_bullets)
 
-    def clean(self):
-        cleaned_data = super().clean()
-        bullets_text = cleaned_data.get('answer_bullets_text', '')
-        bullets_list = [line.strip() for line in bullets_text.split('\n') if line.strip()]
-        cleaned_data['answer_bullets'] = bullets_list
-        return cleaned_data
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        bullets_text = self.cleaned_data.get('answer_bullets_text', '')
+        instance.answer_bullets = [line.strip() for line in bullets_text.split('\n') if line.strip()]
+        if commit:
+            instance.save()
+        return instance
 
 
 class ProcessStepAdminForm(forms.ModelForm):
@@ -47,7 +48,7 @@ class ProcessStepAdminForm(forms.ModelForm):
 
     class Meta:
         model = ProcessStep
-        fields = '__all__'
+        exclude = ('deliverables', 'outcomes')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -62,14 +63,15 @@ class ProcessStepAdminForm(forms.ModelForm):
             else:
                 self.initial['outcomes_text'] = str(self.instance.outcomes or '')
 
-    def clean(self):
-        cleaned_data = super().clean()
-        del_text = cleaned_data.get('deliverables_text', '')
-        out_text = cleaned_data.get('outcomes_text', '')
-        
-        cleaned_data['deliverables'] = [line.strip() for line in del_text.split('\n') if line.strip()]
-        cleaned_data['outcomes'] = [line.strip() for line in out_text.split('\n') if line.strip()]
-        return cleaned_data
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        del_text = self.cleaned_data.get('deliverables_text', '')
+        out_text = self.cleaned_data.get('outcomes_text', '')
+        instance.deliverables = [line.strip() for line in del_text.split('\n') if line.strip()]
+        instance.outcomes = [line.strip() for line in out_text.split('\n') if line.strip()]
+        if commit:
+            instance.save()
+        return instance
 
 
 class ServiceFeatureInline(admin.TabularInline):

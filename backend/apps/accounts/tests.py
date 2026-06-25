@@ -10,7 +10,8 @@ class AuthTests(TestCase):
         self.user = User.objects.create_user(
             email='test@example.com',
             password='testpass123',
-            full_name='Test User'
+            first_name='Test',
+            last_name='User'
         )
 
     def test_login_success(self):
@@ -19,14 +20,14 @@ class AuthTests(TestCase):
             'password': 'testpass123'
         })
         self.assertEqual(res.status_code, 200)
-        self.assertIn('access', res.data['data'])
+        self.assertIn('access', res.data)
 
     def test_login_invalid_credentials(self):
         res = self.client.post(reverse('auth-login'), {
             'email': 'test@example.com',
             'password': 'wrongpass'
         })
-        self.assertEqual(res.status_code, 400)
+        self.assertEqual(res.status_code, 401)
 
     def test_me_requires_auth(self):
         res = self.client.get(reverse('auth-me'))
@@ -36,4 +37,5 @@ class AuthTests(TestCase):
         self.client.force_authenticate(user=self.user)
         res = self.client.get(reverse('auth-me'))
         self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.data['data']['email'], self.user.email)
+        self.assertEqual(res.data['email'], self.user.email)
+

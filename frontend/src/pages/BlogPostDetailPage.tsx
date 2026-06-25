@@ -13,6 +13,7 @@ import BlogCard from '../components/ui/BlogCard';
 import { useBlogPost, useBlogPosts } from '../hooks/useBlog';
 import { Link2, ArrowLeft } from 'lucide-react';
 import { cn } from '../utils/cn';
+import { resolveImageUrl } from '../utils/imageHelper';
 
 const Twitter: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -81,7 +82,7 @@ export default function BlogPostDetailPage({ theme }: BlogPostDetailPageProps) {
     const originalDesc = metaDescEl ? metaDescEl.getAttribute('content') : '';
 
     // Update with post specific metadata (fallbacks if empty)
-    document.title = post.seo_title || `${post.title} | InfinytTech Insights`;
+    document.title = post.seo_title || `${post.title} | InfinytTech Blog`;
     if (metaDescEl) {
       metaDescEl.setAttribute('content', post.seo_description || post.excerpt);
     }
@@ -122,8 +123,8 @@ export default function BlogPostDetailPage({ theme }: BlogPostDetailPageProps) {
           <Text variant="body" className="text-secondary-text">
             The article you are looking for does not exist, has been archived, or was reverted to a draft.
           </Text>
-          <Link to="/insights">
-            <Button variant="primary" className="mt-4">Back to Insights</Button>
+          <Link to="/blog">
+            <Button variant="primary" className="mt-4">Back to Blog</Button>
           </Link>
         </Container>
       </div>
@@ -154,11 +155,11 @@ export default function BlogPostDetailPage({ theme }: BlogPostDetailPageProps) {
       <Container size="sm">
         {/* Back Link */}
         <Link
-          to="/insights"
+          to="/blog"
           className="inline-flex items-center gap-2 text-small font-medium text-secondary-text hover:text-primary-text transition-colors mb-12"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Insights
+          Back to Blog
         </Link>
 
         {/* Article Metadata Header */}
@@ -201,7 +202,7 @@ export default function BlogPostDetailPage({ theme }: BlogPostDetailPageProps) {
           {post.featured_image && (
             <div className="aspect-video w-full overflow-hidden rounded-xl bg-surface-light border border-border-primary">
               <img
-                src={post.featured_image}
+                src={resolveImageUrl(post.featured_image)}
                 alt={post.title}
                 loading="eager"
                 className="w-full h-full object-cover"
@@ -221,7 +222,7 @@ export default function BlogPostDetailPage({ theme }: BlogPostDetailPageProps) {
               {post.tags.map((tag) => (
                 <Link
                   key={tag.id}
-                  to={`/insights?tag=${tag.slug}`}
+                  to={`/blog?tag=${tag.slug}`}
                   className={cn(
                     'px-3 py-1 rounded-md text-caption font-medium border transition-colors',
                     isDark
@@ -279,7 +280,7 @@ export default function BlogPostDetailPage({ theme }: BlogPostDetailPageProps) {
             <div>
               {prevPost && (
                 <Link
-                  to={`/insights/${prevPost.slug}`}
+                  to={`/blog/${prevPost.slug}`}
                   className="flex flex-col text-left group gap-1"
                 >
                   <span className="text-caption text-secondary-text font-semibold uppercase tracking-wider">&larr; Previous</span>
@@ -292,7 +293,7 @@ export default function BlogPostDetailPage({ theme }: BlogPostDetailPageProps) {
             <div className="text-right">
               {nextPost && (
                 <Link
-                  to={`/insights/${nextPost.slug}`}
+                  to={`/blog/${nextPost.slug}`}
                   className="flex flex-col text-right group gap-1"
                 >
                   <span className="text-caption text-secondary-text font-semibold uppercase tracking-wider">Next &rarr;</span>
@@ -313,15 +314,15 @@ export default function BlogPostDetailPage({ theme }: BlogPostDetailPageProps) {
             </Heading>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {relatedPosts.map((rPost) => (
-                <Link to={`/insights/${rPost.slug}`} key={rPost.id} className="block h-full">
+                <Link to={`/blog/${rPost.slug}`} key={rPost.id} className="block h-full">
                   <BlogCard
                     title={rPost.title}
                     excerpt={rPost.excerpt}
                     date={formatDate(rPost.published_at)}
                     readTime={`${rPost.reading_time} min read`}
-                    imageUrl={rPost.featured_image || undefined}
+                    imageUrl={resolveImageUrl(rPost.featured_image)}
                     category={rPost.category?.name}
-                    href={`/insights/${rPost.slug}`}
+                    href={`/blog/${rPost.slug}`}
                     className="h-full"
                   />
                 </Link>

@@ -13,6 +13,7 @@ import EmptyState from '../components/ui/EmptyState';
 import { useBlogCategories, useBlogTags, useBlogPosts } from '../hooks/useBlog';
 import { Search } from 'lucide-react';
 import { cn } from '../utils/cn';
+import { resolveImageUrl } from '../utils/imageHelper';
 
 interface InsightsPageProps {
   theme: 'dark' | 'light';
@@ -225,7 +226,7 @@ export default function InsightsPage({ theme }: InsightsPageProps) {
         {/* Featured Post Showcase */}
         {featuredPost && (
           <div className="mb-16 group">
-            <Link to={`/insights/${featuredPost.slug}`}>
+            <Link to={`/blog/${featuredPost.slug}`}>
               <div className={cn(
                 'grid grid-cols-1 lg:grid-cols-12 gap-8 p-6 md:p-8 rounded-2xl border transition-all duration-300',
                 isDark
@@ -235,7 +236,7 @@ export default function InsightsPage({ theme }: InsightsPageProps) {
                 <div className="lg:col-span-7 aspect-video lg:aspect-auto w-full overflow-hidden rounded-xl bg-surface-light border border-border-primary relative">
                   {featuredPost.featured_image ? (
                     <img
-                      src={featuredPost.featured_image}
+                      src={resolveImageUrl(featuredPost.featured_image)}
                       alt={featuredPost.title}
                       loading="eager"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-101"
@@ -319,15 +320,15 @@ export default function InsightsPage({ theme }: InsightsPageProps) {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {displayPosts.map((post) => (
-              <Link to={`/insights/${post.slug}`} key={post.id} className="block h-full">
+              <Link to={`/blog/${post.slug}`} key={post.id} className="block h-full">
                 <BlogCard
                   title={post.title}
                   excerpt={post.excerpt}
                   date={formatDate(post.published_at)}
                   readTime={`${post.reading_time} min read`}
-                  imageUrl={post.featured_image || undefined}
+                  imageUrl={resolveImageUrl(post.featured_image)}
                   category={post.category?.name}
-                  href={`/insights/${post.slug}`}
+                  href={`/blog/${post.slug}`}
                   className="h-full"
                 />
               </Link>

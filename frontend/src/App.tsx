@@ -48,6 +48,7 @@ import WorkPage from './pages/WorkPage';
 import InsightsPage from './pages/InsightsPage';
 import BlogPostDetailPage from './pages/BlogPostDetailPage';
 import { useBlogPosts } from './hooks/useBlog';
+import { resolveImageUrl } from './utils/imageHelper';
 
 // Constants & Data
 import { SITE_INFO } from './constants';
@@ -96,7 +97,7 @@ const ShowcaseBlogGrid: React.FC = () => {
           excerpt={post.excerpt}
           date={post.published_at ? new Date(post.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Draft'}
           readTime={`${post.reading_time} min read`}
-          imageUrl={post.featured_image || undefined}
+          imageUrl={resolveImageUrl(post.featured_image)}
           category={post.category?.name}
         />
       ))}
@@ -482,7 +483,7 @@ const RecentInsights: React.FC<{ theme: 'dark' | 'light' }> = ({ theme }) => {
               Recent writing from our team.
             </Heading>
           </div>
-          <Link to="/insights">
+          <Link to="/blog">
             <Button variant="secondary" className="py-2.5">
               View All Articles &rarr;
             </Button>
@@ -511,15 +512,15 @@ const RecentInsights: React.FC<{ theme: 'dark' | 'light' }> = ({ theme }) => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {posts.map((post) => (
-              <Link to={`/insights/${post.slug}`} key={post.id} className="block h-full">
+              <Link to={`/blog/${post.slug}`} key={post.id} className="block h-full">
                 <BlogCard
                   title={post.title}
                   excerpt={post.excerpt}
                   date={formatDate(post.published_at)}
                   readTime={`${post.reading_time} min read`}
-                  imageUrl={post.featured_image || undefined}
+                  imageUrl={resolveImageUrl(post.featured_image)}
                   category={post.category?.name}
-                  href={`/insights/${post.slug}`}
+                  href={`/blog/${post.slug}`}
                   className="h-full"
                 />
               </Link>
@@ -583,6 +584,8 @@ export const App: React.FC = () => {
           <Route path="/services" element={<ServicesPage theme={theme} />} />
           <Route path="/work" element={<WorkPage theme={theme} />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/blog" element={<InsightsPage theme={theme} />} />
+          <Route path="/blog/:slug" element={<BlogPostDetailPage theme={theme} />} />
           <Route path="/insights" element={<InsightsPage theme={theme} />} />
           <Route path="/insights/:slug" element={<BlogPostDetailPage theme={theme} />} />
           <Route path="/showcase" element={<Showcase />} />

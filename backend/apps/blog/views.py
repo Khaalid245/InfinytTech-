@@ -99,7 +99,7 @@ class PublicPostListView(APIView):
 
         paginator = StandardPagination()
         page = paginator.paginate_queryset(qs, request)
-        serializer = BlogPostListSerializer(page, many=True)
+        serializer = BlogPostListSerializer(page, many=True, context={'request': request})
         return paginator.get_paginated_response(serializer.data)
 
 
@@ -118,7 +118,7 @@ class PublicPostDetailView(APIView):
             slug=slug,
             status=BlogPost.StatusChoices.PUBLISHED
         )
-        serializer = BlogPostDetailSerializer(post)
+        serializer = BlogPostDetailSerializer(post, context={'request': request})
         return api_response(data=serializer.data)
 
 

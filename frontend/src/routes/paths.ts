@@ -4,8 +4,9 @@ export const PATHS = {
   WORK: '/work',
   PROCESS: '/process',
   ABOUT: '/about',
-  INSIGHTS: '/insights',
+  INSIGHTS: '/blog',
   CONTACT: '/contact',
 } as const;
 
 export type PathType = typeof PATHS[keyof typeof PATHS];
+

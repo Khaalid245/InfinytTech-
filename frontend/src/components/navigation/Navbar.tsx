@@ -18,7 +18,7 @@ const NAV_ITEMS = [
   { label: 'Services', href: '/services', id: 'services', sectionId: undefined },
   { label: 'Portfolio', href: '/work', id: 'portfolio', sectionId: undefined },
   { label: 'About', href: '/about', id: 'about', sectionId: undefined },
-  { label: 'Blog', href: '/insights', id: 'blog', sectionId: 'blog' },
+  { label: 'Blog', href: '/insights', id: 'blog', sectionId: undefined },
   { label: 'Contact', href: '/contact', id: 'contact', sectionId: undefined },
 ] as const;
 
@@ -126,7 +126,6 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
     const pathRouteMap: Record<string, string> = {
       '/': 'hero',
       '/process': 'process',
-      '/insights': 'blog',
     };
 
     const targetSectionId = pathRouteMap[path];

@@ -4,6 +4,7 @@ import { Section } from '../components/layout/Section';
 import { Heading } from '../components/ui/Heading';
 import { Text } from '../components/ui/Text';
 import { cn } from '../utils/cn';
+import { Image } from '../components/ui/Image';
 
 export interface AboutFeature {
   label: string;
@@ -49,11 +50,10 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
               isLeft ? 'lg:order-1' : 'lg:order-2'
             )}>
               <div className="w-full aspect-4/3 bg-surface-light border border-border-primary rounded-xl overflow-hidden shadow-elegant">
-                <img
+                <Image
                   src={imageUrl}
                   alt={title}
-                  className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
-                  loading="lazy"
+                  className="w-full h-full grayscale hover:grayscale-0 transition-all duration-700"
                 />
               </div>
             </div>

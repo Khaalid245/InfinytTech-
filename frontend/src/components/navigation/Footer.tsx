@@ -5,9 +5,11 @@ import { Container } from '../layout/Container';
 import { Text } from '../ui/Text';
 import { Logo } from '../ui/Logo';
 import { SITE_INFO, SOCIAL_LINKS, FOOTER_LINKS } from '../../constants';
+import { useSiteSettings } from '../../hooks/useSiteSettings';
 
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
+  const { data: settings } = useSiteSettings();
 
   return (
     <footer className="w-full bg-surface-light border-t border-border-primary pt-16 pb-8">
@@ -26,7 +28,7 @@ export const Footer: React.FC = () => {
               variant="body"
               className="max-w-xs text-secondary-text text-small leading-relaxed"
             >
-              {SITE_INFO.description}
+              {settings?.footer_description || SITE_INFO.description}
             </Text>
           </div>
 
@@ -63,33 +65,49 @@ export const Footer: React.FC = () => {
             variant="caption"
             className="text-[10px] text-secondary-text tracking-wider uppercase font-semibold"
           >
-            © {currentYear} {SITE_INFO.name}. All rights reserved.
+            © {currentYear} {settings?.company_name || SITE_INFO.name}. {settings?.copyright_text || 'All rights reserved.'}
           </Text>
           <div className="flex items-center gap-6">
-            <a
-              href={SOCIAL_LINKS.twitter}
-              target="_blank; noreferrer"
-              rel="noopener noreferrer"
-              className="text-caption text-secondary-text hover:text-brand-gold transition-colors uppercase tracking-wider font-semibold"
-            >
-              Twitter
-            </a>
-            <a
-              href={SOCIAL_LINKS.linkedin}
-              target="_blank; noreferrer"
-              rel="noopener noreferrer"
-              className="text-caption text-secondary-text hover:text-brand-gold transition-colors uppercase tracking-wider font-semibold"
-            >
-              LinkedIn
-            </a>
-            <a
-              href={SOCIAL_LINKS.github}
-              target="_blank; noreferrer"
-              rel="noopener noreferrer"
-              className="text-caption text-secondary-text hover:text-brand-gold transition-colors uppercase tracking-wider font-semibold"
-            >
-              GitHub
-            </a>
+            {settings?.social_links && settings.social_links.length > 0 ? (
+              settings.social_links.map(link => (
+                <a
+                  key={link.platform}
+                  href={link.url}
+                  target="_blank; noreferrer"
+                  rel="noopener noreferrer"
+                  className="text-caption text-secondary-text hover:text-brand-gold transition-colors uppercase tracking-wider font-semibold"
+                >
+                  {link.platform}
+                </a>
+              ))
+            ) : (
+              <>
+                <a
+                  href={SOCIAL_LINKS.twitter}
+                  target="_blank; noreferrer"
+                  rel="noopener noreferrer"
+                  className="text-caption text-secondary-text hover:text-brand-gold transition-colors uppercase tracking-wider font-semibold"
+                >
+                  Twitter
+                </a>
+                <a
+                  href={SOCIAL_LINKS.linkedin}
+                  target="_blank; noreferrer"
+                  rel="noopener noreferrer"
+                  className="text-caption text-secondary-text hover:text-brand-gold transition-colors uppercase tracking-wider font-semibold"
+                >
+                  LinkedIn
+                </a>
+                <a
+                  href={SOCIAL_LINKS.github}
+                  target="_blank; noreferrer"
+                  rel="noopener noreferrer"
+                  className="text-caption text-secondary-text hover:text-brand-gold transition-colors uppercase tracking-wider font-semibold"
+                >
+                  GitHub
+                </a>
+              </>
+            )}
           </div>
         </div>
       </Container>

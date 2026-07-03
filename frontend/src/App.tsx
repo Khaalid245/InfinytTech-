@@ -25,6 +25,8 @@ import LoadingState from './components/ui/LoadingState';
 import PageLayout from './components/layout/PageLayout';
 import Container from './components/layout/Container';
 import { useEffect } from 'react';
+import { FadeUp } from './components/animation/FadeUp';
+import { StaggerContainer, StaggerItem } from './components/animation/StaggerContainer';
 
 // Sections
 import HeroSection from './sections/HeroSection';
@@ -38,6 +40,8 @@ import ServicesSection from './sections/ServicesSection';
 import ProcessSection from './sections/ProcessSection';
 import AboutSection from './sections/AboutSection';
 import TestimonialSection from './sections/TestimonialSection';
+import { GlobalSEO } from './components/seo/GlobalSEO';
+import ClientLogosSection from './sections/ClientLogosSection';
 import InteractiveCtaSection from './sections/InteractiveCtaSection';
 import ContactSection from './sections/ContactSection';
 import CTASection from './sections/CTASection';
@@ -51,12 +55,10 @@ import { useBlogPosts } from './hooks/useBlog';
 import { resolveImageUrl } from './utils/imageHelper';
 
 // Constants & Data
-import { SITE_INFO } from './constants';
 import {
   dummyServices,
   dummyCaseStudies,
   dummySteps,
-  dummyTestimonials,
 } from './data/mockData';
 
 const ShowcaseBlogGrid: React.FC = () => {
@@ -424,13 +426,7 @@ const Showcase: React.FC = () => {
           />
 
           {/* E. Testimonial Section */}
-          <TestimonialSection
-            tagline="Testimonials"
-            title="Trusted by technology leaders."
-            subtitle="Read how our frontend engineering architecture helps teams build products faster with bulletproof reliability."
-            testimonials={dummyTestimonials}
-            background="light"
-          />
+          <TestimonialSection background="light" />
 
           {/* F. CTA Section */}
           <CTASection
@@ -448,7 +444,8 @@ const Showcase: React.FC = () => {
             tagline="Contact Us"
             title="Partner with InfinytTech"
             subtitle="Have questions about code quality, setup timelines, or project budgeting? Write to our core team in London or Zurich."
-            locations={SITE_INFO.locations}
+            // Fallback to SITE_INFO.locations handled in ContactSection if needed
+            locations={[]} 
           />
         </div>
       )}
@@ -510,10 +507,11 @@ const RecentInsights: React.FC<{ theme: 'dark' | 'light' }> = ({ theme }) => {
             <Text variant="body" className="text-secondary-text">No articles published yet.</Text>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {posts.map((post) => (
-              <Link to={`/blog/${post.slug}`} key={post.id} className="block h-full">
-                <BlogCard
+              <StaggerItem key={post.id}>
+                <Link to={`/blog/${post.slug}`} className="block h-full">
+                  <BlogCard
                   title={post.title}
                   excerpt={post.excerpt}
                   date={formatDate(post.published_at)}
@@ -523,46 +521,74 @@ const RecentInsights: React.FC<{ theme: 'dark' | 'light' }> = ({ theme }) => {
                   href={`/blog/${post.slug}`}
                   className="h-full"
                 />
-              </Link>
+                </Link>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         )}
       </Container>
     </section>
   );
 };
 
-// ── Home page: hero first, then remaining sections ──────────────────────────
 const HomePage: FC<{ theme: 'dark' | 'light' }> = ({ theme }) => (
   <div>
-    <div id="hero">
-      <HeroSection theme={theme} />
-    </div>
-    <div id="services">
-      <ServiceExplorer theme={theme} />
-    </div>
-    <div id="portfolio">
-      <FeaturedCaseStudies theme={theme} />
-    </div>
-    <div id="process">
-      <WorkflowTimeline theme={theme} />
-    </div>
-    <WhyChooseUs theme={theme} />
-    <div id="tech-stack">
-      <TechStackSection theme={theme} />
-    </div>
-    <InteractiveCtaSection theme={theme} />
-    <div id="blog">
-      <RecentInsights theme={theme} />
-    </div>
-    <div id="contact">
-      <ContactSection
-        tagline="Contact Us"
-        title="Partner with InfinytTech"
-        subtitle="Have questions about timelines or budgeting? Write to our core team."
-        locations={SITE_INFO.locations}
-      />
-    </div>
+    <FadeUp viewportAmount={0} duration={0.8}>
+      <div id="hero">
+        <HeroSection theme={theme} />
+      </div>
+    </FadeUp>
+    <FadeUp viewportAmount={0.2} delay={0.1}>
+      <div id="clients">
+        <ClientLogosSection theme={theme} />
+      </div>
+    </FadeUp>
+    <FadeUp viewportAmount={0.1}>
+      <div id="services">
+        <ServiceExplorer theme={theme} />
+      </div>
+    </FadeUp>
+    <FadeUp viewportAmount={0.1}>
+      <div id="portfolio">
+        <FeaturedCaseStudies theme={theme} />
+      </div>
+    </FadeUp>
+    <FadeUp viewportAmount={0.1}>
+      <div id="process">
+        <WorkflowTimeline theme={theme} />
+      </div>
+    </FadeUp>
+    <FadeUp viewportAmount={0.1}>
+      <WhyChooseUs theme={theme} />
+    </FadeUp>
+    <FadeUp viewportAmount={0.1}>
+      <div id="testimonials">
+        <TestimonialSection background={theme === 'dark' ? 'primary' : 'light'} />
+      </div>
+    </FadeUp>
+    <FadeUp viewportAmount={0.1}>
+      <div id="tech-stack">
+        <TechStackSection theme={theme} />
+      </div>
+    </FadeUp>
+    <FadeUp viewportAmount={0.1}>
+      <InteractiveCtaSection theme={theme} />
+    </FadeUp>
+    <FadeUp viewportAmount={0.1}>
+      <div id="blog">
+        <RecentInsights theme={theme} />
+      </div>
+    </FadeUp>
+    <FadeUp viewportAmount={0.1}>
+      <div id="contact">
+        <ContactSection
+          tagline="Contact Us"
+          title="Partner with InfinytTech"
+          subtitle="Have questions about timelines or budgeting? Write to our core team."
+          locations={[]}
+        />
+      </div>
+    </FadeUp>
   </div>
 );
 
@@ -577,6 +603,7 @@ export const App: React.FC = () => {
 
   return (
     <Router>
+      <GlobalSEO />
       <PageLayout theme={theme} onThemeToggle={handleThemeToggle}>
         <Routes>
           <Route path="/" element={<HomePage theme={theme} />} />

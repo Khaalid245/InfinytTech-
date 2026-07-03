@@ -12,6 +12,8 @@ import { Button } from '../components/ui/Button';
 import { FormWrapper } from '../components/ui/FormWrapper';
 import { cn } from '../utils/cn';
 import { submitLead } from '../services/leads.service';
+import { useSiteSettings } from '../hooks/useSiteSettings';
+import { SITE_INFO } from '../constants';
 
 export interface OfficeLocation {
   city: string;
@@ -62,6 +64,19 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
     { value: 'strategy', label: 'Product Strategy & Consulting' },
     { value: 'ai', label: 'Artificial Intelligence' },
   ];
+
+  const { data: settings } = useSiteSettings();
+
+  const finalLocations = locations.length > 0 
+    ? locations 
+    : (settings?.office_locations?.length 
+        ? settings.office_locations.map(loc => ({
+            city: loc.city,
+            address: loc.address.split('\n'),
+            email: loc.email,
+            phone: loc.phone,
+          }))
+        : (SITE_INFO.locations as readonly OfficeLocation[]));
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -167,9 +182,9 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
             </div>
 
             {/* Offices details list */}
-            {locations.length > 0 && (
+            {finalLocations.length > 0 && (
               <div className="space-y-8 w-full">
-                {locations.map((loc, idx) => (
+                {finalLocations.map((loc, idx) => (
                   <div key={idx} className="space-y-3 border-t border-border-primary pt-6">
                     <span className="block text-small font-semibold text-primary-text uppercase tracking-wider font-sans">
                       {loc.city}

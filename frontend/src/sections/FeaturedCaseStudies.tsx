@@ -4,6 +4,8 @@ import { cn } from '../utils/cn';
 import { X } from 'lucide-react';
 import { useProjects, useCategories, useProjectDetail } from '../hooks/usePortfolio';
 import type { ProjectListItem } from '../types/portfolio';
+import { StaggerContainer, StaggerItem } from '../components/animation/StaggerContainer';
+import { Image } from '../components/ui/Image';
 
 interface FeaturedCaseStudiesProps {
   theme: 'dark' | 'light';
@@ -221,27 +223,28 @@ export const FeaturedCaseStudies: React.FC<FeaturedCaseStudiesProps> = ({ theme 
               <p className="font-semibold" style={{ color: sub }}>No portfolio projects available yet.</p>
             </div>
           ) : (
-            <div
+            <StaggerContainer
               className={cn(
                 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 transition-all duration-300',
                 visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
               )}
             >
               {filtered.map(project => (
-                <CaseStudyCard
-                  key={project.id}
-                  project={project}
-                  isDark={isDark}
-                  accent={accent}
-                  cardBg={cardBg}
-                  border={border}
-                  primary={primary}
-                  sub={sub}
-                  dim={dim}
-                  onClick={() => setSelectedSlug(project.slug)}
-                />
+                <StaggerItem key={project.id}>
+                  <CaseStudyCard
+                    project={project}
+                    isDark={isDark}
+                    accent={accent}
+                    cardBg={cardBg}
+                    border={border}
+                    primary={primary}
+                    sub={sub}
+                    dim={dim}
+                    onClick={() => setSelectedSlug(project.slug)}
+                  />
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
           )}
         </div>
       </section>
@@ -338,14 +341,13 @@ const CaseStudyCard: React.FC<CardProps> = ({
         )}
 
         {project.featured_image ? (
-          <img
+          <Image
             src={project.featured_image}
             alt={project.title}
             className={cn(
-              'w-full h-full object-cover transition-transform duration-500',
+              'w-full h-full transition-transform duration-500',
               hovered ? 'scale-103' : 'scale-100'
             )}
-            loading="lazy"
           />
         ) : (
           <div
@@ -601,10 +603,10 @@ const CaseStudyModal: React.FC<ModalProps> = ({
             <div className="h-56 w-full overflow-hidden border-b relative flex-shrink-0" style={{ borderColor: border }}>
               {project.featured_image ? (
                 <>
-                  <img
+                  <Image
                     src={project.featured_image}
                     alt={project.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent pointer-events-none" />
                 </>
@@ -807,11 +809,10 @@ const CaseStudyModal: React.FC<ModalProps> = ({
                         className="group relative rounded-xl overflow-hidden border cursor-pointer aspect-video"
                         style={{ borderColor: border }}
                       >
-                        <img
+                        <Image
                           src={img.image}
                           alt={img.caption || project.title}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                          loading="lazy"
+                          className="w-full h-full cursor-pointer hover:opacity-90 transition-opacity"
                         />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
                           <span className="text-white text-xs font-bold px-3 py-1.5 bg-black/60 rounded-full">
@@ -879,10 +880,10 @@ const CaseStudyModal: React.FC<ModalProps> = ({
                 >
                   <X className="w-5 h-5" />
                 </button>
-                <img
+                <Image
                   src={activeLightboxImg}
-                  alt="Gallery Preview"
-                  className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
+                  alt="Expanded gallery image"
+                  className="max-w-full max-h-[85vh] rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
                 />
               </div>
             )}

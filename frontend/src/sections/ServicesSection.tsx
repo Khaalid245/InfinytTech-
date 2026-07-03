@@ -6,6 +6,7 @@ import { Text } from '../components/ui/Text';
 import { ServiceCard } from '../components/ui/ServiceCard';
 import type { ServiceCardProps } from '../components/ui/ServiceCard';
 import { cn } from '../utils/cn';
+import { StaggerContainer, StaggerItem } from '../components/animation/StaggerContainer';
 
 export interface ServicesSectionProps {
   tagline?: string;
@@ -63,14 +64,13 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
         </div>
 
         {/* Services Grid */}
-        <div className={cn('grid gap-8', gridCols[columns])}>
+        <StaggerContainer className={cn('grid gap-8', gridCols[columns])}>
           {services.map((service, index) => (
-            <ServiceCard
-              key={index}
-              {...service}
-            />
+            <StaggerItem key={index}>
+              <ServiceCard {...service} />
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </Container>
     </Section>
   );

@@ -3,6 +3,7 @@ import { Card } from './Card';
 import { Heading } from './Heading';
 import { Text } from './Text';
 import { Button } from './Button';
+import { Image } from './Image';
 
 export interface BlogCardProps {
   title: string;
@@ -34,11 +35,10 @@ export const BlogCard: React.FC<BlogCardProps> = ({
       >
         {imageUrl ? (
           <div className="relative aspect-video w-full overflow-hidden bg-surface-light border-b border-border-primary">
-            <img
+            <Image
               src={imageUrl}
               alt={title}
-              loading="lazy"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
+              className="w-full h-full transition-transform duration-500 group-hover:scale-102"
             />
           </div>
         ) : (

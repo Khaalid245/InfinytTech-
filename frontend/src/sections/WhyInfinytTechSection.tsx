@@ -9,6 +9,7 @@ import {
   Handshake,
   Check,
 } from 'lucide-react';
+import { useSiteSettings } from '../hooks/useSiteSettings';
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -176,6 +177,7 @@ interface WhyInfinytTechProps {
 export const WhyInfinytTechSection: React.FC<WhyInfinytTechProps> = ({ theme }) => {
   const isDark = theme === 'dark';
   const headerRef = useRef<HTMLDivElement>(null);
+  const { data: settings } = useSiteSettings();
 
   const gold          = '#D4A017';
   const bg            = isDark ? 'bg-[#0B0D0F]'  : 'bg-[#F8FAFC]';
@@ -279,10 +281,10 @@ export const WhyInfinytTechSection: React.FC<WhyInfinytTechProps> = ({ theme }) 
           style={{ borderColor: cardBorder }}
         >
           {[
-            { value: '40+',   label: 'Products Launched' },
-            { value: '98%',   label: 'On-Time Delivery' },
-            { value: '5',     label: 'Countries Served' },
-            { value: '3+ yr', label: 'Avg. Partnership Length' },
+            { value: `${settings?.completed_projects || 40}+`,   label: 'Products Launched' },
+            { value: `${settings?.happy_clients || 98}%`,   label: 'Client Satisfaction' },
+            { value: `${settings?.countries_served || 5}`,     label: 'Countries Served' },
+            { value: `${settings?.years_experience || 3}+ yr`, label: 'Avg. Partnership Length' },
           ].map((stat, i) => (
             <div
               key={stat.label}

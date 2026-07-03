@@ -16,7 +16,7 @@ export const Card: React.FC<CardProps> = ({
   children,
   ...props
 }) => {
-  const baseStyles = 'bg-primary-bg rounded-md transition-all duration-300';
+  const baseStyles = 'bg-primary-bg rounded-2xl transition-all duration-300';
   
   const variants = {
     flat: 'border border-transparent bg-surface-light',
@@ -25,9 +25,9 @@ export const Card: React.FC<CardProps> = ({
   };
 
   const hovers = {
-    flat: 'hover:bg-neutral-100/50',
-    outline: 'hover:border-primary-text hover:shadow-elegant',
-    elevation: 'hover:shadow-elegant-lg hover:-translate-y-0.5',
+    flat: 'hover:bg-neutral-100/50 dark:hover:bg-neutral-800/50 hover:-translate-y-1',
+    outline: 'hover:border-primary-text hover:shadow-elegant hover:-translate-y-1',
+    elevation: 'hover:shadow-elegant-lg hover:-translate-y-1',
   };
 
   const paddings = {

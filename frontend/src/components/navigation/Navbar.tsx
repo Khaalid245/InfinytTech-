@@ -231,7 +231,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
               'flex items-center select-none transition-all duration-200 active:scale-95 hover:opacity-80'
             )}
           >
-            <Logo className="h-8 md:h-9" />
+            <Logo className="h-8 md:h-9" theme={isDark ? 'dark' : 'light'} />
           </Link>
 
           {/* ── DESKTOP NAV ── */}
@@ -405,7 +405,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
               'flex items-center select-none transition-all duration-200 active:scale-95 hover:opacity-80'
             )}
           >
-            <Logo className="h-8" />
+            <Logo className="h-8" theme={isDark ? 'dark' : 'light'} />
           </Link>
 
           {/* Theme Switcher inside Drawer Header */}

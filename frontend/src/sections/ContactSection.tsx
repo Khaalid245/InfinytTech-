@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check } from 'lucide-react';
+import { Check, Mail, Phone, MapPin, MessageSquare, Map } from 'lucide-react';
 import { Container } from '../components/layout/Container';
 import { Section } from '../components/layout/Section';
 import { Heading } from '../components/ui/Heading';
@@ -65,7 +65,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
     { value: 'ai', label: 'Artificial Intelligence' },
   ];
 
-  const { data: settings } = useSiteSettings();
+  const { data: settings, isLoading } = useSiteSettings();
 
   const finalLocations = locations.length > 0 
     ? locations 
@@ -181,9 +181,104 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
               </Text>
             </div>
 
-            {/* Offices details list */}
-            {finalLocations.length > 0 && (
-              <div className="space-y-8 w-full">
+            {/* Global Contact Info Block */}
+            {isLoading ? (
+              <div className="w-full space-y-6 animate-pulse">
+                <div className="h-24 bg-surface-light rounded-xl w-full" />
+                <div className="h-24 bg-surface-light rounded-xl w-full" />
+              </div>
+            ) : (
+              <div className="space-y-8 w-full border-t border-border-primary pt-8">
+                {/* Support & Sales Emails */}
+                {(settings?.support_email || settings?.sales_email) && (
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center gap-3 text-primary-text font-semibold tracking-wide">
+                      <Mail className="w-5 h-5 text-accent-primary" />
+                      Email
+                    </div>
+                    <div className="pl-8 space-y-2">
+                      {settings.support_email && (
+                        <div>
+                          <span className="text-caption text-secondary-text block mb-0.5">Support</span>
+                          <a href={`mailto:${settings.support_email}`} className="text-small hover:text-accent-primary transition-colors">{settings.support_email}</a>
+                        </div>
+                      )}
+                      {settings.sales_email && (
+                        <div>
+                          <span className="text-caption text-secondary-text block mb-0.5">Sales</span>
+                          <a href={`mailto:${settings.sales_email}`} className="text-small hover:text-accent-primary transition-colors">{settings.sales_email}</a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Phone & WhatsApp */}
+                {(settings?.phone || settings?.whatsapp) && (
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center gap-3 text-primary-text font-semibold tracking-wide">
+                      <Phone className="w-5 h-5 text-accent-primary" />
+                      Phone & WhatsApp
+                    </div>
+                    <div className="pl-8 space-y-2">
+                      {settings.phone && (
+                        <div>
+                          <span className="text-caption text-secondary-text block mb-0.5">Direct Line</span>
+                          <a href={`tel:${settings.phone.replace(/[^0-9+]/g, '')}`} className="text-small hover:text-accent-primary transition-colors">{settings.phone}</a>
+                        </div>
+                      )}
+                      {settings.whatsapp && (
+                        <div>
+                          <span className="text-caption text-secondary-text block mb-0.5">WhatsApp</span>
+                          <a 
+                            href={`https://wa.me/${settings.whatsapp.replace(/[^0-9]/g, '')}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-small flex items-center gap-1.5 hover:text-green-500 transition-colors"
+                          >
+                            <MessageSquare className="w-3.5 h-3.5" />
+                            {settings.whatsapp}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Main Office Address & Google Maps */}
+                {settings?.office_address && (
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center gap-3 text-primary-text font-semibold tracking-wide">
+                      <MapPin className="w-5 h-5 text-accent-primary" />
+                      Headquarters
+                    </div>
+                    <div className="pl-8 space-y-3">
+                      <p className="text-small text-secondary-text whitespace-pre-line leading-relaxed">
+                        {settings.office_address}
+                      </p>
+                      {settings.google_maps_url && (
+                        <a 
+                          href={settings.google_maps_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-sm font-medium text-accent-primary hover:text-brand-gold transition-colors"
+                        >
+                          <Map className="w-4 h-4" />
+                          View on Map
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Offices details list (Secondary Locations) */}
+            {!isLoading && finalLocations.length > 0 && (
+              <div className="space-y-8 w-full mt-12">
+                <span className="text-caption font-semibold tracking-wider text-secondary-text uppercase block mb-4">
+                  Global Offices
+                </span>
                 {finalLocations.map((loc, idx) => (
                   <div key={idx} className="space-y-3 border-t border-border-primary pt-6">
                     <span className="block text-small font-semibold text-primary-text uppercase tracking-wider font-sans">

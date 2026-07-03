@@ -41,6 +41,7 @@ import ProcessSection from './sections/ProcessSection';
 import AboutSection from './sections/AboutSection';
 import TestimonialSection from './sections/TestimonialSection';
 import { GlobalSEO } from './components/seo/GlobalSEO';
+import { BusinessStatisticsSection } from './sections/BusinessStatisticsSection';
 import ClientLogosSection from './sections/ClientLogosSection';
 import InteractiveCtaSection from './sections/InteractiveCtaSection';
 import ContactSection from './sections/ContactSection';
@@ -538,6 +539,9 @@ const HomePage: FC<{ theme: 'dark' | 'light' }> = ({ theme }) => (
         <HeroSection theme={theme} />
       </div>
     </FadeUp>
+    <div id="statistics">
+      <BusinessStatisticsSection theme={theme} />
+    </div>
     <FadeUp viewportAmount={0.2} delay={0.1}>
       <div id="clients">
         <ClientLogosSection theme={theme} />

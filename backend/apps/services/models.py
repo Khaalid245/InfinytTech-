@@ -35,12 +35,25 @@ class Service(UUIDModel, TimeStampedModel):
     )
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=220, unique=True)
-    description = models.TextField()
+    short_description = models.TextField(blank=True, help_text='Brief summary for cards and banners.')
+    description = models.TextField(help_text='Full HTML or Markdown description.')
     icon = models.CharField(
         max_length=100, blank=True,
         help_text='Icon identifier for frontend rendering (e.g. "code", "search")'
     )
-    is_active = models.BooleanField(default=True)
+    featured_media = models.ForeignKey(
+        'media_library.MediaFile',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='featured_services'
+    )
+    benefits = models.JSONField(default=list, blank=True, help_text='List of benefit strings.')
+    industries = models.ManyToManyField('Industry', blank=True, related_name='services')
+    faqs = models.ManyToManyField('FAQ', blank=True, related_name='services')
+    
+    is_active = models.BooleanField(default=True, help_text='Draft vs Published status.')
+    is_featured = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)
 
     class Meta:

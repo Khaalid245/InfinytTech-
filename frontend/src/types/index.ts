@@ -72,3 +72,6 @@ export interface ServiceExplorerItem {
   engagementModel: string;
   support: string;
 }
+
+export * from './siteSettings.types';
+export * from './dashboard.types';

@@ -10,6 +10,7 @@ import {
   ChevronDown
 } from 'lucide-react';
 import type { Service } from '../types/services';
+import { StaggerContainer, StaggerItem } from '../components/animation/StaggerContainer';
 
 interface ServiceExplorerProps {
   theme: 'dark' | 'light';
@@ -185,15 +186,15 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
         <div className="hidden lg:grid lg:grid-cols-12 gap-8 items-start min-h-[640px]">
           
           {/* Left Drawer Selection List */}
-          <div className="lg:col-span-5 space-y-3">
+          <StaggerContainer className="lg:col-span-5 space-y-3">
             {servicesList.map((service, idx) => {
               const IconComp = getLucideIcon(service.icon, Layers);
               const isActive = activeIndex === idx;
 
               return (
-                <button
-                  key={service.id}
-                  onClick={() => setActiveIndex(idx)}
+                <StaggerItem key={service.id}>
+                  <button
+                    onClick={() => setActiveIndex(idx)}
                   className={cn(
                     "w-full text-left flex items-center justify-between p-5 rounded-xl border transition-all duration-300 group cursor-pointer",
                     isActive 
@@ -242,9 +243,10 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                     )}
                   />
                 </button>
+                </StaggerItem>
               );
             })}
-          </div>
+          </StaggerContainer>
 
           {/* Right Drawer Detailed Panel */}
           <div className={cn("lg:col-span-7 rounded-2xl border p-8 space-y-6 min-h-[640px] flex flex-col justify-between transition-all duration-300", cardBg, border)}>
@@ -431,7 +433,7 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
 
             return (
               <div 
-                key={item.category}
+                key={service.id}
                 className={cn(
                   "rounded-xl border overflow-hidden transition-all duration-300",
                   isOpen ? activeBg : "bg-transparent",

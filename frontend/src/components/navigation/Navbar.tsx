@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, LayoutDashboard } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { Button } from '../ui/Button';
 import { Logo } from '../ui/Logo';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface NavbarProps {
   currentTheme?: 'dark' | 'light';
@@ -18,7 +19,7 @@ const NAV_ITEMS = [
   { label: 'Services', href: '/services', id: 'services', sectionId: undefined },
   { label: 'Portfolio', href: '/work', id: 'portfolio', sectionId: undefined },
   { label: 'About', href: '/about', id: 'about', sectionId: undefined },
-  { label: 'Blog', href: '/insights', id: 'blog', sectionId: 'blog' },
+  { label: 'Blog', href: '/blog', id: 'blog', sectionId: undefined },
   { label: 'Contact', href: '/contact', id: 'contact', sectionId: undefined },
 ] as const;
 
@@ -28,6 +29,10 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
   const [activeTab, setActiveTab] = useState<string>('home');
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
   const [isNavHovered, setIsNavHovered] = useState(false);
+  const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
+  
+  // Auth State
+  const { isAuthenticated, isAdmin, logout } = useAuth();
   
   // Underline state styling coordinates
   const [underlineStyle, setUnderlineStyle] = useState<React.CSSProperties>({
@@ -126,7 +131,6 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
     const pathRouteMap: Record<string, string> = {
       '/': 'hero',
       '/process': 'process',
-      '/insights': 'blog',
     };
 
     const targetSectionId = pathRouteMap[path];
@@ -232,7 +236,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
               'flex items-center select-none transition-all duration-200 active:scale-95 hover:opacity-80'
             )}
           >
-            <Logo className="h-8 md:h-9" />
+            <Logo className="h-8 md:h-9" theme={isDark ? 'dark' : 'light'} />
           </Link>
 
           {/* ── DESKTOP NAV ── */}
@@ -280,6 +284,54 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
 
           {/* ── DESKTOP ACTIONS ── */}
           <div className="hidden md:flex items-center gap-4">
+            {/* Admin Menu (Only if logged in as admin) */}
+            {isAuthenticated && isAdmin && (
+              <div className="relative">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setIsAdminMenuOpen(!isAdminMenuOpen)}
+                  className={cn(
+                    'px-3 py-1.5 flex items-center gap-2 border',
+                    useHeroText ? 'border-white/30 text-white hover:bg-white/10' : (isDark ? 'border-[#23262D] text-[#D4A017] hover:bg-[#23262D]' : 'border-slate-200 text-[#0F172A] hover:bg-slate-50')
+                  )}
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  <span className="text-sm font-medium">Admin</span>
+                </Button>
+                
+                {isAdminMenuOpen && (
+                  <div className={cn(
+                    "absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 border focus:outline-none z-50",
+                    isDark ? "bg-[#181B1F] border-[#23262D]" : "bg-white border-slate-200"
+                  )}>
+                    <Link
+                      to="/admin/dashboard"
+                      className={cn(
+                        "block px-4 py-2 text-sm",
+                        isDark ? "text-gray-300 hover:bg-[#23262D] hover:text-white" : "text-gray-700 hover:bg-slate-50"
+                      )}
+                      onClick={() => setIsAdminMenuOpen(false)}
+                    >
+                      Analytics Dashboard
+                    </Link>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsAdminMenuOpen(false);
+                      }}
+                      className={cn(
+                        "block w-full text-left px-4 py-2 text-sm text-red-500",
+                        isDark ? "hover:bg-[#23262D]" : "hover:bg-slate-50"
+                      )}
+                    >
+                      Sign out
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Theme Toggle Button */}
             {onThemeToggle && (
               <button
@@ -406,7 +458,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
               'flex items-center select-none transition-all duration-200 active:scale-95 hover:opacity-80'
             )}
           >
-            <Logo className="h-8" />
+            <Logo className="h-8" theme={isDark ? 'dark' : 'light'} />
           </Link>
 
           {/* Theme Switcher inside Drawer Header */}

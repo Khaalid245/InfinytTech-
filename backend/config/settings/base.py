@@ -38,6 +38,12 @@ LOCAL_APPS = [
     'apps.services',
     'apps.portfolio',
     'apps.leads',
+    'apps.blog',
+    'apps.media_library',
+    'apps.team',
+    'apps.testimonials',
+    'apps.site_settings',
+    'apps.dashboard',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

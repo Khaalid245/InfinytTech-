@@ -1,0 +1,40 @@
+{% extends "admin/base_site.html" %}
+{% load i18n l10n admin_urls static %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+&rsaquo; <a href="{% url 'admin:media_library_mediafile_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+&rsaquo; Move files
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <div class="module">
+        <form action="" method="post">
+            {% csrf_token %}
+            <div>
+                <p>Select the target destination folder for the following selected assets:</p>
+                <ul>
+                    {% for item in items %}
+                        <li>
+                            <strong>{{ item.original_filename }}</strong> ({{ item.title }})
+                            <input type="hidden" name="{% get_admin_action_checkbox_name %}" value="{{ item.pk|unlocalize }}" />
+                        </li>
+                    {% endfor %}
+                </ul>
+                
+                <div style="margin: 20px 0; padding: 15px; background: var(--body-bg, #f8f9fa); border: 1px solid var(--border-color, #e9ecef); border-radius: 4px;">
+                    {{ form.as_p }}
+                </div>
+                
+                <input type="hidden" name="action" value="move_folder_action" />
+                <input type="submit" name="apply" value="Move files" class="default" style="background: var(--button-bg, #D4A017); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;" />
+                <a href="#" onclick="window.history.back(); return false;" class="button cancel-link" style="margin-left: 10px; display: inline-block; vertical-align: middle;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -5,6 +5,7 @@ import WhyChooseUs from '../sections/WhyChooseUs';
 import CapabilitiesSection from '../sections/CapabilitiesSection';
 import HorizontalJourney from '../sections/HorizontalJourney';
 import InteractiveCtaSection from '../sections/InteractiveCtaSection';
+import TeamSection from '../sections/TeamSection';
 
 interface AboutPageProps {
   theme: 'dark' | 'light';
@@ -17,6 +18,7 @@ export default function AboutPage({ theme }: AboutPageProps) {
       <OurStorySection theme={theme} />
       <MissionVisionValues theme={theme} />
       <WhyChooseUs theme={theme} />
+      <TeamSection theme={theme} />
       <CapabilitiesSection theme={theme} />
       <HorizontalJourney theme={theme} />
       <InteractiveCtaSection theme={theme} />

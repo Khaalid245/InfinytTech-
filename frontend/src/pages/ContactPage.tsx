@@ -2,6 +2,7 @@ import Container from '../components/layout/Container';
 import Heading from '../components/ui/Heading';
 import ContactSection, { type OfficeLocation } from '../sections/ContactSection';
 import contactArtwork from '../../docs/contact-us image.webp';
+import { useSiteSettings } from '../hooks/useSiteSettings';
 
 const CONTACT_LOCATIONS: OfficeLocation[] = [
   {
@@ -19,6 +20,17 @@ const CONTACT_LOCATIONS: OfficeLocation[] = [
 ];
 
 export default function ContactPage() {
+  const { data: settings } = useSiteSettings();
+
+  const dynamicLocations: OfficeLocation[] = settings?.office_locations?.length 
+    ? settings.office_locations.map(loc => ({
+        city: loc.city,
+        address: loc.address.split('\n'),
+        email: loc.email,
+        phone: loc.phone,
+      }))
+    : CONTACT_LOCATIONS;
+
   return (
     <div className="animate-fade-in bg-primary-bg">
       {/* HERO SECTION */}
@@ -86,7 +98,7 @@ export default function ContactPage() {
         tagline="Contact Us"
         title="Partner with InfinityTech"
         subtitle="Have questions about timelines or budgeting? Write to our core team."
-        locations={CONTACT_LOCATIONS}
+        locations={dynamicLocations}
         background="primary"
         premiumDark
         className="pt-0"

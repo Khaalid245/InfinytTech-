@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '../utils/cn';
 import { ArrowRight, Check } from 'lucide-react';
+import { Image } from '../components/ui/Image';
+import { useSiteSettings } from '../hooks/useSiteSettings';
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 interface HeroSectionProps {
@@ -77,6 +79,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
   const [paused, setPaused] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [progressKey, setProgressKey] = useState(0);
+  const { data: settings } = useSiteSettings();
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 60);
@@ -155,18 +158,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
                 color: textPri
               }}
             >
-              Technology Built<br />
-              For Real{' '}
-              <span
-                style={{
-                  backgroundImage: `linear-gradient(130deg, ${textPri} 0%, ${accent} 65%)`,
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}
-              >
-                Business Growth.
-              </span>
+              {settings?.hero_title || 'Technology Built For Real Business Growth.'}
             </h1>
 
             {/* Sub-headline */}
@@ -177,7 +169,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
               )}
               style={{ color: textSub }}
             >
-              We help startups and businesses design, build, and scale web platforms, mobile applications, AI solutions, and cloud systems.
+              {settings?.hero_subtitle || 'We help startups and businesses design, build, and scale web platforms, mobile applications, AI solutions, and cloud systems.'}
             </p>
 
             {/* CTAs */}
@@ -189,7 +181,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
             >
               {/* Primary */}
               <Link
-                to="/contact"
+                to={settings?.hero_primary_button_url || '/contact'}
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold tracking-wide transition-all duration-200 active:scale-[0.97]"
                 style={{
                   background: accent,
@@ -199,13 +191,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = accentHov; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = accent; }}
               >
-                Start Your Project
+                {settings?.hero_primary_button_text || 'Start Your Project'}
                 <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
               </Link>
 
               {/* Secondary */}
               <Link
-                to="/work"
+                to={settings?.hero_secondary_button_url || '/work'}
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold tracking-wide border transition-all duration-200 active:scale-[0.97]"
                 style={{
                   background: surface,
@@ -225,7 +217,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
                   el.style.color = textSub;
                 }}
               >
-                View Case Studies
+                {settings?.hero_secondary_button_text || 'View Case Studies'}
               </Link>
             </div>
 
@@ -322,11 +314,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
                 className="relative w-full overflow-hidden bg-slate-900"
                 style={{ aspectRatio: '16/9' }}
               >
-                <img
+                <Image
                   key={proj.id}
                   src={proj.imageUrl}
                   alt={proj.title}
-                  className="w-full h-full object-cover transition-opacity duration-500"
+                  className="w-full h-full transition-opacity duration-500"
                   style={{ filter: 'brightness(0.78) contrast(1.08) saturate(0.9)' }}
                 />
                 {/* Gradient overlay */}

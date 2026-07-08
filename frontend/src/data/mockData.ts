@@ -1,5 +1,5 @@
 import { Sparkles, Code, Shield } from 'lucide-react';
-import type { ServiceItem, ProjectItem, TestimonialItem, BlogPostItem, WorkflowStep } from '../types';
+import type { ServiceItem, ProjectItem, TestimonialItem, WorkflowStep } from '../types';
 
 export const dummyServices: ServiceItem[] = [
   {
@@ -68,26 +68,5 @@ export const dummyTestimonials: TestimonialItem[] = [
     role: "Staff Product Architect",
     company: "Veloce Financial",
     imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&h=120&q=80"
-  }
-];
-
-export const dummyBlogPosts: BlogPostItem[] = [
-  {
-    title: "Scaling Tailwind CSS in Large-Scale Monorepos",
-    excerpt: "Strategies for avoiding utility class duplication, managing custom theme extensions with Tailwind v4, and defining rigid design systems.",
-    date: "May 28, 2026",
-    readTime: "6 min read",
-    category: "Engineering",
-    imageUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=80",
-    href: "#"
-  },
-  {
-    title: "The Case for Verbatim Module Syntax in TypeScript",
-    excerpt: "Why type-only imports lead to faster bundler compilation times and cleaner transpiled Javascript output in production React systems.",
-    date: "April 15, 2026",
-    readTime: "4 min read",
-    category: "Architecture",
-    imageUrl: "https://images.unsplash.com/photo-1618401471353-b98aedd07871?auto=format&fit=crop&w=800&q=80",
-    href: "#"
   }
 ];

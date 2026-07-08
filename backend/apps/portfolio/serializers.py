@@ -36,10 +36,17 @@ class ProjectImageSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'created_at')
 
     def get_image(self, obj):
-        if not obj.image:
-            return None
         request = self.context.get('request')
-        return request.build_absolute_uri(obj.image.url) if request else obj.image.url
+        
+        # Priority 1: Media Library File
+        if obj.media_file and obj.media_file.file:
+            return request.build_absolute_uri(obj.media_file.file.url) if request else obj.media_file.file.url
+            
+        # Priority 2: Legacy Image Upload
+        if obj.image:
+            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
+            
+        return None
 
 
 class ProjectMetricSerializer(serializers.ModelSerializer):
@@ -73,10 +80,17 @@ class ProjectListSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'created_at')
 
     def get_featured_image(self, obj):
-        if not obj.featured_image:
-            return None
         request = self.context.get('request')
-        return request.build_absolute_uri(obj.featured_image.url) if request else obj.featured_image.url
+        
+        # Priority 1: Media Library File
+        if obj.featured_media and obj.featured_media.file:
+            return request.build_absolute_uri(obj.featured_media.file.url) if request else obj.featured_media.file.url
+            
+        # Priority 2: Legacy Image Upload
+        if obj.featured_image:
+            return request.build_absolute_uri(obj.featured_image.url) if request else obj.featured_image.url
+            
+        return None
 
 
 class ProjectDetailSerializer(serializers.ModelSerializer):
@@ -102,10 +116,12 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'created_at', 'updated_at')
 
     def get_featured_image(self, obj):
-        if not obj.featured_image:
-            return None
         request = self.context.get('request')
-        return request.build_absolute_uri(obj.featured_image.url) if request else obj.featured_image.url
+        if obj.featured_media and obj.featured_media.file:
+            return request.build_absolute_uri(obj.featured_media.file.url) if request else obj.featured_media.file.url
+        if obj.featured_image:
+            return request.build_absolute_uri(obj.featured_image.url) if request else obj.featured_image.url
+        return None
 
 
 # ---------------------------------------------------------------------------
@@ -149,12 +165,19 @@ class ProjectAdminSerializer(serializers.ModelSerializer):
         write_only=True,
         required=False,
     )
+    featured_media_id = serializers.PrimaryKeyRelatedField(
+        source='featured_media',
+        queryset=__import__('apps.media_library.models', fromlist=['MediaFile']).MediaFile.objects.all(),
+        write_only=True,
+        required=False,
+        allow_null=True,
+    )
 
     class Meta:
         model = Project
         fields = (
             'id', 'title', 'slug', 'short_description', 'full_description',
-            'featured_image', 'featured_image_upload',
+            'featured_image', 'featured_image_upload', 'featured_media_id',
             'client_name', 'project_url',
             'status', 'is_featured',
             'meta_title', 'meta_description',
@@ -167,19 +190,37 @@ class ProjectAdminSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'created_at', 'updated_at')
 
     def get_featured_image(self, obj):
-        if not obj.featured_image:
-            return None
         request = self.context.get('request')
-        return request.build_absolute_uri(obj.featured_image.url) if request else obj.featured_image.url
+        if obj.featured_media and obj.featured_media.file:
+            return request.build_absolute_uri(obj.featured_media.file.url) if request else obj.featured_media.file.url
+        if obj.featured_image:
+            return request.build_absolute_uri(obj.featured_image.url) if request else obj.featured_image.url
+        return None
 
 
 class ProjectImageAdminSerializer(serializers.ModelSerializer):
     """Writable serializer for adding images to a project."""
-    image = serializers.ImageField()
+    image = serializers.ImageField(required=False, allow_null=True)
+    media_file_id = serializers.PrimaryKeyRelatedField(
+        source='media_file',
+        queryset=__import__('apps.media_library.models', fromlist=['MediaFile']).MediaFile.objects.all(),
+        write_only=True,
+        required=False,
+        allow_null=True,
+    )
+    image_url = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = ProjectImage
-        fields = ('id', 'image', 'caption', 'display_order', 'created_at')
+        fields = ('id', 'image', 'media_file_id', 'image_url', 'caption', 'display_order', 'created_at')
+
+    def get_image_url(self, obj):
+        request = self.context.get('request')
+        if obj.media_file and obj.media_file.file:
+            return request.build_absolute_uri(obj.media_file.file.url) if request else obj.media_file.file.url
+        if obj.image:
+            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
+        return None
         read_only_fields = ('id', 'created_at')
 
 

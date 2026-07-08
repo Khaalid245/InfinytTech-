@@ -183,9 +183,26 @@ class AdminProjectListCreateView(APIView):
             .select_related('category')
             .prefetch_related('technologies', 'tags', 'images', 'metrics')
         )
+        
         status_filter = request.query_params.get('status')
-        if status_filter:
+        if status_filter and status_filter != 'all':
             qs = qs.filter(status=status_filter)
+            
+        category_filter = request.query_params.get('category')
+        if category_filter and category_filter != 'all':
+            qs = qs.filter(category__slug=category_filter)
+            
+        search_query = request.query_params.get('search')
+        if search_query:
+            from django.db.models import Q
+            qs = qs.filter(
+                Q(title__icontains=search_query) |
+                Q(client_name__icontains=search_query) |
+                Q(slug__icontains=search_query)
+            )
+
+        # Ensure consistent ordering
+        qs = qs.order_by('-created_at')
 
         paginator = StandardPagination()
         page = paginator.paginate_queryset(qs, request)
@@ -264,7 +281,7 @@ class AdminProjectImageCreateView(APIView):
     Upload an image for a project.
     """
     permission_classes = [IsAuthenticated, IsAdminOrSuperAdmin]
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def post(self, request, slug):
         project = get_object_or_404(Project, slug=slug)
@@ -275,22 +292,35 @@ class AdminProjectImageCreateView(APIView):
         return api_response(data=serializer.data, message='Image uploaded.', status=201)
 
 
-@extend_schema(
-    tags=['Portfolio — Admin'],
-    summary='Delete project image',
+@extend_schema_view(
+    delete=extend_schema(tags=['Portfolio — Admin'], summary='Delete project image'),
+    patch=extend_schema(tags=['Portfolio — Admin'], summary='Partial update project image', request=ProjectImageAdminSerializer, responses=ProjectImageAdminSerializer)
 )
-class AdminProjectImageDeleteView(APIView):
+class AdminProjectImageDetailView(APIView):
     """
     DELETE /api/portfolio/admin/projects/<slug>/images/<pk>/
-    Remove a specific image from a project.
+    PATCH  /api/portfolio/admin/projects/<slug>/images/<pk>/
+    Manage a specific image from a project.
     """
     permission_classes = [IsAuthenticated, IsAdminOrSuperAdmin]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def delete(self, request, slug, pk):
         project = get_object_or_404(Project, slug=slug)
         image = get_object_or_404(ProjectImage, pk=pk, project=project)
         image.delete()
         return api_response(message='Image deleted.')
+
+    def patch(self, request, slug, pk):
+        project = get_object_or_404(Project, slug=slug)
+        image = get_object_or_404(ProjectImage, pk=pk, project=project)
+        serializer = ProjectImageAdminSerializer(
+            image, data=request.data, partial=True, context={'request': request}
+        )
+        if not serializer.is_valid():
+            return api_error('Validation failed.', errors=serializer.errors)
+        serializer.save()
+        return api_response(data=serializer.data, message='Image updated.')
 
 
 @extend_schema(

@@ -3,6 +3,8 @@
 // Mirrors: apps/blog/serializers.py
 // ─────────────────────────────────────────────────────────────────────────────
 
+import type { MediaFile } from '../services/media.service';
+
 export interface BlogAuthor {
   id: string;
   first_name: string;
@@ -18,12 +20,16 @@ export interface BlogCategory {
   description: string;
   is_active: boolean;
   order: number;
+  post_count?: number;
 }
 
 export interface BlogTag {
   id: string;
   name: string;
   slug: string;
+  description?: string;
+  is_active?: boolean;
+  usage_count?: number;
 }
 
 export interface BlogPost {
@@ -33,6 +39,7 @@ export interface BlogPost {
   excerpt: string;
   content: string;
   featured_image: string | null;
+  featured_media: MediaFile | null;
   author: BlogAuthor | null;
   category: BlogCategory | null;
   tags: BlogTag[];
@@ -44,4 +51,43 @@ export interface BlogPost {
   reading_time: number;
   created_at: string;
   updated_at: string;
+}
+
+export interface AdminBlogFilters {
+  search?: string;
+  category?: string;
+  status?: string;
+  featured?: boolean;
+  page?: number;
+  page_size?: number;
+}
+
+export interface BlogFormData {
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  category_id: string;
+  tag_ids: string[];
+  featured_media_id?: string | null;
+  author_id?: string | null;
+  status: 'draft' | 'published' | 'archived';
+  is_featured: boolean;
+  seo_title?: string;
+  seo_description?: string;
+}
+
+export interface BlogCategoryFormData {
+  name: string;
+  slug: string;
+  description: string;
+  is_active: boolean;
+  order: number;
+}
+
+export interface BlogTagFormData {
+  name: string;
+  slug: string;
+  description: string;
+  is_active: boolean;
 }

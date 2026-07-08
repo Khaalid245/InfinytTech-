@@ -74,3 +74,4 @@ export interface ServiceExplorerItem {
 }
 
 export * from './siteSettings.types';
+export * from './dashboard.types';

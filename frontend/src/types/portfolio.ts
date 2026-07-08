@@ -79,6 +79,22 @@ export interface ProjectDetail extends ProjectListItem {
   updated_at: string;
 }
 
+export interface ProjectFormData {
+  title: string;
+  slug: string;
+  short_description: string;
+  full_description: string;
+  client_name: string;
+  project_url: string;
+  status: 'draft' | 'published' | 'archived';
+  is_featured: boolean;
+  category_id?: string;
+  technology_ids?: string[];
+  tag_ids?: string[];
+  featured_image?: File | string | null;
+  featured_media_id?: string | null;
+}
+
 // ─── Paginated list wrapper ───────────────────────────────────────────────────
 export interface PaginatedResponse<T> {
   count: number;

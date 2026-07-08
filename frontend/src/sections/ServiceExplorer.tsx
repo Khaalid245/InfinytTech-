@@ -433,7 +433,7 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
 
             return (
               <div 
-                key={item.category}
+                key={service.id}
                 className={cn(
                   "rounded-xl border overflow-hidden transition-all duration-300",
                   isOpen ? activeBg : "bg-transparent",

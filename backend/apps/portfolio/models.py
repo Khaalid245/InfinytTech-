@@ -89,6 +89,15 @@ class Project(UUIDModel, TimeStampedModel):
         upload_to='portfolio/projects/featured/',
         blank=True,
         null=True,
+        help_text='Legacy/Fallback raw image upload'
+    )
+    featured_media = models.ForeignKey(
+        'media_library.MediaFile',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='portfolio_projects',
+        help_text='Selected image from Media Library'
     )
     client_name = models.CharField(max_length=150, blank=True)
     project_url = models.URLField(blank=True)
@@ -143,7 +152,15 @@ class ProjectImage(UUIDModel, TimeStampedModel):
         on_delete=models.CASCADE,
         related_name='images',
     )
-    image = models.ImageField(upload_to='portfolio/projects/gallery/')
+    image = models.ImageField(upload_to='portfolio/projects/gallery/', blank=True, null=True, help_text='Legacy/Fallback raw image upload')
+    media_file = models.ForeignKey(
+        'media_library.MediaFile',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='portfolio_gallery_images',
+        help_text='Selected image from Media Library'
+    )
     caption = models.CharField(max_length=255, blank=True)
     display_order = models.PositiveIntegerField(default=0)
 

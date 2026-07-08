@@ -10,6 +10,7 @@ import type {
   Industry,
   ProcessStep,
   FAQ,
+  ServiceFormData
 } from '../types/services';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
@@ -17,8 +18,28 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
 const api = axios.create({
   baseURL: `${BASE_URL}/api/services`,
   timeout: 10_000,
-  headers: { 'Content-Type': 'application/json' },
 });
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      // Token expired or invalid
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
 export interface ServiceFilters {
   category?: string;
@@ -78,4 +99,46 @@ export async function getProcessSteps(): Promise<ProcessStep[]> {
 export async function getFaqs(): Promise<FAQ[]> {
   const { data } = await api.get<ApiResponse<FAQ[]>>('/faqs/');
   return data.data;
+}
+
+// ─── Admin endpoints ──────────────────────────────────────────────────────────
+
+export interface AdminServiceFilters extends ServiceFilters {
+  status?: string;
+}
+
+export async function getAdminServices(
+  filters: AdminServiceFilters = {}
+): Promise<PaginatedResponse<Service>> {
+  const params: Record<string, string | number> = {};
+  if (filters.category) params.category = filters.category;
+  if (filters.search)   params.search = filters.search;
+  if (filters.page)     params.page = filters.page;
+  if (filters.page_size)params.page_size = filters.page_size;
+  if (filters.status)   params.status = filters.status;
+
+  const { data } = await api.get<ApiResponse<PaginatedResponse<Service>>>(
+    '/admin/services/',
+    { params }
+  );
+  return data.data;
+}
+
+export async function getAdminServiceDetail(slug: string): Promise<Service> {
+  const { data } = await api.get<ApiResponse<Service>>(`/admin/services/${slug}/`);
+  return data.data;
+}
+
+export async function createService(formData: ServiceFormData): Promise<Service> {
+  const { data } = await api.post<ApiResponse<Service>>('/admin/services/', formData);
+  return data.data;
+}
+
+export async function updateService(slug: string, formData: Partial<ServiceFormData>): Promise<Service> {
+  const { data } = await api.patch<ApiResponse<Service>>(`/admin/services/${slug}/`, formData);
+  return data.data;
+}
+
+export async function deleteService(slug: string): Promise<void> {
+  await api.delete(`/admin/services/${slug}/`);
 }

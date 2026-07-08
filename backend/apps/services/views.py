@@ -166,16 +166,42 @@ class AdminServiceListCreateView(APIView):
     permission_classes = [IsAuthenticated, IsAdminOrSuperAdmin]
 
     def get(self, request):
-        services = Service.objects.all().select_related('category').order_by('order', 'title')
-        serializer = ServiceSerializer(services, many=True)
-        return api_response(data=serializer.data)
+        qs = Service.objects.all().select_related('category').prefetch_related('features', 'industries', 'faqs')
+        
+        status_filter = request.query_params.get('status')
+        if status_filter and status_filter != 'all':
+            # Map 'published' to is_active=True and 'draft' to is_active=False
+            if status_filter == 'published':
+                qs = qs.filter(is_active=True)
+            elif status_filter == 'draft':
+                qs = qs.filter(is_active=False)
+                
+        category_filter = request.query_params.get('category')
+        if category_filter and category_filter != 'all':
+            qs = qs.filter(category__slug=category_filter)
+            
+        search_query = request.query_params.get('search')
+        if search_query:
+            from django.db.models import Q
+            qs = qs.filter(
+                Q(title__icontains=search_query) |
+                Q(description__icontains=search_query) |
+                Q(slug__icontains=search_query)
+            )
+
+        qs = qs.order_by('order', 'title')
+        
+        paginator = StandardPagination()
+        page = paginator.paginate_queryset(qs, request)
+        serializer = ServiceSerializer(page, many=True, context={'request': request})
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
-        serializer = ServiceAdminSerializer(data=request.data)
+        serializer = ServiceAdminSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         service = serializer.save()
         # Return full details including category info
-        return api_response(data=ServiceSerializer(service).data, message='Service created.', status=201)
+        return api_response(data=ServiceSerializer(service, context={'request': request}).data, message='Service created.', status=201)
 
 
 @extend_schema(tags=['Services — Admin'])
@@ -186,19 +212,19 @@ class AdminServiceDetailView(APIView):
         return get_object_or_404(Service, slug=slug)
 
     def get(self, request, slug):
-        return api_response(data=ServiceSerializer(self.get_object(slug)).data)
+        return api_response(data=ServiceSerializer(self.get_object(slug), context={'request': request}).data)
 
     def put(self, request, slug):
-        serializer = ServiceAdminSerializer(self.get_object(slug), data=request.data)
+        serializer = ServiceAdminSerializer(self.get_object(slug), data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         service = serializer.save()
-        return api_response(data=ServiceSerializer(service).data, message='Service updated.')
+        return api_response(data=ServiceSerializer(service, context={'request': request}).data, message='Service updated.')
 
     def patch(self, request, slug):
-        serializer = ServiceAdminSerializer(self.get_object(slug), data=request.data, partial=True)
+        serializer = ServiceAdminSerializer(self.get_object(slug), data=request.data, partial=True, context={'request': request})
         serializer.is_valid(raise_exception=True)
         service = serializer.save()
-        return api_response(data=ServiceSerializer(service).data, message='Service updated.')
+        return api_response(data=ServiceSerializer(service, context={'request': request}).data, message='Service updated.')
 
     def delete(self, request, slug):
         service = self.get_object(slug)

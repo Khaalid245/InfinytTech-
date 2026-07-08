@@ -219,7 +219,7 @@ export default function BlogPostDetailPage({ theme }: BlogPostDetailPageProps) {
           {/* Article Keyword Tags */}
           {post.tags && post.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 pt-8 border-t border-border-primary border-dashed">
-              {post.tags.map((tag) => (
+              {post.tags.map((tag: any) => (
                 <Link
                   key={tag.id}
                   to={`/blog?tag=${tag.slug}`}

@@ -30,6 +30,8 @@ class BlogTag(UUIDModel, TimeStampedModel):
     """
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=120, unique=True)
+    description = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'blog_tags'
@@ -55,7 +57,13 @@ class BlogPost(UUIDModel, TimeStampedModel):
     slug = models.SlugField(max_length=255, unique=True)
     excerpt = models.CharField(max_length=500, blank=True)
     content = models.TextField()
-    featured_image = models.ImageField(upload_to='blog/images/', max_length=255, blank=True, null=True)
+    featured_media = models.ForeignKey(
+        'media_library.MediaFile',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='blog_posts'
+    )
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,

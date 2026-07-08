@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet, Link } from 'react-router-dom';
 import { Layers, ArrowRight, Inbox, RefreshCw } from 'lucide-react';
 
 // Primitives
@@ -54,6 +54,17 @@ import InsightsPage from './pages/InsightsPage';
 import BlogPostDetailPage from './pages/BlogPostDetailPage';
 import { useBlogPosts } from './hooks/useBlog';
 import { resolveImageUrl } from './utils/imageHelper';
+import ProtectedRoute from './components/admin/ProtectedRoute';
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import AdminPortfolioPage from './pages/admin/AdminPortfolioPage';
+import AdminServicesPage from './pages/admin/AdminServicesPage';
+import AdminBlogPage from './pages/admin/AdminBlogPage';
+import AdminBlogCategoriesPage from './pages/admin/AdminBlogCategoriesPage';
+import AdminBlogTagsPage from './pages/admin/AdminBlogTagsPage';
+import AdminLoginPage from './pages/admin/AdminLoginPage';
+import AdminStubPage from './pages/admin/AdminStubPage';
+import AdminLayout from './components/admin/layout/AdminLayout';
+import { AuthProvider } from './contexts/AuthContext';
 
 // Constants & Data
 import {
@@ -606,24 +617,56 @@ export const App: React.FC = () => {
   const handleThemeToggle = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
   return (
-    <Router>
-      <GlobalSEO />
-      <PageLayout theme={theme} onThemeToggle={handleThemeToggle}>
+    <AuthProvider>
+      <Router>
+        <GlobalSEO />
         <Routes>
-          <Route path="/" element={<HomePage theme={theme} />} />
-          <Route path="/about" element={<AboutPage theme={theme} />} />
-          <Route path="/services" element={<ServicesPage theme={theme} />} />
-          <Route path="/work" element={<WorkPage theme={theme} />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/blog" element={<InsightsPage theme={theme} />} />
-          <Route path="/blog/:slug" element={<BlogPostDetailPage theme={theme} />} />
-          <Route path="/insights" element={<InsightsPage theme={theme} />} />
-          <Route path="/insights/:slug" element={<BlogPostDetailPage theme={theme} />} />
-          <Route path="/showcase" element={<Showcase />} />
-          <Route path="*" element={<HomePage theme={theme} />} />
+          {/* Public Routes with PageLayout */}
+          <Route element={
+            <PageLayout theme={theme} onThemeToggle={handleThemeToggle}>
+              <Outlet />
+            </PageLayout>
+          }>
+            <Route path="/" element={<HomePage theme={theme} />} />
+            <Route path="/about" element={<AboutPage theme={theme} />} />
+            <Route path="/services" element={<ServicesPage theme={theme} />} />
+            <Route path="/work" element={<WorkPage theme={theme} />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/blog" element={<InsightsPage theme={theme} />} />
+            <Route path="/blog/:slug" element={<BlogPostDetailPage theme={theme} />} />
+            <Route path="/insights" element={<InsightsPage theme={theme} />} />
+            <Route path="/insights/:slug" element={<BlogPostDetailPage theme={theme} />} />
+            <Route path="/showcase" element={<Showcase />} />
+            <Route path="/login" element={<AdminLoginPage />} />
+            <Route path="*" element={<HomePage theme={theme} />} />
+          </Route>
+
+          {/* Admin Routes with AdminLayout */}
+          <Route path="/admin" element={
+            <ProtectedRoute>
+              <AdminLayout>
+                <Outlet />
+              </AdminLayout>
+            </ProtectedRoute>
+          }>
+            <Route index element={<AdminDashboardPage />} />
+            <Route path="dashboard" element={<AdminDashboardPage />} />
+            <Route path="portfolio" element={<AdminPortfolioPage />} />
+            <Route path="services" element={<AdminServicesPage />} />
+            <Route path="blog">
+              <Route index element={<AdminBlogPage />} />
+              <Route path="categories" element={<AdminBlogCategoriesPage />} />
+              <Route path="tags" element={<AdminBlogTagsPage />} />
+            </Route>
+            <Route path="settings" element={<AdminStubPage title="Global Settings" description="Configure site-wide preferences, API keys, and metadata." />} />
+            <Route path="media" element={<AdminStubPage title="Media Library" description="Upload and manage images, videos, and documents." />} />
+            <Route path="team" element={<AdminStubPage title="Team Members" description="Manage your organization's staff and member profiles." />} />
+            <Route path="testimonials" element={<AdminStubPage title="Testimonials" description="Curate and organize reviews from your clients." />} />
+            <Route path="leads" element={<AdminStubPage title="Leads CRM" description="Track inquiries and manage your sales pipeline." />} />
+          </Route>
         </Routes>
-      </PageLayout>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 };
 

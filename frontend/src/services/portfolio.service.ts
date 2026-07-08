@@ -11,6 +11,7 @@ import type {
   ProjectTag,
   ProjectListItem,
   ProjectDetail,
+  ProjectFormData,
 } from '../types/portfolio';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
@@ -18,8 +19,28 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
 const api = axios.create({
   baseURL: `${BASE_URL}/api/portfolio`,
   timeout: 10_000,
-  headers: { 'Content-Type': 'application/json' },
 });
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      // Token expired or invalid
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
 // ─── Project Filters ──────────────────────────────────────────────────────────
 export interface ProjectFilters {
@@ -30,6 +51,7 @@ export interface ProjectFilters {
   search?: string;
   page?: number;
   page_size?: number;
+  status?: string;     // draft, published, archived
 }
 
 // ─── Public endpoints ─────────────────────────────────────────────────────────
@@ -92,4 +114,80 @@ export async function getTechnologies(): Promise<Technology[]> {
 export async function getTags(): Promise<ProjectTag[]> {
   const { data } = await api.get<ApiResponse<ProjectTag[]>>('/tags/');
   return data.data;
+}
+
+// ─── Admin endpoints ──────────────────────────────────────────────────────────
+
+/**
+ * GET /api/portfolio/admin/projects/
+ * Returns paginated projects (including drafts/archived) for Admin.
+ */
+export async function getAdminProjects(
+  filters: ProjectFilters = {}
+): Promise<PaginatedResponse<ProjectListItem>> {
+  const params: Record<string, string | number> = {};
+  if (filters.category)   params.category   = filters.category;
+  if (filters.technology) params.technology = filters.technology;
+  if (filters.tag)        params.tag        = filters.tag;
+  if (filters.featured)   params.featured   = 1;
+  if (filters.search)     params.search     = filters.search;
+  if (filters.page)       params.page       = filters.page;
+  if (filters.page_size)  params.page_size  = filters.page_size;
+  if (filters.status)     params.status     = filters.status; // Optional status filter for admin
+
+  const { data } = await api.get<ApiResponse<PaginatedResponse<ProjectListItem>>>(
+    '/admin/projects/',
+    { params }
+  );
+  return data.data;
+}
+
+/**
+ * GET /api/portfolio/admin/projects/:slug/
+ */
+export async function getAdminProjectDetail(slug: string): Promise<ProjectDetail> {
+  const { data } = await api.get<ApiResponse<ProjectDetail>>(`/admin/projects/${slug}/`);
+  return data.data;
+}
+
+/**
+ * POST /api/portfolio/admin/projects/
+ */
+export async function createProject(formData: ProjectFormData): Promise<ProjectDetail> {
+  const { data } = await api.post<ApiResponse<ProjectDetail>>('/admin/projects/', formData);
+  return data.data;
+}
+
+/**
+ * PUT/PATCH /api/portfolio/admin/projects/:slug/
+ */
+export async function updateProject(slug: string, formData: Partial<ProjectFormData>): Promise<ProjectDetail> {
+  const { data } = await api.patch<ApiResponse<ProjectDetail>>(`/admin/projects/${slug}/`, formData);
+  return data.data;
+}
+
+/**
+ * DELETE /api/portfolio/admin/projects/:slug/
+ */
+export async function deleteProject(slug: string): Promise<void> {
+  await api.delete(`/admin/projects/${slug}/`);
+}
+
+// ─── Gallery Endpoints ────────────────────────────────────────────────────────
+
+export async function addProjectGalleryImage(slug: string, media_file_id: string, display_order: number): Promise<void> {
+  await api.post(`/admin/projects/${slug}/images/`, {
+    media_file_id,
+    display_order
+  });
+}
+
+export async function updateProjectGalleryImage(slug: string, imageId: string, display_order: number): Promise<void> {
+  await api.patch(`/admin/projects/${slug}/images/${imageId}/`, {
+    display_order
+  });
+}
+
+export async function removeProjectGalleryImage(slug: string, imageId: string): Promise<void> {
+  await api.delete(`/admin/projects/${slug}/images/${imageId}/`);
 }

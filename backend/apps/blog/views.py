@@ -167,16 +167,58 @@ class ApiResponseMixin:
 
 @extend_schema(tags=['Blog — Admin'])
 class AdminCategoryViewSet(ApiResponseMixin, viewsets.ModelViewSet):
-    queryset = BlogCategory.objects.all().order_by('order', 'name')
     serializer_class = BlogCategorySerializer
     permission_classes = [permissions.IsAuthenticated, IsAdminOrSuperAdmin]
+    pagination_class = StandardPagination
+
+    def get_queryset(self):
+        qs = BlogCategory.objects.annotate(
+            post_count=models.Count('posts')
+        ).order_by('order', 'name')
+        
+        search = self.request.query_params.get('search')
+        if search:
+            qs = qs.filter(
+                models.Q(name__icontains=search) | 
+                models.Q(slug__icontains=search) | 
+                models.Q(description__icontains=search)
+            ).distinct()
+            
+        status_val = self.request.query_params.get('status')
+        if status_val == 'active':
+            qs = qs.filter(is_active=True)
+        elif status_val == 'inactive':
+            qs = qs.filter(is_active=False)
+            
+        return qs
 
 
 @extend_schema(tags=['Blog — Admin'])
 class AdminTagViewSet(ApiResponseMixin, viewsets.ModelViewSet):
-    queryset = BlogTag.objects.all().order_by('name')
     serializer_class = BlogTagSerializer
     permission_classes = [permissions.IsAuthenticated, IsAdminOrSuperAdmin]
+    pagination_class = StandardPagination
+
+    def get_queryset(self):
+        qs = BlogTag.objects.annotate(
+            usage_count=models.Count('posts')
+        ).order_by('name')
+        
+        search = self.request.query_params.get('search')
+        if search:
+            qs = qs.filter(
+                models.Q(name__icontains=search) | 
+                models.Q(slug__icontains=search) | 
+                models.Q(description__icontains=search)
+            ).distinct()
+            
+        status_val = self.request.query_params.get('status')
+        if status_val == 'active':
+            qs = qs.filter(is_active=True)
+        elif status_val == 'inactive':
+            qs = qs.filter(is_active=False)
+            
+        return qs
 
 
 @extend_schema(tags=['Blog — Admin'])
@@ -184,9 +226,40 @@ class AdminPostViewSet(ApiResponseMixin, viewsets.ModelViewSet):
     queryset = BlogPost.objects.all().select_related('category', 'author').prefetch_related('tags')
     serializer_class = BlogPostAdminSerializer
     permission_classes = [permissions.IsAuthenticated, IsAdminOrSuperAdmin]
+    pagination_class = StandardPagination
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        
+        search = self.request.query_params.get('search')
+        if search:
+            qs = qs.filter(
+                models.Q(title__icontains=search) | 
+                models.Q(excerpt__icontains=search) | 
+                models.Q(slug__icontains=search)
+            ).distinct()
+            
+        category = self.request.query_params.get('category')
+        if category:
+            # Try to match by ID first, fallback to slug if needed (though admin usually uses ID)
+            qs = qs.filter(models.Q(category_id=category) | models.Q(category__slug=category))
+            
+        status = self.request.query_params.get('status')
+        if status:
+            qs = qs.filter(status=status)
+            
+        featured = self.request.query_params.get('featured')
+        if featured in ['true', '1', 'True']:
+            qs = qs.filter(is_featured=True)
+        elif featured in ['false', '0', 'False']:
+            qs = qs.filter(is_featured=False)
+            
+        return qs
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
             return BlogPostDetailSerializer
         return BlogPostAdminSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)

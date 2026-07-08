@@ -10,7 +10,7 @@ from .views import (
     AdminProjectListCreateView,
     AdminProjectDetailView,
     AdminProjectImageCreateView,
-    AdminProjectImageDeleteView,
+    AdminProjectImageDetailView,
     AdminProjectMetricCreateView,
     AdminProjectMetricDeleteView,
     # Admin — Categories
@@ -42,7 +42,7 @@ urlpatterns = [
     path('admin/projects/', AdminProjectListCreateView.as_view(), name='admin-project-list'),
     path('admin/projects/<slug:slug>/', AdminProjectDetailView.as_view(), name='admin-project-detail'),
     path('admin/projects/<slug:slug>/images/', AdminProjectImageCreateView.as_view(), name='admin-project-image-create'),
-    path('admin/projects/<slug:slug>/images/<uuid:pk>/', AdminProjectImageDeleteView.as_view(), name='admin-project-image-delete'),
+    path('admin/projects/<slug:slug>/images/<uuid:pk>/', AdminProjectImageDetailView.as_view(), name='admin-project-image-detail'),
     path('admin/projects/<slug:slug>/metrics/', AdminProjectMetricCreateView.as_view(), name='admin-project-metric-create'),
     path('admin/projects/<slug:slug>/metrics/<uuid:pk>/', AdminProjectMetricDeleteView.as_view(), name='admin-project-metric-delete'),
 

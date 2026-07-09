@@ -16,10 +16,13 @@ class MediaAuthorSerializer(serializers.ModelSerializer):
 
 
 class MediaFolderSerializer(serializers.ModelSerializer):
+    slug = serializers.SlugField(max_length=120, required=False)
+    file_count = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = MediaFolder
-        fields = ('id', 'name', 'slug', 'description', 'parent', 'order', 'is_active', 'created_at', 'updated_at')
-        read_only_fields = ('id', 'created_at', 'updated_at')
+        fields = ('id', 'name', 'slug', 'description', 'parent', 'order', 'is_active', 'file_count', 'created_at', 'updated_at')
+        read_only_fields = ('id', 'file_count', 'created_at', 'updated_at')
 
     def validate(self, attrs):
         parent = attrs.get('parent')

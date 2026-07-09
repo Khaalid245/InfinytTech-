@@ -1,5 +1,7 @@
 from django.db import models
+from django.db.models import Count, Sum
 from rest_framework import viewsets, permissions, status
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from apps.core.response import api_response
@@ -74,6 +76,8 @@ class MediaFolderViewSet(ApiResponseMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()
+        # Annotate file_count
+        qs = qs.annotate(file_count=Count('files'))
         # Non-admins only see active folders
         user = self.request.user
         is_admin = user and user.is_authenticated and getattr(user, 'role', None) in ['admin', 'super_admin']
@@ -163,3 +167,51 @@ class MediaFileViewSet(ApiResponseMixin, viewsets.ModelViewSet):
         if instance.file:
             instance.file.delete(save=False)
         super().perform_destroy(instance)
+
+    @action(detail=True, methods=['get'])
+    def usage(self, request, pk=None):
+        instance = self.get_object()
+        usage_data = {}
+        for f in instance._meta.get_fields():
+            if f.auto_created and not f.concrete:
+                if f.related_model:
+                    try:
+                        related_name = f.get_accessor_name()
+                        manager = getattr(instance, related_name, None)
+                        if manager:
+                            count = manager.count()
+                            if count > 0:
+                                display_name = related_name.replace('_', ' ').title()
+                                usage_data[display_name] = count
+                    except Exception:
+                        pass
+        return api_response(data=usage_data)
+
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        qs = self.get_queryset()
+        total_files = qs.count()
+        
+        from django.db.models import Sum
+        total_storage = qs.aggregate(Sum('file_size'))['file_size__sum'] or 0
+        
+        images_count = qs.filter(mime_type__startswith='image/').count()
+        videos_count = qs.filter(mime_type__startswith='video/').count()
+        documents_count = qs.filter(mime_type='application/pdf').count()
+        
+        # If user is admin, count all folders, else active folders
+        user = request.user
+        is_admin = user and user.is_authenticated and getattr(user, 'role', None) in ['admin', 'super_admin']
+        if is_admin:
+            folders_count = MediaFolder.objects.count()
+        else:
+            folders_count = MediaFolder.objects.filter(is_active=True).count()
+        
+        return api_response(data={
+            "total_files": total_files,
+            "total_storage": total_storage,
+            "folders": folders_count,
+            "images": images_count,
+            "videos": videos_count,
+            "documents": documents_count
+        })

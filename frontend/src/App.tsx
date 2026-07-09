@@ -61,6 +61,7 @@ import AdminServicesPage from './pages/admin/AdminServicesPage';
 import AdminBlogPage from './pages/admin/AdminBlogPage';
 import AdminBlogCategoriesPage from './pages/admin/AdminBlogCategoriesPage';
 import AdminBlogTagsPage from './pages/admin/AdminBlogTagsPage';
+import AdminMediaPage from './pages/admin/AdminMediaPage';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminStubPage from './pages/admin/AdminStubPage';
 import AdminLayout from './components/admin/layout/AdminLayout';
@@ -659,7 +660,7 @@ export const App: React.FC = () => {
               <Route path="tags" element={<AdminBlogTagsPage />} />
             </Route>
             <Route path="settings" element={<AdminStubPage title="Global Settings" description="Configure site-wide preferences, API keys, and metadata." />} />
-            <Route path="media" element={<AdminStubPage title="Media Library" description="Upload and manage images, videos, and documents." />} />
+            <Route path="media" element={<AdminMediaPage />} />
             <Route path="team" element={<AdminStubPage title="Team Members" description="Manage your organization's staff and member profiles." />} />
             <Route path="testimonials" element={<AdminStubPage title="Testimonials" description="Curate and organize reviews from your clients." />} />
             <Route path="leads" element={<AdminStubPage title="Leads CRM" description="Track inquiries and manage your sales pipeline." />} />

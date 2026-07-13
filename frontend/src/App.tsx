@@ -65,12 +65,20 @@ import AdminMediaPage from './pages/admin/AdminMediaPage';
 import AdminTeamPage from './pages/admin/team/AdminTeamPage';
 import AdminTeamDepartmentsPage from './pages/admin/team/AdminTeamDepartmentsPage';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
-import AdminStubPage from './pages/admin/AdminStubPage';
 import AdminTestimonialsPage from './pages/admin/testimonials/AdminTestimonialsPage';
 import AdminClientsPage from './pages/admin/testimonials/AdminClientsPage';
 import AdminLeadsPage from './pages/admin/leads/AdminLeadsPage';
 import AdminUsersPage from './pages/admin/users/AdminUsersPage';
 import AdminRolesPage from './pages/admin/users/AdminRolesPage';
+import SettingsLayout from './pages/admin/settings/SettingsLayout';
+import GeneralSettings from './pages/admin/settings/GeneralSettings';
+import BrandingSettings from './pages/admin/settings/BrandingSettings';
+import ContactSettings from './pages/admin/settings/ContactSettings';
+import SocialSettings from './pages/admin/settings/SocialSettings';
+import SeoSettings from './pages/admin/settings/SeoSettings';
+import EmailSettings from './pages/admin/settings/EmailSettings';
+import SecuritySettings from './pages/admin/settings/SecuritySettings';
+import SystemSettings from './pages/admin/settings/SystemSettings';
 import AdminLayout from './components/admin/layout/AdminLayout';
 import { AuthProvider } from './contexts/AuthContext';
 
@@ -666,7 +674,17 @@ export const App: React.FC = () => {
               <Route path="categories" element={<AdminBlogCategoriesPage />} />
               <Route path="tags" element={<AdminBlogTagsPage />} />
             </Route>
-            <Route path="settings" element={<AdminStubPage title="Global Settings" description="Configure site-wide preferences, API keys, and metadata." />} />
+            <Route path="settings" element={<SettingsLayout />}>
+              <Route index element={<GeneralSettings />} />
+              <Route path="general" element={<GeneralSettings />} />
+              <Route path="branding" element={<BrandingSettings />} />
+              <Route path="contact" element={<ContactSettings />} />
+              <Route path="social" element={<SocialSettings />} />
+              <Route path="seo" element={<SeoSettings />} />
+              <Route path="email" element={<EmailSettings />} />
+              <Route path="security" element={<SecuritySettings />} />
+              <Route path="system" element={<SystemSettings />} />
+            </Route>
             <Route path="media" element={<AdminMediaPage />} />
             <Route path="team">
               <Route index element={<AdminTeamPage />} />

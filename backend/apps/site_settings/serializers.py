@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from apps.media_library.models import MediaFile
-from .models import SiteSettings, OfficeLocation, SocialLink
+from .models import SiteSettings, OfficeLocation, SocialLink, SystemBackup, Notification
 
 
 class MediaImageSerializer(serializers.ModelSerializer):
@@ -31,6 +31,18 @@ class SocialLinkSerializer(serializers.ModelSerializer):
         fields = ('id', 'platform', 'url', 'icon', 'order', 'is_active', 'created_at', 'updated_at')
 
 
+class SystemBackupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SystemBackup
+        fields = ('id', 'file_name', 'file_size', 'status', 'created_at', 'updated_at')
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = ('id', 'title', 'message', 'type', 'is_read', 'created_at', 'updated_at')
+
+
 class SiteSettingsSerializer(serializers.ModelSerializer):
     # Nested relations for Media Files
     primary_logo_details = MediaImageSerializer(source='primary_logo', read_only=True)
@@ -39,6 +51,10 @@ class SiteSettingsSerializer(serializers.ModelSerializer):
     light_logo_details = MediaImageSerializer(source='light_logo', read_only=True)
     favicon_details = MediaImageSerializer(source='favicon', read_only=True)
     open_graph_image_details = MediaImageSerializer(source='open_graph_image', read_only=True)
+    apple_touch_icon_details = MediaImageSerializer(source='apple_touch_icon', read_only=True)
+    loading_logo_details = MediaImageSerializer(source='loading_logo', read_only=True)
+
+    smtp_password = serializers.CharField(write_only=True, required=False, allow_blank=True)
 
     # Inline relationships
     office_locations = OfficeLocationSerializer(many=True, read_only=True)
@@ -48,8 +64,9 @@ class SiteSettingsSerializer(serializers.ModelSerializer):
         model = SiteSettings
         fields = (
             'id', 'is_active',
-            # Company Info
+            # General Info
             'company_name', 'company_tagline', 'company_description', 'founded_year',
+            'company_timezone', 'default_language', 'default_currency',
             # Branding
             'primary_logo', 'primary_logo_details',
             'secondary_logo', 'secondary_logo_details',
@@ -57,11 +74,22 @@ class SiteSettingsSerializer(serializers.ModelSerializer):
             'light_logo', 'light_logo_details',
             'favicon', 'favicon_details',
             'open_graph_image', 'open_graph_image_details',
+            'apple_touch_icon', 'apple_touch_icon_details',
+            'loading_logo', 'loading_logo_details',
+            'brand_colors',
             # Contact
-            'support_email', 'sales_email', 'phone', 'whatsapp', 'office_address', 'google_maps_url',
+            'primary_email', 'support_email', 'sales_email', 'phone', 'whatsapp', 
+            'office_address', 'google_maps_url', 'business_hours',
             # SEO
             'default_meta_title', 'default_meta_description', 'default_keywords',
             'canonical_url', 'robots_index', 'robots_follow',
+            'open_graph_title', 'open_graph_description', 'twitter_card_type',
+            # Email / SMTP
+            'smtp_provider', 'smtp_host', 'smtp_port', 'smtp_username', 'smtp_password',
+            'smtp_encryption', 'smtp_sender_name', 'smtp_sender_email',
+            # Security
+            'password_policy', 'session_timeout', 'max_login_attempts',
+            'two_factor_auth_enabled', 'allowed_origins', 'api_token_expiration',
             # Hero
             'hero_title', 'hero_subtitle', 'hero_primary_button_text', 'hero_primary_button_url',
             'hero_secondary_button_text', 'hero_secondary_button_url',
@@ -77,3 +105,9 @@ class SiteSettingsSerializer(serializers.ModelSerializer):
             'created_at', 'updated_at'
         )
         read_only_fields = ('id', 'created_at', 'updated_at')
+
+    def update(self, instance, validated_data):
+        smtp_password = validated_data.pop('smtp_password', None)
+        if smtp_password is not None:
+            instance.smtp_password = smtp_password
+        return super().update(instance, validated_data)

@@ -38,8 +38,24 @@ const navItems = [
     ]
   },
   { path: '/admin/media', label: 'Media Library', icon: ImageIcon },
-  { path: '/admin/team', label: 'Team', icon: Users },
-  { path: '/admin/testimonials', label: 'Testimonials', icon: MessageSquare },
+  { 
+    path: '/admin/team', 
+    label: 'Team', 
+    icon: Users,
+    children: [
+      { path: '/admin/team', label: 'Members' },
+      { path: '/admin/team/departments', label: 'Departments' },
+    ]
+  },
+  { 
+    path: '/admin/testimonials', 
+    label: 'Testimonials', 
+    icon: MessageSquare,
+    children: [
+      { path: '/admin/testimonials', label: 'Testimonials' },
+      { path: '/admin/clients', label: 'Clients' },
+    ]
+  },
   { path: '/admin/leads', label: 'Leads CRM', icon: Target },
   { path: '/admin/settings', label: 'Site Settings', icon: Settings },
 ];
@@ -48,6 +64,8 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, setIsOpen }) => {
   const { logout } = useAuth();
   const [expandedMenus, setExpandedMenus] = React.useState<Record<string, boolean>>({
     '/admin/blog': true,
+    '/admin/team': true,
+    '/admin/testimonials': true,
   });
 
   const toggleMenu = (path: string) => {
@@ -110,7 +128,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, setIsOpen }) => {
                         <NavLink
                           key={child.path}
                           to={child.path}
-                          end={child.path === '/admin/blog'} // exact match for parent route so it doesn't stay active on sub-routes
+                          end={child.path === item.path} // exact match for parent route so it doesn't stay active on sub-routes
                           className={({ isActive }) => 
                             `block px-3 py-1.5 rounded-md transition-colors text-sm font-medium ${
                               isActive 

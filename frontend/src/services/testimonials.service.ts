@@ -8,7 +8,28 @@ const api = axios.create({
   timeout: 10_000,
   headers: { 'Content-Type': 'application/json' },
 });
-import type { Client, Testimonial, TestimonialFilters } from '../types/testimonials';
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+import type { Client, Testimonial, TestimonialFilters, AdminClientPayload, AdminTestimonialPayload } from '../types/testimonials';
 
 export const getClients = async (params?: { industry?: string; country?: string; search?: string }): Promise<PaginatedResponse<Client>> => {
   const response = await api.get<ApiResponse<PaginatedResponse<Client>>>('/testimonials/clients/', { params });
@@ -32,3 +53,45 @@ export const getFeaturedTestimonials = async (): Promise<PaginatedResponse<Testi
   const response = await api.get<ApiResponse<PaginatedResponse<Testimonial>>>('/testimonials/featured/');
   return response.data.data;
 };
+
+// -----------------------------------------------------------------------------
+// Admin APIs (Require JWT)
+// -----------------------------------------------------------------------------
+
+export async function getAdminClients(): Promise<Client[]> {
+  const { data } = await api.get<ApiResponse<Client[]>>('/testimonials/admin/clients/');
+  return data.data;
+}
+
+export async function createAdminClient(payload: AdminClientPayload): Promise<Client> {
+  const { data } = await api.post<ApiResponse<Client>>('/testimonials/admin/clients/', payload);
+  return data.data;
+}
+
+export async function updateAdminClient(id: string, payload: AdminClientPayload): Promise<Client> {
+  const { data } = await api.patch<ApiResponse<Client>>(`/testimonials/admin/clients/${id}/`, payload);
+  return data.data;
+}
+
+export async function deleteAdminClient(id: string): Promise<void> {
+  await api.delete(`/testimonials/admin/clients/${id}/`);
+}
+
+export async function getAdminTestimonials(): Promise<Testimonial[]> {
+  const { data } = await api.get<ApiResponse<Testimonial[]>>('/testimonials/admin/');
+  return data.data;
+}
+
+export async function createAdminTestimonial(payload: AdminTestimonialPayload): Promise<Testimonial> {
+  const { data } = await api.post<ApiResponse<Testimonial>>('/testimonials/admin/', payload);
+  return data.data;
+}
+
+export async function updateAdminTestimonial(id: string, payload: AdminTestimonialPayload): Promise<Testimonial> {
+  const { data } = await api.patch<ApiResponse<Testimonial>>(`/testimonials/admin/${id}/`, payload);
+  return data.data;
+}
+
+export async function deleteAdminTestimonial(id: string): Promise<void> {
+  await api.delete(`/testimonials/admin/${id}/`);
+}

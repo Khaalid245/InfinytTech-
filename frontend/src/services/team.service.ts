@@ -11,6 +11,26 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 export interface TeamFilters {
   department?: string;
   featured?: boolean;
@@ -53,4 +73,53 @@ export async function getTeamMembers(
 export async function getTeamMemberBySlug(slug: string): Promise<TeamMember> {
   const { data } = await api.get<ApiResponse<TeamMember>>(`/${slug}/`);
   return data.data;
+}
+
+// -----------------------------------------------------------------------------
+// Admin APIs (Require JWT)
+// -----------------------------------------------------------------------------
+
+export async function getAdminDepartments(): Promise<Department[]> {
+  const { data } = await api.get<ApiResponse<Department[]>>('/admin/departments/');
+  return data.data;
+}
+
+export async function createAdminDepartment(payload: Partial<Department>): Promise<Department> {
+  const { data } = await api.post<ApiResponse<Department>>('/admin/departments/', payload);
+  return data.data;
+}
+
+export async function updateAdminDepartment(id: string, payload: Partial<Department>): Promise<Department> {
+  const { data } = await api.patch<ApiResponse<Department>>(`/admin/departments/${id}/`, payload);
+  return data.data;
+}
+
+export async function deleteAdminDepartment(id: string): Promise<void> {
+  await api.delete(`/admin/departments/${id}/`);
+}
+
+// Team Members Admin
+
+export async function getAdminTeamMembers(): Promise<TeamMember[]> {
+  const { data } = await api.get<ApiResponse<TeamMember[]>>('/admin/members/');
+  return data.data;
+}
+
+export type TeamMemberPayload = Omit<Partial<TeamMember>, 'department' | 'photo'> & {
+  department?: string;
+  photo?: string | null;
+};
+
+export async function createAdminTeamMember(payload: TeamMemberPayload): Promise<TeamMember> {
+  const { data } = await api.post<ApiResponse<TeamMember>>('/admin/members/', payload);
+  return data.data;
+}
+
+export async function updateAdminTeamMember(id: string, payload: TeamMemberPayload): Promise<TeamMember> {
+  const { data } = await api.patch<ApiResponse<TeamMember>>(`/admin/members/${id}/`, payload);
+  return data.data;
+}
+
+export async function deleteAdminTeamMember(id: string): Promise<void> {
+  await api.delete(`/admin/members/${id}/`);
 }

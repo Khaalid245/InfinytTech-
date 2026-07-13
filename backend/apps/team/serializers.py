@@ -9,13 +9,15 @@ from .models import Department, TeamMember
 class DepartmentSerializer(serializers.ModelSerializer):
     """Full serializer for Department — used in public and admin contexts."""
 
+    members_count = serializers.IntegerField(read_only=True, required=False)
+
     class Meta:
         model = Department
         fields = (
             'id', 'name', 'slug', 'description',
-            'display_order', 'is_active', 'created_at', 'updated_at'
+            'display_order', 'is_active', 'members_count', 'created_at', 'updated_at'
         )
-        read_only_fields = ('id', 'created_at', 'updated_at')
+        read_only_fields = ('id', 'created_at', 'updated_at', 'members_count')
 
     def validate_slug(self, value):
         qs = Department.objects.filter(slug=value)
@@ -127,6 +129,13 @@ class AdminTeamMemberSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('id', 'full_name', 'created_at', 'updated_at',
                             'photo_details', 'department_details')
+
+    def to_representation(self, instance):
+        repr = super().to_representation(instance)
+        # Map IDs back to full objects for frontend compatibility
+        repr['department'] = DepartmentSerializer(instance.department).data if instance.department else None
+        repr['photo'] = TeamMemberPhotoSerializer(instance.photo).data if instance.photo else None
+        return repr
 
     # ------------------------------------------------------------------
     # Field-level validation

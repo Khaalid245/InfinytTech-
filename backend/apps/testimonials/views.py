@@ -9,6 +9,7 @@ from apps.core.pagination import StandardPagination
 from apps.team.views import ApiResponseMixin  # Reuse the standardized response wrapper
 
 from .models import Client, Testimonial
+from django.db.models import Count
 from .serializers import (
     ClientSerializer,
     TestimonialSerializer,
@@ -41,7 +42,7 @@ class PublicTestimonialViewSet(ApiResponseMixin, viewsets.ReadOnlyModelViewSet):
     """
     queryset = Testimonial.objects.filter(
         status=Testimonial.Status.PUBLISHED
-    ).select_related('client', 'project', 'author_photo', 'client__company_logo')
+    ).select_related('client', 'related_project', 'author_photo', 'client__company_logo')
     
     serializer_class = TestimonialSerializer
     permission_classes = [AllowAny]
@@ -78,14 +79,18 @@ class AdminClientViewSet(ApiResponseMixin, viewsets.ModelViewSet):
     """
     Admin API for complete Client management.
     """
-    queryset = Client.objects.all().order_by('-created_at')
     serializer_class = AdminClientSerializer
     permission_classes = [IsAuthenticated, IsAdminOrSuperAdmin]
-    pagination_class = StandardPagination
+    pagination_class = None
     
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['is_active', 'industry', 'country']
     search_fields = ['company_name', 'slug', 'website']
+
+    def get_queryset(self):
+        return Client.objects.annotate(
+            testimonials_count=Count('testimonials')
+        ).order_by('-created_at')
 
 
 class AdminTestimonialViewSet(ApiResponseMixin, viewsets.ModelViewSet):
@@ -95,7 +100,7 @@ class AdminTestimonialViewSet(ApiResponseMixin, viewsets.ModelViewSet):
     queryset = Testimonial.objects.all().order_by('-created_at')
     serializer_class = AdminTestimonialSerializer
     permission_classes = [IsAuthenticated, IsAdminOrSuperAdmin]
-    pagination_class = StandardPagination
+    pagination_class = None
     
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['status', 'featured', 'rating']

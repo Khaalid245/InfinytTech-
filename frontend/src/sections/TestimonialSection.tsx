@@ -100,7 +100,7 @@ export const TestimonialSection: React.FC<TestimonialSectionProps> = ({
                   imageUrl={t.author_photo?.file}
                   clientLogoUrl={t.client.company_logo?.file}
                   rating={t.rating}
-                  projectUrl={t.project ? `/work/${t.project.slug}` : undefined}
+                  projectUrl={t.related_project ? `/work?library=${t.related_project.slug}` : undefined}
                   className="h-full w-full"
                 />
               </StaggerItem>

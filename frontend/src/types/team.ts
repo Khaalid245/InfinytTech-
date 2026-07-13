@@ -6,6 +6,7 @@ export interface Department {
   description: string;
   display_order: number;
   is_active: boolean;
+  members_count?: number;
   created_at: string;
 }
 
@@ -31,10 +32,12 @@ export interface TeamMember {
   phone: string;
   linkedin_url: string;
   github_url: string;
+  twitter_url: string;
   website_url: string;
   skills: string[];
   years_of_experience: number | null;
   display_order: number;
   is_featured: boolean;
   is_active: boolean;
+  created_at: string;
 }

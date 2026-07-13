@@ -42,11 +42,11 @@ export default function DataTable<T>({ columns, data, keyExtractor, onRowClick, 
                 key={keyExtractor(item)} 
                 draggable={draggable}
                 onDragStart={(e) => onDragStart && onDragStart(item, e)}
-                className={`transition-colors ${onRowClick ? 'cursor-pointer' : ''} ${isSelected ? 'bg-accent-primary/10' : 'hover:bg-black/2 dark:hover:bg-white/2'}`}
+                className={`transition-colors group ${onRowClick ? 'cursor-pointer' : ''} ${isSelected ? 'bg-accent-primary/10' : 'hover:bg-black/5 dark:hover:bg-white/5'}`}
                 onClick={() => onRowClick && onRowClick(item)}
               >
                 {onSelectRow && (
-                  <td className="px-6 py-4 w-12 text-center" onClick={(e) => onSelectRow(item, e)}>
+                  <td className="px-6 py-4 w-12 text-center align-middle" onClick={(e) => onSelectRow(item, e)}>
                     <input 
                       type="checkbox" 
                       checked={isSelected || false}
@@ -56,7 +56,7 @@ export default function DataTable<T>({ columns, data, keyExtractor, onRowClick, 
                   </td>
                 )}
                 {columns.map((col, i) => (
-                  <td key={i} className="px-6 py-4 whitespace-nowrap">
+                  <td key={i} className="px-6 py-4 whitespace-nowrap align-middle">
                     {col.accessor(item)}
                   </td>
                 ))}

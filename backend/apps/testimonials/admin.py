@@ -28,7 +28,7 @@ class TestimonialAdmin(admin.ModelAdmin):
     )
     list_filter = ('status', 'featured', 'rating', 'client__industry')
     search_fields = ('author_name', 'testimonial', 'client__company_name')
-    autocomplete_fields = ['client', 'project', 'author_photo']
+    autocomplete_fields = ['client', 'related_project', 'author_photo']
     list_editable = ('featured', 'status', 'display_order')
     
     actions = ['publish_testimonials', 'archive_testimonials', 'feature_testimonials', 'unfeature_testimonials']

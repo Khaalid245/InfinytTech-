@@ -76,6 +76,7 @@ export interface ProjectDetail extends ProjectListItem {
   meta_description: string;
   images: ProjectImage[];
   metrics: ProjectMetric[];
+  testimonials?: any[];
   updated_at: string;
 }
 

@@ -20,13 +20,13 @@ class ClientSerializer(serializers.ModelSerializer):
 
 class TestimonialSerializer(serializers.ModelSerializer):
     client = ClientSerializer(read_only=True)
-    project = ProjectListSerializer(read_only=True)
+    related_project = ProjectListSerializer(read_only=True)
     author_photo = MediaFileSerializer(read_only=True)
 
     class Meta:
         model = Testimonial
         fields = [
-            'id', 'client', 'project', 'author_name', 'author_position', 
+            'id', 'client', 'related_project', 'author_name', 'author_position', 
             'author_photo', 'testimonial', 'rating', 'featured', 
             'published_at'
         ]
@@ -37,10 +37,17 @@ class TestimonialSerializer(serializers.ModelSerializer):
 # ===========================================================================
 
 class AdminClientSerializer(serializers.ModelSerializer):
+    testimonials_count = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = Client
         fields = '__all__'
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'testimonials_count']
+
+    def to_representation(self, instance):
+        repr = super().to_representation(instance)
+        repr['company_logo'] = MediaFileSerializer(instance.company_logo).data if instance.company_logo else None
+        return repr
 
     def validate_slug(self, value):
         if value:
@@ -58,6 +65,12 @@ class AdminTestimonialSerializer(serializers.ModelSerializer):
         model = Testimonial
         fields = '__all__'
         read_only_fields = ['id', 'created_at', 'updated_at', 'published_at']
+
+    def to_representation(self, instance):
+        repr = super().to_representation(instance)
+        repr['client'] = ClientSerializer(instance.client).data if instance.client else None
+        repr['author_photo'] = MediaFileSerializer(instance.author_photo).data if instance.author_photo else None
+        return repr
 
     def validate_testimonial(self, value):
         if not value or not value.strip():

@@ -153,9 +153,14 @@ class ApiResponseMixin:
 
 @extend_schema(tags=['Team — Admin'])
 class AdminDepartmentViewSet(ApiResponseMixin, viewsets.ModelViewSet):
-    queryset = Department.objects.all().order_by('display_order', 'name')
     serializer_class = DepartmentSerializer
     permission_classes = [permissions.IsAuthenticated, IsAdminOrSuperAdmin]
+    pagination_class = None
+
+    def get_queryset(self):
+        return Department.objects.annotate(
+            members_count=django_models.Count('members')
+        ).order_by('display_order', 'name')
 
 
 @extend_schema(tags=['Team — Admin'])
@@ -168,3 +173,4 @@ class AdminTeamMemberViewSet(ApiResponseMixin, viewsets.ModelViewSet):
     )
     serializer_class = AdminTeamMemberSerializer
     permission_classes = [permissions.IsAuthenticated, IsAdminOrSuperAdmin]
+    pagination_class = None

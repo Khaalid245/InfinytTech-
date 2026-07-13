@@ -101,6 +101,7 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
     images = ProjectImageSerializer(many=True, read_only=True)
     metrics = ProjectMetricSerializer(many=True, read_only=True)
     featured_image = serializers.SerializerMethodField()
+    testimonials = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -110,10 +111,16 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
             'status', 'is_featured',
             'meta_title', 'meta_description',
             'category', 'technologies', 'tags',
-            'images', 'metrics',
+            'images', 'metrics', 'testimonials',
             'created_at', 'updated_at',
         )
         read_only_fields = ('id', 'created_at', 'updated_at')
+
+    def get_testimonials(self, obj):
+        from apps.testimonials.serializers import TestimonialSerializer
+        # Only return published testimonials linked to this project
+        testimonials = obj.testimonials.filter(status='PUBLISHED')
+        return TestimonialSerializer(testimonials, many=True, context=self.context).data
 
     def get_featured_image(self, obj):
         request = self.context.get('request')

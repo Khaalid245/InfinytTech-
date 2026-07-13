@@ -59,7 +59,7 @@ class Testimonial(UUIDModel, TimeStampedModel):
         on_delete=models.PROTECT, 
         related_name='testimonials'
     )
-    project = models.ForeignKey(
+    related_project = models.ForeignKey(
         'portfolio.Project',
         on_delete=models.SET_NULL,
         null=True,

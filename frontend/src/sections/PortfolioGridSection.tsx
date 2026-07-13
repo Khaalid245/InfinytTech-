@@ -4,6 +4,7 @@ import { cn } from '../utils/cn';
 import { X } from 'lucide-react';
 import { useProjects, useCategories, useProjectDetail } from '../hooks/usePortfolio';
 import type { ProjectListItem } from '../types/portfolio';
+import TestimonialCard from '../components/ui/TestimonialCard';
 
 interface PortfolioGridSectionProps {
   theme: 'dark' | 'light';
@@ -809,6 +810,30 @@ const ProjectDetailModal: React.FC<ModalProps> = ({
                           </div>
                         )}
                       </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Linked Testimonials */}
+              {project.testimonials && project.testimonials.length > 0 && (
+                <div className="flex flex-col gap-4 text-left border-t pt-8 mt-4" style={{ borderColor: borderRaw }}>
+                  <p className="text-[10px] uppercase tracking-widest font-semibold" style={{ color: textDim }}>
+                    Client Testimonials
+                  </p>
+                  <div className="flex flex-col gap-6">
+                    {project.testimonials.map(t => (
+                      <TestimonialCard
+                        key={t.id}
+                        quote={t.testimonial}
+                        author={t.author_name}
+                        role={t.author_position}
+                        company={t.client?.company_name || 'Client'}
+                        imageUrl={t.author_photo?.file}
+                        clientLogoUrl={t.client?.company_logo?.file}
+                        rating={t.rating}
+                        className="w-full"
+                      />
                     ))}
                   </div>
                 </div>

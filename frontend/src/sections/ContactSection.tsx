@@ -48,6 +48,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
+    company: '',
     service: 'design',
     message: '',
     privacy: false,
@@ -110,6 +112,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
         first_name,
         last_name,
         email: formData.email,
+        phone: formData.phone,
+        company: formData.company,
         message: formData.message,
         project_type,
         source: 'Contact Form'
@@ -357,6 +361,23 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                     value={formData.email}
                     onChange={handleInputChange}
                     error={errors.email}
+                    className={premiumDark ? 'bg-primary-bg focus:border-accent-primary focus:bg-primary-bg' : undefined}
+                  />
+                  <Input
+                    name="phone"
+                    label="Phone Number (Optional)"
+                    type="tel"
+                    placeholder="+1 234 567 890"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className={premiumDark ? 'bg-primary-bg focus:border-accent-primary focus:bg-primary-bg' : undefined}
+                  />
+                  <Input
+                    name="company"
+                    label="Company (Optional)"
+                    placeholder="Acme Corp"
+                    value={formData.company}
+                    onChange={handleInputChange}
                     className={premiumDark ? 'bg-primary-bg focus:border-accent-primary focus:bg-primary-bg' : undefined}
                   />
                 </div>

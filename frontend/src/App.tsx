@@ -68,6 +68,7 @@ import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminStubPage from './pages/admin/AdminStubPage';
 import AdminTestimonialsPage from './pages/admin/testimonials/AdminTestimonialsPage';
 import AdminClientsPage from './pages/admin/testimonials/AdminClientsPage';
+import AdminLeadsPage from './pages/admin/leads/AdminLeadsPage';
 import AdminLayout from './components/admin/layout/AdminLayout';
 import { AuthProvider } from './contexts/AuthContext';
 
@@ -673,7 +674,7 @@ export const App: React.FC = () => {
               <Route index element={<AdminTestimonialsPage />} />
             </Route>
             <Route path="clients" element={<AdminClientsPage />} />
-            <Route path="leads" element={<AdminStubPage title="Leads CRM" description="Track inquiries and manage your sales pipeline." />} />
+            <Route path="leads" element={<AdminLeadsPage />} />
           </Route>
         </Routes>
       </Router>

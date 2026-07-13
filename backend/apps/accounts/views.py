@@ -11,9 +11,15 @@ from .serializers import (
     UserSerializer,
     UserListSerializer,
     CreateUserSerializer,
-    UpdateUserSerializer
+    UpdateUserSerializer,
+    UserActivitySerializer
 )
 from .permissions import IsAdminOrSuperAdmin
+from .models import UserActivity
+from apps.core.pagination import StandardPagination
+from apps.team.views import ApiResponseMixin
+from rest_framework import viewsets, filters
+from rest_framework.decorators import action
 
 User = get_user_model()
 
@@ -51,21 +57,103 @@ class CurrentUserView(generics.RetrieveUpdateAPIView):
         return UserSerializer
 
 
-class UserListCreateView(generics.ListCreateAPIView):
+class UserAdminViewSet(ApiResponseMixin, viewsets.ModelViewSet):
+    """
+    Enterprise user management endpoints.
+    """
     permission_classes = (IsAuthenticated, IsAdminOrSuperAdmin)
+    pagination_class = StandardPagination
     queryset = User.objects.all().order_by('-created_at')
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['first_name', 'last_name', 'email', 'department', 'role']
 
     def get_serializer_class(self):
-        if self.request.method == 'POST':
+        if self.action == 'list':
+            return UserListSerializer
+        if self.action == 'create':
             return CreateUserSerializer
-        return UserListSerializer
-
-
-class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsAuthenticated, IsAdminOrSuperAdmin)
-    queryset = User.objects.all()
-
-    def get_serializer_class(self):
-        if self.request.method in ['PATCH', 'PUT']:
+        if self.action in ['update', 'partial_update']:
             return UpdateUserSerializer
         return UserSerializer
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        role = self.request.query_params.get('role')
+        department = self.request.query_params.get('department')
+        status = self.request.query_params.get('status')
+        
+        if role:
+            qs = qs.filter(role=role)
+        if department:
+            qs = qs.filter(department__icontains=department)
+        if status:
+            is_active = status.lower() == 'active'
+            qs = qs.filter(is_active=is_active)
+            
+        return qs
+
+    def perform_destroy(self, instance):
+        if self.request.user.id == instance.id:
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError("You cannot delete your own account.")
+            
+        if instance.role == User.Role.SUPER_ADMIN:
+            # Check if this is the last super admin
+            super_admin_count = User.objects.filter(role=User.Role.SUPER_ADMIN, is_active=True).count()
+            if super_admin_count <= 1:
+                from rest_framework.exceptions import ValidationError
+                raise ValidationError("Cannot delete the last remaining Super Admin.")
+                
+        # Log deletion (though the user will be gone, this is just for safety)
+        super().perform_destroy(instance)
+
+    @action(detail=True, methods=['post'])
+    def reset_password(self, request, pk=None):
+        user = self.get_object()
+        new_password = request.data.get('password')
+        if not new_password:
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError("Password is required.")
+        
+        user.set_password(new_password)
+        user.save()
+        
+        UserActivity.objects.create(
+            user=user,
+            action=UserActivity.ActionType.PASSWORD_RESET,
+            description="Password reset by administrator.",
+            ip_address=request.META.get('REMOTE_ADDR')
+        )
+        return self.api_response(message="Password reset successfully.")
+
+    @action(detail=True, methods=['post'])
+    def toggle_status(self, request, pk=None):
+        user = self.get_object()
+        
+        if self.request.user.id == user.id:
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError("You cannot deactivate your own account.")
+            
+        if user.role == User.Role.SUPER_ADMIN and user.is_active:
+            super_admin_count = User.objects.filter(role=User.Role.SUPER_ADMIN, is_active=True).count()
+            if super_admin_count <= 1:
+                from rest_framework.exceptions import ValidationError
+                raise ValidationError("Cannot deactivate the last remaining Super Admin.")
+                
+        user.is_active = not user.is_active
+        user.save()
+        
+        UserActivity.objects.create(
+            user=user,
+            action=UserActivity.ActionType.STATUS_CHANGE,
+            description=f"Status changed to {'Active' if user.is_active else 'Inactive'} by administrator.",
+            ip_address=request.META.get('REMOTE_ADDR')
+        )
+        return self.api_response(data={"is_active": user.is_active}, message="User status updated successfully.")
+
+    @action(detail=True, methods=['get'])
+    def activity(self, request, pk=None):
+        user = self.get_object()
+        activities = user.activities.all()[:50]
+        serializer = UserActivitySerializer(activities, many=True)
+        return self.api_response(data=serializer.data)

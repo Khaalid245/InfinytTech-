@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type { PaginatedResponse } from '../types/portfolio';
-import type { BlogAuthor } from '../types/blog';
+import type { User, UserListResponse, UserActivity } from '../types/users';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
 
@@ -30,21 +30,48 @@ api.interceptors.response.use(
   }
 );
 
-export async function getUsers(): Promise<PaginatedResponse<BlogAuthor>> {
-  const { data } = await api.get<PaginatedResponse<BlogAuthor>>('/users/');
-  
-  if ('data' in data && (data as any).data?.results) {
-    return (data as any).data;
-  }
-  if ('results' in data) {
-    return data as any;
-  }
-  // DRF generic fallback
-  const isArray = Array.isArray(data);
-  return {
-    count: isArray ? (data as any).length : 0,
-    next: null,
-    previous: null,
-    results: isArray ? (data as any) : [],
-  };
+interface UsersParams {
+  page?: number;
+  search?: string;
+  role?: string;
+  department?: string;
+  status?: string;
+}
+
+export async function getUsers(params?: UsersParams): Promise<PaginatedResponse<UserListResponse>> {
+  const { data } = await api.get('/users/', { params });
+  return data.data || data; // Handle ApiResponseMixin or direct Generic Response
+}
+
+export async function getUser(id: string): Promise<User> {
+  const { data } = await api.get(`/users/${id}/`);
+  return data.data || data;
+}
+
+export async function createUser(userData: Partial<User>): Promise<User> {
+  const { data } = await api.post('/users/', userData);
+  return data.data || data;
+}
+
+export async function updateUser(id: string, userData: Partial<User>): Promise<User> {
+  const { data } = await api.patch(`/users/${id}/`, userData);
+  return data.data || data;
+}
+
+export async function deleteUser(id: string): Promise<void> {
+  await api.delete(`/users/${id}/`);
+}
+
+export async function toggleUserStatus(id: string): Promise<{ is_active: boolean }> {
+  const { data } = await api.post(`/users/${id}/toggle_status/`);
+  return data.data || data;
+}
+
+export async function resetUserPassword(id: string, password: string): Promise<void> {
+  await api.post(`/users/${id}/reset_password/`, { password });
+}
+
+export async function getUserActivity(id: string): Promise<UserActivity[]> {
+  const { data } = await api.get(`/users/${id}/activity/`);
+  return data.data || data;
 }

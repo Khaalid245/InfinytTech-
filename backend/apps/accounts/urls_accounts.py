@@ -1,7 +1,10 @@
-from django.urls import path
-from .views import UserListCreateView, UserRetrieveUpdateDestroyView
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import UserAdminViewSet
+
+router = DefaultRouter()
+router.register(r'users', UserAdminViewSet, basename='users')
 
 urlpatterns = [
-    path('users/', UserListCreateView.as_view(), name='users-list-create'),
-    path('users/<uuid:pk>/', UserRetrieveUpdateDestroyView.as_view(), name='users-detail'),
+    path('', include(router.urls)),
 ]

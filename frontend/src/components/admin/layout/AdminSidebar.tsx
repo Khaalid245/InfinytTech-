@@ -9,8 +9,9 @@ import {
   Users, 
   MessageSquare, 
   Target, 
-  Settings, 
-  User, 
+  Settings,
+  User,
+  Shield,
   LogOut,
   Menu,
   ChevronDown,
@@ -57,6 +58,15 @@ const navItems = [
     ]
   },
   { path: '/admin/leads', label: 'Leads CRM', icon: Target },
+  { 
+    path: '/admin/users', 
+    label: 'Administration', 
+    icon: Shield,
+    children: [
+      { path: '/admin/users', label: 'Users' },
+      { path: '/admin/roles', label: 'Roles & Permissions' },
+    ]
+  },
   { path: '/admin/settings', label: 'Site Settings', icon: Settings },
 ];
 
@@ -66,6 +76,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, setIsOpen }) => {
     '/admin/blog': true,
     '/admin/team': true,
     '/admin/testimonials': true,
+    '/admin/users': true,
   });
 
   const toggleMenu = (path: string) => {

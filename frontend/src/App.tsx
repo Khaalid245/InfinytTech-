@@ -69,6 +69,8 @@ import AdminStubPage from './pages/admin/AdminStubPage';
 import AdminTestimonialsPage from './pages/admin/testimonials/AdminTestimonialsPage';
 import AdminClientsPage from './pages/admin/testimonials/AdminClientsPage';
 import AdminLeadsPage from './pages/admin/leads/AdminLeadsPage';
+import AdminUsersPage from './pages/admin/users/AdminUsersPage';
+import AdminRolesPage from './pages/admin/users/AdminRolesPage';
 import AdminLayout from './components/admin/layout/AdminLayout';
 import { AuthProvider } from './contexts/AuthContext';
 
@@ -675,6 +677,10 @@ export const App: React.FC = () => {
             </Route>
             <Route path="clients" element={<AdminClientsPage />} />
             <Route path="leads" element={<AdminLeadsPage />} />
+            <Route path="users">
+              <Route index element={<AdminUsersPage />} />
+            </Route>
+            <Route path="roles" element={<AdminRolesPage />} />
           </Route>
         </Routes>
       </Router>

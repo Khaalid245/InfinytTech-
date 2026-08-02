@@ -2,6 +2,7 @@ import React, { useState, useCallback, useId } from 'react';
 import { cn } from '../utils/cn';
 import { Plus, Minus, Calendar, ArrowRight } from 'lucide-react';
 import { useFaqs } from '../hooks/useServices';
+import { useSiteSettings } from '../hooks/useSiteSettings';
 import type { FAQ } from '../types/services';
 
 // ─── Accordion Item ────────────────────────────────────────────────────────────
@@ -152,6 +153,7 @@ interface ServicesFaqSectionProps {
 export const ServicesFaqSection: React.FC<ServicesFaqSectionProps> = ({ theme }) => {
   const isDark = theme === 'dark';
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const { data: settings } = useSiteSettings();
 
   const { data: rawFaqs = [], isLoading, isError } = useFaqs();
   const faqs = [...rawFaqs].sort((a, b) => a.order - b.order);
@@ -261,7 +263,7 @@ export const ServicesFaqSection: React.FC<ServicesFaqSectionProps> = ({ theme })
           {/* Subtitle */}
           <p className={cn('text-base sm:text-[17px] font-light leading-[1.75]', textSecondary)}>
             We believe great partnerships begin with clarity. Here are answers to the questions
-            clients ask most before working with InfinytTech.
+            clients ask most before working with {settings?.company_name || 'us'}.
           </p>
         </div>
 

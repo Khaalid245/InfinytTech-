@@ -9,7 +9,6 @@ import {
   Users, 
   MessageSquare, 
   Target, 
-  Settings,
   User,
   Shield,
   LogOut,
@@ -65,9 +64,9 @@ const navItems = [
     children: [
       { path: '/admin/users', label: 'Users' },
       { path: '/admin/roles', label: 'Roles & Permissions' },
+      { path: '/admin/settings', label: 'Platform Settings' },
     ]
   },
-  { path: '/admin/settings', label: 'Site Settings', icon: Settings },
 ];
 
 const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, setIsOpen }) => {

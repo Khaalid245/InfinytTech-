@@ -5,17 +5,23 @@
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
 
-/**
- * Resolves an image URL safely. Prepends the backend API base URL if the path is relative.
- */
 export function resolveImageUrl(url: string | null | undefined): string | undefined {
   if (!url) return undefined;
   
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    return url;
+  let cleanedUrl = url;
+  
+  // Clean port-less localhost backend misconfigurations by rewriting to BASE_URL
+  if (cleanedUrl.startsWith('http://localhost/') && !cleanedUrl.startsWith('http://localhost:')) {
+    cleanedUrl = cleanedUrl.replace('http://localhost', BASE_URL);
+  } else if (cleanedUrl.startsWith('http://127.0.0.1/') && !cleanedUrl.startsWith('http://127.0.0.1:')) {
+    cleanedUrl = cleanedUrl.replace('http://127.0.0.1', BASE_URL);
+  }
+
+  if (cleanedUrl.startsWith('http://') || cleanedUrl.startsWith('https://')) {
+    return cleanedUrl;
   }
   
-  // Clean slash mapping
-  const cleanUrl = url.startsWith('/') ? url : `/${url}`;
+  // Clean slash mapping for relative URLs
+  const cleanUrl = cleanedUrl.startsWith('/') ? cleanedUrl : `/${cleanedUrl}`;
   return `${BASE_URL}${cleanUrl}`;
 }

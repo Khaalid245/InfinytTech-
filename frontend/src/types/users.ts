@@ -9,10 +9,11 @@ export type UserRole =
 
 export interface UserActivity {
   id: string;
-  action: 'login' | 'logout' | 'password_reset' | 'profile_update' | 'role_change' | 'status_change';
+  action: 'login' | 'logout' | 'password_reset' | 'profile_update' | 'role_change' | 'status_change' | 'account_lock' | 'account_unlock';
   description: string;
   ip_address: string | null;
   user_agent: string;
+  user_email?: string;
   created_at: string;
 }
 
@@ -38,6 +39,9 @@ export interface User {
   last_login: string | null;
   created_at: string;
   updated_at: string;
+  failed_login_attempts: number;
+  locked_until: string | null;
+  max_login_attempts: number;
 }
 
 export interface UserListResponse {
@@ -52,4 +56,6 @@ export interface UserListResponse {
   last_login: string | null;
   created_at: string;
   avatar_url: string | null;
+  failed_login_attempts: number;
+  locked_until: string | null;
 }

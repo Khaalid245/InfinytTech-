@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '../../utils/cn';
 import { useSiteSettings } from '../../hooks/useSiteSettings';
-import fallbackLogo from '../../../docs/logo.png';
+import { resolveImageUrl } from '../../utils/imageHelper';
 
 interface LogoProps {
   className?: string;
@@ -15,7 +15,7 @@ export const Logo: React.FC<LogoProps> = ({ className, theme = 'dark' }) => {
     return <div className={cn("bg-slate-200/20 animate-pulse rounded-md", className)} style={{ width: '120px' }} />;
   }
 
-  let logoUrl = fallbackLogo;
+  let logoUrl: string | null = null;
   if (settings) {
     if (theme === 'dark' && settings.dark_logo_details?.url) {
       logoUrl = settings.dark_logo_details.url;
@@ -26,12 +26,16 @@ export const Logo: React.FC<LogoProps> = ({ className, theme = 'dark' }) => {
     }
   }
 
-  const altText = settings?.company_name ? `${settings.company_name} Logo` : 'InfinityTech Logo';
+  const companyName = settings?.company_name || 'Company';
+
+  if (!logoUrl) {
+    return <span className={cn("font-extrabold text-xl tracking-tighter select-none", className)}>{companyName}</span>;
+  }
 
   return (
     <img 
-      src={logoUrl} 
-      alt={altText} 
+      src={resolveImageUrl(logoUrl)} 
+      alt={`${companyName} Logo`} 
       className={cn("w-auto object-contain transition-opacity duration-300", className)} 
     />
   );

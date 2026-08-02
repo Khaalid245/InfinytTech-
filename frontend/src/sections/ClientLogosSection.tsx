@@ -3,6 +3,7 @@ import React from 'react';
 import { Container } from '../components/layout/Container';
 import { Section } from '../components/layout/Section';
 import { useClients } from '../hooks/useTestimonials';
+import { useSiteSettings } from '../hooks/useSiteSettings';
 import { Image } from '../components/ui/Image';
 import { StaggerContainer, StaggerItem } from '../components/animation/StaggerContainer';
 
@@ -18,6 +19,7 @@ export const ClientLogosSection: React.FC<ClientLogosSectionProps> = ({
   className,
 }) => {
   const { data: clientsData, isLoading, isError } = useClients();
+  const { data: settings } = useSiteSettings();
   const clients = clientsData?.results || [];
 
   return (
@@ -33,7 +35,7 @@ export const ClientLogosSection: React.FC<ClientLogosSectionProps> = ({
               {title}
             </h3>
             <p className="text-xs md:text-sm text-secondary-text/70 max-w-2xl mx-auto">
-              Organizations that trust InfinytTech to build modern digital solutions.
+              Organizations that trust {settings?.company_name || 'us'} to build modern digital solutions.
             </p>
           </div>
         )}

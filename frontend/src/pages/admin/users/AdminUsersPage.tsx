@@ -119,13 +119,30 @@ export default function AdminUsersPage() {
       )
     },
     {
-      header: 'Status',
-      accessor: (user: UserListResponse) => (
-        <div className="flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${user.is_active ? 'bg-green-500' : 'bg-red-500'}`} />
-          <span className="text-sm">{user.is_active ? 'Active' : 'Inactive'}</span>
-        </div>
-      )
+      header: 'Account Status',
+      accessor: (user: UserListResponse) => {
+        const now = new Date();
+        const isLocked = user.locked_until ? new Date(user.locked_until) > now : false;
+        if (isLocked) {
+          return (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+              🔒 Locked
+            </span>
+          );
+        }
+        if (!user.is_active) {
+          return (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-500/10 text-gray-500 border border-gray-500/20">
+              ⚫ Disabled
+            </span>
+          );
+        }
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+            🟢 Active
+          </span>
+        );
+      }
     },
     {
       header: 'Last Login',
@@ -147,10 +164,12 @@ export default function AdminUsersPage() {
   };
 
   const users = usersData?.results || [];
+  const now = new Date();
   
   // Calculate KPIs
   const totalUsers = usersData?.count || 0;
-  const activeUsers = users.filter((u: UserListResponse) => u.is_active).length;
+  const activeUsers = users.filter((u: UserListResponse) => u.is_active && !(u.locked_until && new Date(u.locked_until) > now)).length;
+  const lockedUsers = users.filter((u: UserListResponse) => u.locked_until && new Date(u.locked_until) > now).length;
   const admins = users.filter((u: UserListResponse) => ['admin', 'super_admin'].includes(u.role)).length;
   const editors = users.filter((u: UserListResponse) => u.role === 'editor').length;
   const sales = users.filter((u: UserListResponse) => u.role === 'sales').length;
@@ -170,7 +189,7 @@ export default function AdminUsersPage() {
         </div>
 
         {/* KPI Dashboard */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
           <div className="p-4 bg-surface-light border border-border-primary rounded-xl">
             <p className="text-sm text-secondary-text mb-1">Total Users</p>
             <h3 className="text-2xl font-bold text-primary-text">{totalUsers}</h3>
@@ -178,6 +197,10 @@ export default function AdminUsersPage() {
           <div className="p-4 bg-surface-light border border-border-primary rounded-xl">
             <p className="text-sm text-secondary-text mb-1">Active</p>
             <h3 className="text-2xl font-bold text-green-500">{activeUsers}</h3>
+          </div>
+          <div className="p-4 bg-surface-light border border-border-primary rounded-xl">
+            <p className="text-sm text-secondary-text mb-1">🔒 Locked</p>
+            <h3 className={`text-2xl font-bold ${lockedUsers > 0 ? 'text-amber-500' : 'text-secondary-text'}`}>{lockedUsers}</h3>
           </div>
           <div className="p-4 bg-surface-light border border-border-primary rounded-xl">
             <p className="text-sm text-secondary-text mb-1">Administrators</p>

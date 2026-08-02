@@ -3,6 +3,8 @@ from django.db.models import Count, Sum
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.views.decorators.cache import never_cache
+from django.utils.decorators import method_decorator
 
 from apps.core.response import api_response
 from apps.core.pagination import StandardPagination
@@ -66,6 +68,7 @@ class ApiResponseMixin:
         return api_response(message='Asset deleted successfully', status=status.HTTP_200_OK)
 
 
+@method_decorator(never_cache, name='dispatch')
 class MediaFolderViewSet(ApiResponseMixin, viewsets.ModelViewSet):
     """
     CRUD management for Media Folders.
@@ -95,6 +98,7 @@ class MediaTagViewSet(ApiResponseMixin, viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnlyPublic]
 
 
+@method_decorator(never_cache, name='dispatch')
 class MediaFileViewSet(ApiResponseMixin, viewsets.ModelViewSet):
     """
     Asset Manager covering secure file uploads, queries, filters, and metadata.

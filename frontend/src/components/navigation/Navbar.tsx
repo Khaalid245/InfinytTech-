@@ -5,6 +5,7 @@ import { cn } from '../../utils/cn';
 import { Button } from '../ui/Button';
 import { Logo } from '../ui/Logo';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSiteSettings } from '../../hooks/useSiteSettings';
 
 interface NavbarProps {
   currentTheme?: 'dark' | 'light';
@@ -33,6 +34,9 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
   
   // Auth State
   const { isAuthenticated, isAdmin, logout } = useAuth();
+  
+  // Site Settings
+  const { data: settings } = useSiteSettings();
   
   // Underline state styling coordinates
   const [underlineStyle, setUnderlineStyle] = useState<React.CSSProperties>({
@@ -559,7 +563,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
             Start Project
           </Button>
           <p className={cn('text-center text-[10px] uppercase tracking-wider font-semibold mt-2 opacity-40')}>
-            © {new Date().getFullYear()} InfinytTech
+            © {new Date().getFullYear()} {settings?.company_name || 'Company'}
           </p>
         </div>
       </div>

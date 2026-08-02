@@ -7,3 +7,4 @@ cryptography==48.0.0
 python-decouple==3.8
 Pillow==10.4.0
 django-filter==24.2
+psutil>=6.0.0

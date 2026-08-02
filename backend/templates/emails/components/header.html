@@ -1,0 +1,11 @@
+<table cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #ffffff; border-bottom: 1px solid #e5e7eb;">
+    <tr>
+        <td style="padding: 24px 32px; text-align: center;">
+            {% if primary_logo %}
+                <img src="{{ primary_logo }}" alt="{{ company_name }} Logo" height="40" style="display: block; margin: 0 auto; max-height: 40px; width: auto;">
+            {% else %}
+                <h2 style="margin: 0; color: {{ brand_colors.primary|default:'#2563eb' }}; font-size: 24px;">{{ company_name|default:"InfinytTech" }}</h2>
+            {% endif %}
+        </td>
+    </tr>
+</table>

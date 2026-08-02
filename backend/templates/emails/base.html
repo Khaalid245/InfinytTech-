@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ subject|default:"Important Information" }}</title>
+    <style>
+        /* Base Reset */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        
+        /* Layout */
+        body { margin: 0; padding: 0; width: 100% !important; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f9fafb; color: #1f2937; }
+        .wrapper { width: 100%; table-layout: fixed; background-color: #f9fafb; padding-top: 40px; padding-bottom: 40px; }
+        .main-container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .content-block { padding: 32px; }
+        
+        /* Typography */
+        h1, h2, h3 { color: #111827; margin-top: 0; margin-bottom: 16px; font-weight: 600; }
+        h1 { font-size: 24px; }
+        p { margin-top: 0; margin-bottom: 16px; font-size: 16px; line-height: 24px; color: #4b5563; }
+        a { color: {{ brand_colors.primary|default:"#2563eb" }}; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        
+        /* Responsive */
+        @media screen and (max-width: 600px) {
+            .wrapper { padding-top: 20px; padding-bottom: 20px; }
+            .content-block { padding: 24px 16px; }
+        }
+    </style>
+</head>
+<body>
+    <table class="wrapper" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+            <td align="center">
+                <table class="main-container" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width: 600px;">
+                    <!-- Header -->
+                    <tr>
+                        <td>
+                            {% include "emails/components/header.html" %}
+                        </td>
+                    </tr>
+                    
+                    <!-- Main Content -->
+                    <tr>
+                        <td class="content-block">
+                            {% block content %}{% endblock %}
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td>
+                            {% include "emails/components/footer.html" %}
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

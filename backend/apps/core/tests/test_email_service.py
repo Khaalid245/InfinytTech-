@@ -241,3 +241,48 @@ class EmailResultTests(TestCase):
         d = r.to_dict()
         self.assertFalse(d["success"])
         self.assertEqual(d["error"], "Auth error")
+
+
+class EmailServiceSendTemplateEmailTests(TestCase):
+    """Test the send_template_email() method."""
+
+    def test_send_template_email_injects_site_settings(self):
+        site = _make_site(company_name="AcmeCorp")
+        mock_msg = MagicMock()
+        
+        with patch.object(EmailService, "_get_site_settings", return_value=site), \
+             patch("apps.core.services.email_service.render_to_string", return_value="<html>AcmeCorp</html>") as mock_render, \
+             patch("apps.core.services.email_service.EmailBackend", return_value=MagicMock()), \
+             patch("apps.core.services.email_service.EmailMultiAlternatives", return_value=mock_msg):
+            
+            result = EmailService.send_template_email(
+                subject="Test Template",
+                template_name="emails/test_email.html",
+                recipient_list=["user@example.com"],
+                context={"custom_var": "123"}
+            )
+            
+        self.assertTrue(result.success)
+        mock_render.assert_called_once()
+        
+        # Verify the context passed to render_to_string contains our injected variables
+        context_arg = mock_render.call_args[0][1]
+        self.assertEqual(context_arg["custom_var"], "123")
+        self.assertEqual(context_arg["company_name"], "AcmeCorp")
+        self.assertEqual(context_arg["subject"], "Test Template")
+        self.assertIn("current_year", context_arg)
+
+    def test_send_template_email_handles_rendering_error(self):
+        site = _make_site()
+        
+        with patch.object(EmailService, "_get_site_settings", return_value=site), \
+             patch("apps.core.services.email_service.render_to_string", side_effect=Exception("Template Syntax Error")):
+            
+            result = EmailService.send_template_email(
+                subject="Test",
+                template_name="emails/bad_template.html",
+                recipient_list=["user@example.com"],
+            )
+            
+        self.assertFalse(result.success)
+        self.assertIn("Template rendering error", result.error)

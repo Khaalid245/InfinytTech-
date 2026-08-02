@@ -33,6 +33,8 @@ from typing import Optional
 
 from django.core.mail import EmailMultiAlternatives
 from django.core.mail.backends.smtp import EmailBackend
+from django.template.loader import render_to_string
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -322,38 +324,73 @@ class EmailService:
         )
 
     @classmethod
+    def send_template_email(
+        cls,
+        subject: str,
+        template_name: str,
+        recipient_list: list[str],
+        context: Optional[dict] = None,
+        from_email: Optional[str] = None,
+    ) -> EmailResult:
+        """
+        Render an HTML email template with SiteSettings branding injected into the context.
+        """
+        if context is None:
+            context = {}
+
+        # Inject branding from SiteSettings
+        site = cls._get_site_settings()
+        
+        context.setdefault("company_name", site.company_name if site else "InfinytTech")
+        
+        logo_url = None
+        if site and site.primary_logo and hasattr(site.primary_logo, 'url'):
+            logo_url = site.primary_logo.url
+        context.setdefault("primary_logo", logo_url)
+        
+        context.setdefault("brand_colors", site.brand_colors if site and site.brand_colors else {})
+        context.setdefault("support_email", site.support_email if site else None)
+        context.setdefault("office_address", site.office_address if site else None)
+        context.setdefault("social_links", site.social_links if site and site.social_links else {})
+        
+        context.setdefault("current_year", timezone.now().year)
+        context.setdefault("subject", subject)
+
+        try:
+            html_content = render_to_string(template_name, context)
+            return cls.send_html_email(
+                subject=subject,
+                html_content=html_content,
+                recipient_list=recipient_list,
+                from_email=from_email,
+            )
+        except Exception as exc:
+            logger.exception("EmailService: Failed to render template '%s'.", template_name)
+            return EmailResult(
+                success=False,
+                message="Email could not be sent.",
+                error=f"Template rendering error: {type(exc).__name__}",
+            )
+
+    @classmethod
     def send_test_email(cls, recipient_email: str) -> EmailResult:
         """
-        Send a diagnostic test email.
-
+        Send a diagnostic test email using the email template framework.
+        
         Used by AdminSiteSettingsViewSet.test_email().
         """
         site = cls._get_site_settings()
         company = (site.company_name if site else None) or "InfinytTech"
-
         subject = f"Test Email from {company}"
-        plain = (
-            f"This is a test email sent from {company}'s Admin Panel.\n\n"
-            "If you received this message, your SMTP configuration is working correctly."
-        )
-        html = f"""
-        <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:24px;">
-            <h2 style="color:#1a1a1a;">SMTP Configuration Test</h2>
-            <p style="color:#444;">
-                This is a test email sent from <strong>{company}</strong>'s Admin Panel.
-            </p>
-            <p style="color:#444;">
-                If you received this message, your SMTP configuration is working correctly.
-            </p>
-            <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;" />
-            <p style="color:#9ca3af;font-size:12px;">
-                Sent by InfinytTech Platform Settings &mdash; Email &amp; SMTP
-            </p>
-        </div>
-        """
-        return cls.send_email(
+        
+        context = {
+            "timestamp": timezone.now().strftime("%Y-%m-%d %H:%M:%S UTC"),
+            "smtp_sender_name": site.smtp_sender_name if site else company,
+        }
+
+        return cls.send_template_email(
             subject=subject,
+            template_name="emails/test_email.html",
             recipient_list=[recipient_email],
-            plain_message=plain,
-            html_message=html,
+            context=context,
         )

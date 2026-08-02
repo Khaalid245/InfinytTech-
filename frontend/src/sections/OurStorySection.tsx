@@ -4,8 +4,11 @@ interface OurStorySectionProps {
   theme: 'dark' | 'light';
 }
 
+import { useSiteSettings } from '../hooks/useSiteSettings';
+
 export default function OurStorySection({ theme }: OurStorySectionProps) {
   const isDark = theme === 'dark';
+  const { data: settings } = useSiteSettings();
 
   // Theme-specific color classes
   const eyebrowText = isDark ? 'text-[#D4A017]' : 'text-[#B8860B]';
@@ -63,7 +66,7 @@ export default function OurStorySection({ theme }: OurStorySectionProps) {
             )}
           >
             <p>
-              InfinytTech was founded to bridge that gap. We unite highly disciplined, self-starting developers with international networks, breaking down traditional Silicon Valley corridors to unlock global engineering capacity.
+              {settings?.company_name || 'Our company'} was founded to bridge that gap. We unite highly disciplined, self-starting developers with international networks, breaking down traditional Silicon Valley corridors to unlock global engineering capacity.
             </p>
             <p>
               By combining strict quality standards, modern development workflows, and a philosophy of long-term partnership, we deliver production-ready SaaS platforms, machine learning systems, and complex product architectures directly to enterprises worldwide on time.

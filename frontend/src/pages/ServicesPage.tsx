@@ -31,7 +31,7 @@ export default function ServicesPage({ theme }: ServicesPageProps) {
         <WorkflowTimeline theme={theme} />
       </div>
 
-      {/* 5. Why InfinytTech */}
+      {/* 5. Why Choose Us */}
       <div id="why-infinyttech">
         <WhyInfinytTechSection theme={theme} />
       </div>

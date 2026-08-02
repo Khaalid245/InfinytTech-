@@ -6,10 +6,7 @@ import Input from '../../../components/ui/Input';
 import Select from '../../../components/ui/Select';
 import { Trash2, Plus } from 'lucide-react';
 import type { SocialLink } from '../../../types/siteSettings.types';
-import axios from 'axios';
-import toast from 'react-hot-toast';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
 
 const SocialSettings: React.FC = () => {
   const { settings, isLoadingSettings, updateSettings } = useSettingsAdmin();
@@ -44,20 +41,23 @@ const SocialSettings: React.FC = () => {
   };
 
   const onSave = async () => {
+    if (!settings?.id) return;
     setIsSaving(true);
     try {
-      // Assuming a separate endpoint or doing a full update. 
-      // For this implementation, let's assume we can POST to /api/site-settings/social-links/
-      // or we can just send it as nested data if the serializer supports nested creation.
-      // Wait, Django REST Framework requires custom logic for nested writable serializers.
-      // Usually, it's better to update them separately. Let's send a PATCH to settings if supported.
-      // But we can just leave this as a UI demonstration or assume the backend accepts it.
-      // Given the backend `SiteSettingsSerializer` has `social_links` as `read_only=True`,
-      // we would need a separate endpoint. Since we didn't add one, I will mock the save here
-      // and show a success toast.
-      toast.success('Social links saved successfully');
+      const sanitizedLinks = socialLinks.map(link => {
+        if (typeof link.id === 'string' && link.id.startsWith('new_')) {
+          const { id, ...rest } = link;
+          return rest;
+        }
+        return link;
+      });
+      await updateSettings.mutateAsync({ 
+        id: settings.id, 
+        data: { social_links: sanitizedLinks as any } 
+      });
+      // success toast is handled inside updateSettings mutation onSuccess
     } catch (e) {
-      toast.error('Failed to save social links');
+      // error toast is handled inside updateSettings mutation onError
     } finally {
       setIsSaving(false);
     }
@@ -78,7 +78,7 @@ const SocialSettings: React.FC = () => {
       </div>
 
       <div className="space-y-4 max-w-4xl">
-        {socialLinks.map((link, index) => (
+        {socialLinks.map((link) => (
           <div key={link.id} className="flex gap-4 items-start bg-surface border border-border-primary p-4 rounded-lg">
             <div className="w-48 shrink-0">
               <Select 

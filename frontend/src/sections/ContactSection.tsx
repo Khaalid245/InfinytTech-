@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, Mail, Phone, MapPin, MessageSquare, Map } from 'lucide-react';
+import { Check, Mail, Phone, MapPin, MessageSquare, Map, Share2 } from 'lucide-react';
 import { Container } from '../components/layout/Container';
 import { Section } from '../components/layout/Section';
 import { Heading } from '../components/ui/Heading';
@@ -13,7 +13,7 @@ import { FormWrapper } from '../components/ui/FormWrapper';
 import { cn } from '../utils/cn';
 import { submitLead } from '../services/leads.service';
 import { useSiteSettings } from '../hooks/useSiteSettings';
-import { SITE_INFO } from '../constants';
+import { SocialLinks } from '../components/ui/SocialLinks';
 
 export interface OfficeLocation {
   city: string;
@@ -78,7 +78,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
             email: loc.email,
             phone: loc.phone,
           }))
-        : (SITE_INFO.locations as readonly OfficeLocation[]));
+        : []);
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -274,6 +274,19 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                     </div>
                   </div>
                 )}
+
+                {/* Follow Us / Social Links */}
+                {settings?.social_links?.some(l => l.is_active) && (
+                  <div className="flex flex-col gap-3 pt-2">
+                    <div className="flex items-center gap-3 text-primary-text font-semibold tracking-wide">
+                      <Share2 className="w-5 h-5 text-accent-primary" />
+                      Follow Us
+                    </div>
+                    <div className="pl-8 pt-1">
+                      <SocialLinks socialLinks={settings.social_links} />
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -405,7 +418,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
 
                 <Checkbox
                   name="privacy"
-                  label="I consent to the privacy policy and agree that InfinityTech can reach out regarding project options."
+                  label={`I consent to the privacy policy and agree that ${settings?.company_name || 'the company'} can reach out regarding project options.`}
                   checked={formData.privacy}
                   onChange={handleCheckboxChange}
                   error={errors.privacy}

@@ -4,20 +4,7 @@ import ContactSection, { type OfficeLocation } from '../sections/ContactSection'
 import contactArtwork from '../../docs/contact-us image.webp';
 import { useSiteSettings } from '../hooks/useSiteSettings';
 
-const CONTACT_LOCATIONS: OfficeLocation[] = [
-  {
-    city: 'Mogadishu Office',
-    address: ['Somalia'],
-    email: 'contact@infinitytech.so',
-    phone: '+252 6123456',
-  },
-  {
-    city: 'Remote Studio',
-    address: ['Worldwide'],
-    email: 'hello@infinitytech.so',
-    phone: 'Available globally',
-  },
-];
+
 
 export default function ContactPage() {
   const { data: settings } = useSiteSettings();
@@ -29,7 +16,7 @@ export default function ContactPage() {
         email: loc.email,
         phone: loc.phone,
       }))
-    : CONTACT_LOCATIONS;
+    : [];
 
   return (
     <div className="animate-fade-in bg-primary-bg">
@@ -96,7 +83,7 @@ export default function ContactPage() {
       <ContactSection
         id="contact-form"
         tagline="Contact Us"
-        title="Partner with InfinityTech"
+        title={`Partner with ${settings?.company_name || 'our team'}`}
         subtitle="Have questions about timelines or budgeting? Write to our core team."
         locations={dynamicLocations}
         background="primary"

@@ -55,6 +55,10 @@ class User(UUIDModel, TimeStampedModel, AbstractBaseUser, PermissionsMixin):
         related_name='user_avatars'
     )
     
+    failed_login_attempts = models.PositiveIntegerField(default=0)
+    locked_until = models.DateTimeField(null=True, blank=True)
+    last_activity = models.DateTimeField(null=True, blank=True)
+    
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
@@ -85,6 +89,8 @@ class UserActivity(UUIDModel, TimeStampedModel):
         PROFILE_UPDATE = 'profile_update', 'Profile Update'
         ROLE_CHANGE = 'role_change', 'Role Change'
         STATUS_CHANGE = 'status_change', 'Status Change'
+        ACCOUNT_LOCK = 'account_lock', 'Account Lock'
+        ACCOUNT_UNLOCK = 'account_unlock', 'Account Unlock'
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='activities')
     action = models.CharField(max_length=50, choices=ActionType.choices)

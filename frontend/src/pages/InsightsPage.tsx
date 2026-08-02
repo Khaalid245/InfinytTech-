@@ -11,6 +11,7 @@ import BlogCard from '../components/ui/BlogCard';
 import Button from '../components/ui/Button';
 import EmptyState from '../components/ui/EmptyState';
 import { useBlogCategories, useBlogTags, useBlogPosts } from '../hooks/useBlog';
+import { useSiteSettings } from '../hooks/useSiteSettings';
 import { Search } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { resolveImageUrl } from '../utils/imageHelper';
@@ -21,6 +22,7 @@ interface InsightsPageProps {
 
 export default function InsightsPage({ theme }: InsightsPageProps) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { data: settings } = useSiteSettings();
 
   // Read URL query params
   const categoryParam = searchParams.get('category') || '';
@@ -137,7 +139,7 @@ export default function InsightsPage({ theme }: InsightsPageProps) {
         <div className="border-b border-border-primary pb-10 mb-12">
           <div className="max-w-3xl">
             <span className="text-caption text-accent-primary uppercase font-bold tracking-widest block mb-3">
-              InfinytTech Insights
+              {settings?.company_name || 'Company'} Insights
             </span>
             <Heading variant="h1" className="text-4xl md:text-5xl font-medium tracking-tight mb-4">
               Perspectives on engineering & premium design systems.

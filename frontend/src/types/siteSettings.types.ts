@@ -115,9 +115,13 @@ export interface SiteSettings {
   password_policy: string;
   session_timeout: number;
   max_login_attempts: number;
+  lockout_duration: number;
   two_factor_auth_enabled: boolean;
   allowed_origins: string;
   api_token_expiration: number;
+  rate_limiting_enabled: boolean;
+  login_rate_limit: number;
+  api_rate_limit: number;
   
   // Hero
   hero_title: string;

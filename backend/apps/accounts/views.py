@@ -17,14 +17,21 @@ from .serializers import (
 from .permissions import IsAdminOrSuperAdmin
 from .models import UserActivity
 from apps.core.pagination import StandardPagination
+from apps.core.response import api_response
 from apps.team.views import ApiResponseMixin
 from rest_framework import viewsets, filters
 from rest_framework.decorators import action
+from .throttling import LoginRateThrottle
 
 User = get_user_model()
 
 class CustomTokenObtainPairView(TokenObtainPairView):
+    """JWT login endpoint with per-IP rate limiting."""
     serializer_class = LoginSerializer
+    # Override global throttles: only the strict login throttle applies here.
+    # Anonymous callers are identified by IP.
+    throttle_classes = [LoginRateThrottle]
+    permission_classes = [AllowAny]
 
 
 class LogoutView(APIView):
@@ -32,9 +39,18 @@ class LogoutView(APIView):
 
     def post(self, request):
         try:
+            # Clear last_activity timestamp on logout
+            if request.user and request.user.is_authenticated:
+                request.user.last_activity = None
+                request.user.save(update_fields=['last_activity'])
+
             refresh_token = request.data["refresh"]
             token = RefreshToken(refresh_token)
-            token.blacklist()
+            try:
+                token.blacklist()
+            except Exception:
+                # blacklist app might not be installed in INSTALLED_APPS
+                pass
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -115,6 +131,15 @@ class UserAdminViewSet(ApiResponseMixin, viewsets.ModelViewSet):
             from rest_framework.exceptions import ValidationError
             raise ValidationError("Password is required.")
         
+        from django.contrib.auth.password_validation import validate_password
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        from rest_framework.exceptions import ValidationError as DRFValidationError
+        
+        try:
+            validate_password(new_password, user)
+        except DjangoValidationError as e:
+            raise DRFValidationError({'password': list(e.messages)})
+        
         user.set_password(new_password)
         user.save()
         
@@ -124,7 +149,7 @@ class UserAdminViewSet(ApiResponseMixin, viewsets.ModelViewSet):
             description="Password reset by administrator.",
             ip_address=request.META.get('REMOTE_ADDR')
         )
-        return self.api_response(message="Password reset successfully.")
+        return api_response(message="Password reset successfully.")
 
     @action(detail=True, methods=['post'])
     def toggle_status(self, request, pk=None):
@@ -149,11 +174,26 @@ class UserAdminViewSet(ApiResponseMixin, viewsets.ModelViewSet):
             description=f"Status changed to {'Active' if user.is_active else 'Inactive'} by administrator.",
             ip_address=request.META.get('REMOTE_ADDR')
         )
-        return self.api_response(data={"is_active": user.is_active}, message="User status updated successfully.")
+        return api_response(data={"is_active": user.is_active}, message="User status updated successfully.")
+
+    @action(detail=True, methods=['post'])
+    def unlock(self, request, pk=None):
+        user = self.get_object()
+        user.failed_login_attempts = 0
+        user.locked_until = None
+        user.save()
+
+        UserActivity.objects.create(
+            user=user,
+            action=UserActivity.ActionType.ACCOUNT_UNLOCK,
+            description="Administrator unlocked account.",
+            ip_address=request.META.get('REMOTE_ADDR')
+        )
+        return api_response(message="User account unlocked successfully.")
 
     @action(detail=True, methods=['get'])
     def activity(self, request, pk=None):
         user = self.get_object()
         activities = user.activities.all()[:50]
         serializer = UserActivitySerializer(activities, many=True)
-        return self.api_response(data=serializer.data)
+        return api_response(data=serializer.data)

@@ -1,15 +1,20 @@
 import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { useSettingsAdmin } from '../../../hooks/useSettingsAdmin';
 import Input from '../../../components/ui/Input';
 import TextArea from '../../../components/ui/TextArea';
 import Button from '../../../components/ui/Button';
 import LoadingState from '../../../components/ui/LoadingState';
+import { Trash2, Plus } from 'lucide-react';
 import type { SiteSettings } from '../../../types/siteSettings.types';
 
 const ContactSettings: React.FC = () => {
   const { settings, isLoadingSettings, updateSettings } = useSettingsAdmin();
-  const { register, handleSubmit, reset, formState: { isSubmitting, isDirty } } = useForm<Partial<SiteSettings>>();
+  const { register, control, handleSubmit, reset, formState: { isSubmitting, isDirty } } = useForm<Partial<SiteSettings>>();
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'office_locations' as any
+  });
 
   useEffect(() => {
     if (settings) {
@@ -22,6 +27,7 @@ const ContactSettings: React.FC = () => {
         office_address: settings.office_address,
         google_maps_url: settings.google_maps_url,
         business_hours: settings.business_hours,
+        office_locations: settings.office_locations || [],
       });
     }
   }, [settings, reset]);
@@ -90,6 +96,69 @@ const ContactSettings: React.FC = () => {
             rows={3}
             placeholder="Mon - Fri: 9:00 AM - 6:00 PM"
           />
+        </div>
+
+        <div className="pt-6 border-t border-border-primary">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-md font-medium text-primary-text">Office Locations</h3>
+              <p className="text-sm text-secondary-text">Locations shown on the Contact page.</p>
+            </div>
+            <Button 
+              type="button" 
+              variant="secondary" 
+              onClick={() => append({ city: '', country: '', address: '', phone: '', email: '', map_url: '', order: fields.length, is_active: true })}
+              leftIcon={<Plus className="w-4 h-4" />}
+            >
+              Add Location
+            </Button>
+          </div>
+          
+          <div className="space-y-4">
+            {fields.map((field, index) => (
+              <div key={field.id} className="p-4 border border-border-primary rounded-lg bg-surface relative">
+                <button
+                  type="button"
+                  onClick={() => remove(index)}
+                  className="absolute top-4 right-4 p-2 text-red-500 hover:bg-red-500/10 rounded-md transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mr-10">
+                  <Input 
+                    label="City" 
+                    {...register(`office_locations.${index}.city`)} 
+                    placeholder="e.g. Mogadishu Office"
+                  />
+                  <Input 
+                    label="Country" 
+                    {...register(`office_locations.${index}.country`)} 
+                    placeholder="e.g. Somalia"
+                  />
+                  <TextArea 
+                    label="Address" 
+                    {...register(`office_locations.${index}.address`)} 
+                    rows={2}
+                  />
+                  <div className="space-y-4">
+                    <Input 
+                      label="Email" 
+                      {...register(`office_locations.${index}.email`)} 
+                    />
+                    <Input 
+                      label="Phone" 
+                      {...register(`office_locations.${index}.phone`)} 
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+            {fields.length === 0 && (
+              <div className="text-center py-8 border border-dashed border-border-primary rounded-lg text-secondary-text">
+                No office locations added yet.
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="pt-6 border-t border-border-primary flex justify-end">

@@ -126,13 +126,13 @@ const EmailSettings: React.FC = () => {
               <Input 
                 label="Sender Name" 
                 {...register('smtp_sender_name')} 
-                placeholder="InfinytTech Admin"
+                placeholder="Admin"
               />
               <Input 
                 label="Sender Email" 
                 type="email"
                 {...register('smtp_sender_email')} 
-                placeholder="noreply@infinyt.tech"
+                placeholder="noreply@example.com"
               />
             </div>
 

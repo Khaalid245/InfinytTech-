@@ -9,26 +9,8 @@ const api = axios.create({
   timeout: 15_000,
   headers: { 'Content-Type': 'application/json' },
 });
-
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('role');
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
-);
+import { setupInterceptors } from './api';
+setupInterceptors(api);
 
 export const siteSettingsService = {
   // Public
@@ -40,7 +22,7 @@ export const siteSettingsService = {
   // Admin CRUD for Settings
   async getAdminSettings(): Promise<SiteSettings> {
     const { data } = await api.get('/admin/');
-    return data.data?.[0] || data[0] || data; // Assuming it returns a list of settings or the active one
+    return data.results?.[0] || data.data?.[0] || data[0] || data; // Handle pagination or list
   },
 
   async updateSettings(id: string, payload: Partial<SiteSettings>): Promise<SiteSettings> {
@@ -60,13 +42,13 @@ export const siteSettingsService = {
 
   async getAuditLogs(): Promise<UserActivity[]> {
     const { data } = await api.get('/admin/audit_logs/');
-    return data;
+    return data.results || data;
   },
 
   // Backups
   async getBackups(): Promise<SystemBackup[]> {
     const { data } = await api.get('/backups/');
-    return data;
+    return data.results || data;
   },
   
   async createBackup(): Promise<SystemBackup> {
@@ -81,7 +63,7 @@ export const siteSettingsService = {
   // Notifications
   async getNotifications(): Promise<Notification[]> {
     const { data } = await api.get('/notifications/');
-    return data;
+    return data.results || data;
   },
 
   async markNotificationRead(id: string): Promise<Notification> {

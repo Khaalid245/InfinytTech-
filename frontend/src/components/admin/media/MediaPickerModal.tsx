@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { X, Search, Image as ImageIcon, FileText } from 'lucide-react';
-import { useMediaFiles } from '../../../hooks/useMedia';
+import { X, Search, Image as ImageIcon, FileText, Upload } from 'lucide-react';
+import { useMediaFiles, useMediaFolders } from '../../../hooks/useMedia';
 import type { MediaFile } from '../../../services/media.service';
 import Button from '../../ui/Button';
+import MediaUploadModal from './MediaUploadModal';
 
 interface MediaPickerModalProps {
   isOpen: boolean;
@@ -23,8 +24,10 @@ const MediaPickerModal: React.FC<MediaPickerModalProps> = ({
   const [page, setPage] = useState(1);
   const [selectedMedia, setSelectedMedia] = useState<MediaFile | null>(null);
   const [selectedMultiple, setSelectedMultiple] = useState<MediaFile[]>([]);
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
 
   const { data, isLoading, isError } = useMediaFiles({ page, page_size: 20, search });
+  const { data: foldersData } = useMediaFolders();
 
   if (!isOpen) return null;
 
@@ -82,8 +85,8 @@ const MediaPickerModal: React.FC<MediaPickerModalProps> = ({
           <div className="flex-1 flex flex-col border-r border-border-primary overflow-hidden">
             
             {/* Toolbar */}
-            <div className="p-4 border-b border-border-primary bg-black/2 dark:bg-white/2">
-              <div className="relative w-full max-w-md">
+            <div className="p-4 border-b border-border-primary bg-black/2 dark:bg-white/2 flex items-center justify-between gap-4">
+              <div className="relative w-full max-w-md flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-text" />
                 <input
                   type="text"
@@ -93,6 +96,14 @@ const MediaPickerModal: React.FC<MediaPickerModalProps> = ({
                   className="w-full bg-surface-light border border-border-primary rounded-lg pl-9 pr-4 py-2 text-sm focus:border-accent-primary outline-none transition-colors"
                 />
               </div>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setIsUploadOpen(true)}
+                leftIcon={<Upload className="w-4 h-4" />}
+              >
+                Upload Files
+              </Button>
             </div>
 
             {/* Grid Area */}
@@ -291,6 +302,13 @@ const MediaPickerModal: React.FC<MediaPickerModalProps> = ({
         </div>
 
       </div>
+      {isUploadOpen && (
+        <MediaUploadModal
+          onClose={() => setIsUploadOpen(false)}
+          folders={foldersData || []}
+          currentFolderId=""
+        />
+      )}
     </div>
   );
 };

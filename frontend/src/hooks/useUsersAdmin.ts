@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as usersService from '../services/users.service';
+import toast from 'react-hot-toast';
 
 export function useAdminUsers(filters: any = {}) {
   return useQuery({
@@ -32,10 +33,12 @@ export function useCreateUser() {
     mutationFn: usersService.createUser,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
-      // alert('User created successfully');
+      toast.success('User created successfully');
     },
     onError: (error: any) => {
-      alert(error.response?.data?.message || 'Failed to create user');
+      if (error.response?.status !== 400) {
+        toast.error(error.response?.data?.message || 'Unable to create user. Please try again.');
+      }
     }
   });
 }
@@ -47,10 +50,12 @@ export function useUpdateUser() {
     mutationFn: ({ id, data }: { id: string; data: any }) => usersService.updateUser(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
-      // alert('User updated successfully');
+      toast.success('User updated successfully');
     },
     onError: (error: any) => {
-      alert(error.response?.data?.message || 'Failed to update user');
+      if (error.response?.status !== 400) {
+        toast.error(error.response?.data?.message || 'Unable to update user. Please try again.');
+      }
     }
   });
 }
@@ -62,10 +67,10 @@ export function useDeleteUser() {
     mutationFn: usersService.deleteUser,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
-      // alert('User deleted successfully');
+      toast.success('User deleted successfully');
     },
     onError: (error: any) => {
-      alert(
+      toast.error(
         error.response?.data?.message || 
         error.response?.data?.detail ||
         (Array.isArray(error.response?.data) && error.response?.data[0]) ||
@@ -80,12 +85,12 @@ export function useToggleUserStatus() {
   
   return useMutation({
     mutationFn: usersService.toggleUserStatus,
-    onSuccess: () => {
+    onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
-      // alert(data.is_active ? 'User activated' : 'User deactivated');
+      toast.success(data?.is_active ? 'User activated' : 'User deactivated');
     },
     onError: (error: any) => {
-      alert(
+      toast.error(
         error.response?.data?.message || 
         error.response?.data?.detail ||
         (Array.isArray(error.response?.data) && error.response?.data[0]) ||
@@ -102,10 +107,28 @@ export function useResetUserPassword() {
     mutationFn: ({ id, password }: { id: string; password: string }) => usersService.resetUserPassword(id, password),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
-      // alert('Password reset successfully');
+      toast.success('Password reset successfully');
     },
     onError: (error: any) => {
-      alert(error.response?.data?.message || 'Failed to reset password');
+      if (error.response?.status !== 400) {
+        toast.error(error.response?.data?.message || 'Unable to reset password. Please try again.');
+      }
+    }
+  });
+}
+
+export function useUnlockUser() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: usersService.unlockUser,
+    onSuccess: () => {
+      // Invalidate both user list and details query for the specific user
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      toast.success('Account unlocked successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to unlock user account.');
     }
   });
 }

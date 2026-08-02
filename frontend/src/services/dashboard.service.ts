@@ -13,27 +13,8 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Interceptor to attach JWT token to every request from this service
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-// Interceptor to handle 401 Unauthorized errors
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('role');
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
-);
+import { setupInterceptors } from './api';
+setupInterceptors(api);
 
 /**
  * GET /api/dashboard/

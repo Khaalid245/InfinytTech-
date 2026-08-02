@@ -55,8 +55,10 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'apps.accounts.middleware.SessionTimeoutMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'apps.core.middleware.SecurityHeadersMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -97,6 +99,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+    {'NAME': 'apps.accounts.validators.SitePasswordValidator'},
 ]
 
 LANGUAGE_CODE = 'en-us'
@@ -112,9 +115,31 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# ---------------------------------------------------------------------------
+# Security Settings
+# ---------------------------------------------------------------------------
+# X-Content-Type-Options
+SECURE_CONTENT_TYPE_NOSNIFF = True
+# Referrer-Policy
+SECURE_REFERRER_POLICY = 'same-origin'
+# X-Frame-Options
+X_FRAME_OPTIONS = 'DENY'
+
+# ---------------------------------------------------------------------------
+# Cache — used by DRF rate-limiting throttle counters.
+# LocMemCache is process-local (fine for single-process dev/staging).
+# Replace with a Redis/Memcached backend for multi-process production.
+# ---------------------------------------------------------------------------
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'infinyttech-throttle',
+    }
+}
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'apps.accounts.authentication.SessionTimeoutJWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
@@ -127,6 +152,24 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
+    # -----------------------------------------------------------------------
+    # Rate limiting — reads limits from SiteSettings at request time so
+    # changes take effect immediately without a server restart.
+    # LoginRateThrottle is applied directly on the login view.
+    # -----------------------------------------------------------------------
+    'DEFAULT_THROTTLE_CLASSES': [
+        'apps.accounts.throttling.ApiUserRateThrottle',
+        'apps.accounts.throttling.ApiAnonRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        # Placeholder strings — actual rates are computed dynamically from
+        # SiteSettings in each throttle class, so these are never used.
+        'login':    '10/min',
+        'api_user': '300/min',
+        'api_anon': '60/min',
+    },
+    # Custom exception handler: formats 429 with Retry-After + JSON body.
+    'EXCEPTION_HANDLER': 'apps.core.exceptions.custom_exception_handler',
 }
 
 SIMPLE_JWT = {
@@ -142,3 +185,19 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Backend API for InfinytTech digital services platform',
     'VERSION': '1.0.0',
 }
+
+from corsheaders.defaults import default_headers
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'cache-control',
+    'pragma',
+    'expires',
+]
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = False
+
+
+AUTHENTICATION_BACKENDS = [
+    'apps.accounts.backends.SecurityModelBackend',
+]

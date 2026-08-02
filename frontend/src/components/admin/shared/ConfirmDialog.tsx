@@ -7,7 +7,7 @@ interface ConfirmDialogProps {
   title: string;
   description: string;
   confirmText?: string;
-  variant?: 'danger' | 'primary';
+  variant?: 'danger' | 'primary' | 'default';
 }
 
 export default function ConfirmDialog({ isOpen, onClose, onConfirm, title, description, confirmText = 'Confirm', variant = 'danger' }: ConfirmDialogProps) {
@@ -26,6 +26,8 @@ export default function ConfirmDialog({ isOpen, onClose, onConfirm, title, descr
             className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
               variant === 'danger' 
                 ? 'bg-red-500 hover:bg-red-600 text-white' 
+                : variant === 'default'
+                ? 'bg-primary-text hover:opacity-90 text-primary-bg'
                 : 'bg-accent-primary hover:bg-accent-secondary text-white'
             }`}
           >

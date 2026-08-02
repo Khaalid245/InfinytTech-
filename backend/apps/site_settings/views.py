@@ -1,12 +1,16 @@
 from rest_framework import views, viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from django.views.decorators.cache import never_cache
+from django.utils.decorators import method_decorator
 from apps.accounts.permissions import IsAdminOrSuperAdmin
 from .models import SiteSettings, SystemBackup, Notification
 from .serializers import SiteSettingsSerializer, SystemBackupSerializer, NotificationSerializer
 from apps.accounts.models import UserActivity
 from apps.accounts.serializers import UserActivitySerializer
-from django.core.mail import send_mail
+from django.core.mail import send_mail, get_connection
+from django.core.mail.backends.smtp import EmailBackend
+from django.conf import settings as django_settings
 import psutil
 import datetime
 from django.db import connection
@@ -19,6 +23,7 @@ class PublicSiteSettingsAPIView(views.APIView):
     """
     permission_classes = [permissions.AllowAny]
 
+    @method_decorator(never_cache)
     def get(self, request, *args, **kwargs):
         settings = SiteSettings.objects.filter(is_active=True).first()
         if not settings:
@@ -51,14 +56,31 @@ class AdminSiteSettingsViewSet(viewsets.ModelViewSet):
             return Response({"detail": "Email address required."}, status=400)
 
         try:
-            # Here you would dynamically configure the Django email backend
-            # using the settings. For demonstration in this phase:
+            # Dynamically configure the Django email backend
+            use_tls = settings.smtp_encryption == 'tls'
+            use_ssl = settings.smtp_encryption == 'ssl'
+            
+            # If using Custom SMTP, we build a backend. If using default, we might fall back.
+            if settings.smtp_provider == 'Custom' and settings.smtp_host:
+                connection = EmailBackend(
+                    host=settings.smtp_host,
+                    port=settings.smtp_port,
+                    username=settings.smtp_username,
+                    password=settings.smtp_password,
+                    use_tls=use_tls,
+                    use_ssl=use_ssl,
+                    fail_silently=False,
+                )
+            else:
+                connection = None # Uses default connection in django settings
+
             send_mail(
-                subject='Test Email from InfinytTech Platform',
+                subject=f'Test Email from {settings.company_name or "InfinytTech"}',
                 message='This is a test email to verify your SMTP configuration.',
-                from_email=settings.smtp_sender_email or 'test@example.com',
+                from_email=settings.smtp_sender_email or django_settings.DEFAULT_FROM_EMAIL or 'test@example.com',
                 recipient_list=[test_email],
                 fail_silently=False,
+                connection=connection,
             )
             return Response({"detail": "Test email sent successfully."})
         except Exception as e:
@@ -81,8 +103,8 @@ class AdminSiteSettingsViewSet(viewsets.ModelViewSet):
             "database": db_status,
             "media_storage": "Healthy",
             "api": "Healthy",
-            "background_jobs": "Healthy",
-            "redis": "Healthy", # Mock
+            "background_jobs": "Not Configured", # Placeholder until celery/redis is added
+            "redis": "Not Configured", # Placeholder until redis is added
             "cpu_usage": cpu_usage,
             "memory_usage": memory.percent,
             "disk_usage": disk.percent

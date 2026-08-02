@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSettingsAdmin } from '../../../hooks/useSettingsAdmin';
+import { Checkbox } from '../../../components/ui/Checkbox';
 import Button from '../../../components/ui/Button';
 import LoadingState from '../../../components/ui/LoadingState';
 import { Server, Database, HardDrive, Cpu, Archive, RefreshCw } from 'lucide-react';
@@ -13,6 +14,7 @@ interface HealthCardProps {
 
 const SystemSettings: React.FC = () => {
   const { 
+    settings, updateSettings,
     healthData, isLoadingHealth, 
     backups, isLoadingBackups, createBackup, restoreBackup,
     notifications, isLoadingNotifications, markNotificationRead,
@@ -21,6 +23,12 @@ const SystemSettings: React.FC = () => {
 
   const handleCreateBackup = () => {
     createBackup.mutate();
+  };
+
+  const handleToggle = (field: 'maintenance_mode' | 'analytics_enabled', value: boolean) => {
+    if (settings?.id) {
+      updateSettings.mutate({ id: settings.id, data: { [field]: value } });
+    }
   };
 
   if (isLoadingHealth || isLoadingBackups || isLoadingNotifications || isLoadingAuditLogs) {
@@ -50,6 +58,36 @@ const SystemSettings: React.FC = () => {
   return (
     <div className="p-6 md:p-8 space-y-12">
       
+      {/* 0. System Controls */}
+      <section>
+        <div className="mb-6">
+          <h2 className="text-lg font-medium text-primary-text">System Controls</h2>
+          <p className="text-sm text-secondary-text">Manage global platform state.</p>
+        </div>
+        <div className="bg-surface border border-border-primary p-6 rounded-lg space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-medium text-primary-text">Maintenance Mode</div>
+              <div className="text-sm text-secondary-text">Take the platform offline for updates.</div>
+            </div>
+            <Checkbox 
+              checked={settings?.maintenance_mode || false}
+              onChange={(e) => handleToggle('maintenance_mode', e.target.checked)}
+            />
+          </div>
+          <div className="flex items-center justify-between pt-4 border-t border-border-primary">
+            <div>
+              <div className="font-medium text-primary-text">Enable Analytics</div>
+              <div className="text-sm text-secondary-text">Allow tracking of visitor metrics and performance.</div>
+            </div>
+            <Checkbox 
+              checked={settings?.analytics_enabled || false}
+              onChange={(e) => handleToggle('analytics_enabled', e.target.checked)}
+            />
+          </div>
+        </div>
+      </section>
+
       {/* 1. System Health Dashboard */}
       <section>
         <div className="mb-6">

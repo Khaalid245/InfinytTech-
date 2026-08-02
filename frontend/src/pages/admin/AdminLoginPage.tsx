@@ -31,16 +31,29 @@ const AdminLoginPage: React.FC = () => {
       });
 
       if (data.access) {
-        // Assume super_admin role for simplicity based on the successful login
-        // Real implementation would decode the JWT or fetch /api/auth/me/
-        login(data.access, 'super_admin');
+        const role = data.user?.role || 'viewer';
+        const isAdmin = role === 'admin' || role === 'super_admin';
+
+        if (!isAdmin) {
+          setError('Access denied. This dashboard is restricted to administrators only.');
+          return;
+        }
+
+        login(data.access, role, data.refresh || null);
         navigate('/admin/dashboard', { replace: true });
       } else {
         throw new Error('Invalid response from server.');
       }
     } catch (err: any) {
       if (err.response?.status === 401) {
-        setError('Invalid email or password.');
+        const detail = err.response?.data?.detail || '';
+        if (detail.toLowerCase().includes('locked')) {
+          setError('This account is temporarily locked due to too many failed login attempts. Please try again later or contact your administrator.');
+        } else {
+          setError('Invalid email or password.');
+        }
+      } else if (err.response?.status === 403) {
+        setError('Access denied. You do not have administrator privileges.');
       } else {
         setError(err.message || 'An error occurred during login.');
       }

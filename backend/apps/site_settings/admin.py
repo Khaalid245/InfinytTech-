@@ -68,6 +68,13 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         ('Footer', {
             'fields': ('footer_description', 'copyright_text', 'newsletter_title', 'newsletter_description')
         }),
+        ('Security', {
+            'fields': (
+                'password_policy', 'session_timeout', 'max_login_attempts',
+                'lockout_duration', 'two_factor_auth_enabled', 'allowed_origins',
+                'api_token_expiration'
+            )
+        }),
     )
 
     def _get_image_preview(self, obj, field_name):

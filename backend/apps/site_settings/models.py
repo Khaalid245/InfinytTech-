@@ -3,8 +3,10 @@ import base64
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from apps.core.models import UUIDModel, TimeStampedModel
 from apps.media_library.models import MediaFile
+from apps.site_settings.constants import PasswordPolicy
 from cryptography.fernet import Fernet
 
 def get_fernet():
@@ -38,12 +40,14 @@ class SiteSettings(UUIDModel, TimeStampedModel):
     brand_colors = models.JSONField(default=dict, blank=True, help_text="e.g. {'primary': '#ff0000', 'secondary': '#00ff00'}")
 
     # Contact
+    primary_email = models.EmailField(blank=True)
     support_email = models.EmailField(blank=True)
     sales_email = models.EmailField(blank=True)
     phone = models.CharField(max_length=50, blank=True)
     whatsapp = models.CharField(max_length=50, blank=True)
     office_address = models.TextField(blank=True)
     google_maps_url = models.URLField(max_length=500, blank=True)
+    business_hours = models.TextField(blank=True)
 
     # SEO
     default_meta_title = models.CharField(max_length=255, blank=True)
@@ -67,12 +71,41 @@ class SiteSettings(UUIDModel, TimeStampedModel):
     smtp_sender_email = models.EmailField(blank=True)
 
     # Security
-    password_policy = models.CharField(max_length=255, default='strong')
-    session_timeout = models.PositiveIntegerField(default=1440, help_text='In minutes')
-    max_login_attempts = models.PositiveIntegerField(default=5)
+    password_policy = models.CharField(max_length=255, choices=PasswordPolicy.choices, default=PasswordPolicy.STRICT)
+    session_timeout = models.PositiveIntegerField(
+        default=1440,
+        help_text='In minutes. Minimum 1 minute.',
+        validators=[MinValueValidator(1)]
+    )
+    max_login_attempts = models.PositiveIntegerField(
+        default=5,
+        validators=[MinValueValidator(1)]
+    )
+    lockout_duration = models.PositiveIntegerField(
+        default=15,
+        help_text='In minutes',
+        validators=[MinValueValidator(1)]
+    )
     two_factor_auth_enabled = models.BooleanField(default=False)
     allowed_origins = models.TextField(blank=True, help_text="Comma-separated domains for CORS")
     api_token_expiration = models.PositiveIntegerField(default=30, help_text='In days')
+
+    # Rate Limiting
+    rate_limiting_enabled = models.BooleanField(
+        default=True,
+        help_text='Enable API rate limiting globally. Disable only for debugging.'
+    )
+    login_rate_limit = models.PositiveIntegerField(
+        default=10,
+        help_text='Maximum login attempts per minute per IP address.',
+        validators=[MinValueValidator(1)]
+    )
+    api_rate_limit = models.PositiveIntegerField(
+        default=300,
+        help_text='Maximum API requests per minute per authenticated user.',
+        validators=[MinValueValidator(1)]
+    )
+
 
     # Hero Section
     hero_title = models.CharField(max_length=255, blank=True)

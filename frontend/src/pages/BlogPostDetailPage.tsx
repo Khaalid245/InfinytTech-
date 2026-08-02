@@ -11,6 +11,7 @@ import Text from '../components/ui/Text';
 import Button from '../components/ui/Button';
 import BlogCard from '../components/ui/BlogCard';
 import { useBlogPost, useBlogPosts } from '../hooks/useBlog';
+import { useSiteSettings } from '../hooks/useSiteSettings';
 import { Link2, ArrowLeft } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { resolveImageUrl } from '../utils/imageHelper';
@@ -37,6 +38,7 @@ export default function BlogPostDetailPage({ theme }: BlogPostDetailPageProps) {
   const { slug } = useParams<{ slug: string }>();
   const [scrollProgress, setScrollProgress] = useState(0);
   const [copied, setCopied] = useState(false);
+  const { data: settings } = useSiteSettings();
 
   // 1. Fetch current post details
   const { data: post, isLoading, isError } = useBlogPost(slug || '');
@@ -82,7 +84,7 @@ export default function BlogPostDetailPage({ theme }: BlogPostDetailPageProps) {
     const originalDesc = metaDescEl ? metaDescEl.getAttribute('content') : '';
 
     // Update with post specific metadata (fallbacks if empty)
-    document.title = post.seo_title || `${post.title} | InfinytTech Blog`;
+    document.title = post.seo_title || `${post.title} | ${settings?.company_name || 'Company'} Blog`;
     if (metaDescEl) {
       metaDescEl.setAttribute('content', post.seo_description || post.excerpt);
     }
@@ -94,7 +96,7 @@ export default function BlogPostDetailPage({ theme }: BlogPostDetailPageProps) {
         metaDescEl.setAttribute('content', originalDesc);
       }
     };
-  }, [post]);
+  }, [post, settings?.company_name]);
 
   // Handle URL link copying
   const handleCopyLink = () => {

@@ -4,8 +4,9 @@ import { ArrowRight } from 'lucide-react';
 import { Container } from '../layout/Container';
 import { Text } from '../ui/Text';
 import { Logo } from '../ui/Logo';
-import { SITE_INFO, SOCIAL_LINKS, FOOTER_LINKS } from '../../constants';
+import { FOOTER_LINKS } from '../../constants';
 import { useSiteSettings } from '../../hooks/useSiteSettings';
+import { SocialLinks } from '../ui/SocialLinks';
 
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -28,7 +29,7 @@ export const Footer: React.FC = () => {
               variant="body"
               className="max-w-xs text-secondary-text text-small leading-relaxed"
             >
-              {settings?.footer_description || SITE_INFO.description}
+              {settings?.footer_description}
             </Text>
           </div>
 
@@ -93,50 +94,9 @@ export const Footer: React.FC = () => {
             variant="caption"
             className="text-[10px] text-secondary-text tracking-wider uppercase font-semibold"
           >
-            © {currentYear} {settings?.company_name || SITE_INFO.name}. {settings?.copyright_text || 'All rights reserved.'}
+            © {currentYear} {settings?.company_name}. {settings?.copyright_text}
           </Text>
-          <div className="flex items-center gap-6">
-            {settings?.social_links && settings.social_links.length > 0 ? (
-              settings.social_links.map(link => (
-                <a
-                  key={link.platform}
-                  href={link.url}
-                  target="_blank; noreferrer"
-                  rel="noopener noreferrer"
-                  className="text-caption text-secondary-text hover:text-brand-gold transition-colors uppercase tracking-wider font-semibold"
-                >
-                  {link.platform}
-                </a>
-              ))
-            ) : (
-              <>
-                <a
-                  href={SOCIAL_LINKS.twitter}
-                  target="_blank; noreferrer"
-                  rel="noopener noreferrer"
-                  className="text-caption text-secondary-text hover:text-brand-gold transition-colors uppercase tracking-wider font-semibold"
-                >
-                  Twitter
-                </a>
-                <a
-                  href={SOCIAL_LINKS.linkedin}
-                  target="_blank; noreferrer"
-                  rel="noopener noreferrer"
-                  className="text-caption text-secondary-text hover:text-brand-gold transition-colors uppercase tracking-wider font-semibold"
-                >
-                  LinkedIn
-                </a>
-                <a
-                  href={SOCIAL_LINKS.github}
-                  target="_blank; noreferrer"
-                  rel="noopener noreferrer"
-                  className="text-caption text-secondary-text hover:text-brand-gold transition-colors uppercase tracking-wider font-semibold"
-                >
-                  GitHub
-                </a>
-              </>
-            )}
-          </div>
+          <SocialLinks socialLinks={settings?.social_links} />
         </div>
       </Container>
     </footer>

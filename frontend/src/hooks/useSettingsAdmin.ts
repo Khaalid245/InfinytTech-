@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { siteSettingsService } from '../services/siteSettings.service';
-import type { SiteSettings, SystemBackup, Notification } from '../types/siteSettings.types';
+import type { SiteSettings } from '../types/siteSettings.types';
 import toast from 'react-hot-toast';
 
 export function useSettingsAdmin() {
@@ -17,6 +17,7 @@ export function useSettingsAdmin() {
       siteSettingsService.updateSettings(payload.id, payload.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-settings'] });
+      queryClient.invalidateQueries({ queryKey: ['siteSettings'] });
       toast.success('Settings updated successfully');
     },
     onError: () => {

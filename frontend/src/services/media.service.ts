@@ -62,25 +62,8 @@ const api = axios.create({
   timeout: 60_000, // Uploads might take longer
 });
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('role');
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
-);
+import { setupInterceptors } from './api';
+setupInterceptors(api);
 
 export async function getMediaFiles(filters: MediaFilters = {}): Promise<PaginatedResponse<MediaFile>> {
   const params = new URLSearchParams();

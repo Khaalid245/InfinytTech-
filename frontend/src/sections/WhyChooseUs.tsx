@@ -9,6 +9,7 @@ import {
   Globe, 
   type LucideIcon 
 } from 'lucide-react';
+import { useSiteSettings } from '../hooks/useSiteSettings';
 
 
 // ─── Types ────────────────────────────────────────────────────────────────
@@ -144,6 +145,7 @@ const DiffCard: React.FC<CardProps> = ({
 // ─── Main section ─────────────────────────────────────────────────────────
 export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ theme }) => {
   const isDark = theme === 'dark';
+  const { data: settings } = useSiteSettings();
 
   const bg      = isDark ? '#0B0D0F' : '#FAFAFA';
   const cardBg  = isDark ? '#181B1F' : '#FFFFFF';
@@ -157,7 +159,7 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ theme }) => {
     <section
       style={{ background: bg }}
       className="w-full py-24 px-4 sm:px-6 lg:px-8 transition-colors duration-300"
-      aria-label="Why Choose InfinytTech"
+      aria-label={`Why Choose ${settings?.company_name || 'our company'}`}
     >
       <div className="max-w-5xl mx-auto space-y-16">
 
@@ -172,7 +174,7 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ theme }) => {
                 color:       accent,
               }}
             >
-              Why InfinytTech
+              Why {settings?.company_name || 'our company'}
             </span>
           </div>
 

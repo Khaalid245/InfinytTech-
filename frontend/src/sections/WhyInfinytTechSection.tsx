@@ -259,13 +259,13 @@ export const WhyInfinytTechSection: React.FC<WhyInfinytTechProps> = ({ theme }) 
               style={{ backgroundColor: gold }}
               aria-hidden="true"
             />
-            Why InfinytTech
+            Why {settings?.company_name || 'our company'}
           </span>
 
           {/* Heading */}
           <h2 className={cn('text-4xl sm:text-5xl font-black leading-[1.1] tracking-tight', textPrimary)}>
             Why Teams Choose<br className="hidden sm:block" />{' '}
-            <span style={{ color: gold }}>InfinytTech</span>
+            <span style={{ color: gold }}>{settings?.company_name || 'us'}</span>
           </h2>
 
           {/* Subtitle */}

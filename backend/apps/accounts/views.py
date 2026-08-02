@@ -108,6 +108,27 @@ class UserAdminViewSet(ApiResponseMixin, viewsets.ModelViewSet):
             
         return qs
 
+    def perform_create(self, serializer):
+        # Save user
+        user = serializer.save()
+        
+        # Determine the login URL
+        frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173')
+        login_url = f"{frontend_url}/login"
+        
+        # Send Welcome Email
+        result = EmailService.send_template_email(
+            subject="Welcome to InfinytTech Platform",
+            template_name="emails/welcome.html",
+            recipient_list=[user.email],
+            context={
+                "user": user,
+                "login_url": login_url,
+            }
+        )
+        if not result.success:
+            logger.warning(f"Failed to send welcome email to {user.email}: {result.error}")
+
     def perform_destroy(self, instance):
         if self.request.user.id == instance.id:
             from rest_framework.exceptions import ValidationError
@@ -149,6 +170,17 @@ class UserAdminViewSet(ApiResponseMixin, viewsets.ModelViewSet):
             description="Password reset by administrator.",
             ip_address=request.META.get('REMOTE_ADDR')
         )
+        
+        # Send Password Changed Email
+        result = EmailService.send_template_email(
+            subject="Security Notification: Password Changed by Admin",
+            template_name="emails/password_changed.html",
+            recipient_list=[user.email],
+            context={"user": user}
+        )
+        if not result.success:
+            logger.warning(f"Failed to send password changed email to {user.email}: {result.error}")
+            
         return api_response(message="Password reset successfully.")
 
     @action(detail=True, methods=['post'])
@@ -189,6 +221,23 @@ class UserAdminViewSet(ApiResponseMixin, viewsets.ModelViewSet):
             description="Administrator unlocked account.",
             ip_address=request.META.get('REMOTE_ADDR')
         )
+        
+        # Send Account Unlocked Email
+        frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173')
+        login_url = f"{frontend_url}/login"
+        
+        result = EmailService.send_template_email(
+            subject="Account Unlocked",
+            template_name="emails/account_unlocked.html",
+            recipient_list=[user.email],
+            context={
+                "user": user,
+                "login_url": login_url,
+            }
+        )
+        if not result.success:
+            logger.warning(f"Failed to send account unlocked email to {user.email}: {result.error}")
+            
         return api_response(message="User account unlocked successfully.")
 
     @action(detail=True, methods=['get'])
@@ -197,3 +246,167 @@ class UserAdminViewSet(ApiResponseMixin, viewsets.ModelViewSet):
         activities = user.activities.all()[:50]
         serializer = UserActivitySerializer(activities, many=True)
         return api_response(data=serializer.data)
+
+
+# ---------------------------------------------------------------------------
+# Self-Service Password Endpoints
+# ---------------------------------------------------------------------------
+
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from apps.core.services import EmailService
+import logging
+from django.conf import settings
+
+logger = logging.getLogger(__name__)
+
+class ForgotPasswordView(APIView):
+    """
+    POST /api/auth/forgot-password/
+    Generates a secure password reset link and sends an email.
+    Always returns success to prevent email enumeration.
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        if not email:
+            return api_response(message="Email is required.", success=False, status_code=400)
+            
+        user = User.objects.filter(email=email).first()
+        if user and user.is_active:
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+            
+            # The frontend URL should handle the reset form
+            frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173')
+            reset_url = f"{frontend_url}/auth/reset-password?uid={uid}&token={token}"
+            
+            # Send Email (non-blocking)
+            result = EmailService.send_template_email(
+                subject="Password Reset Request",
+                template_name="emails/password_reset.html",
+                recipient_list=[user.email],
+                context={
+                    "user": user,
+                    "reset_url": reset_url,
+                    "expiration_time": "24 hours",
+                }
+            )
+            if not result.success:
+                logger.warning(f"Failed to send password reset email to {user.email}: {result.error}")
+                
+            UserActivity.objects.create(
+                user=user,
+                action=UserActivity.ActionType.PASSWORD_RESET,
+                description="User requested a password reset link.",
+                ip_address=request.META.get('REMOTE_ADDR')
+            )
+
+        # Always return success to prevent user enumeration
+        return api_response(message="If an account exists with that email, a reset link has been sent.")
+
+
+class ResetPasswordConfirmView(APIView):
+    """
+    POST /api/auth/reset-password-confirm/
+    Validates token and changes the password.
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        uidb64 = request.data.get('uid')
+        token = request.data.get('token')
+        new_password = request.data.get('password')
+        
+        if not all([uidb64, token, new_password]):
+            return api_response(message="UID, token, and new password are required.", success=False, status_code=400)
+            
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+            
+        if user is not None and default_token_generator.check_token(user, token):
+            from django.contrib.auth.password_validation import validate_password
+            from django.core.exceptions import ValidationError as DjangoValidationError
+            
+            try:
+                validate_password(new_password, user)
+            except DjangoValidationError as e:
+                return api_response(data={'password': list(e.messages)}, message="Password validation failed.", success=False, status_code=400)
+                
+            user.set_password(new_password)
+            user.save()
+            
+            UserActivity.objects.create(
+                user=user,
+                action=UserActivity.ActionType.PASSWORD_RESET,
+                description="User successfully reset their password via email link.",
+                ip_address=request.META.get('REMOTE_ADDR')
+            )
+            
+            # Send confirmation email
+            result = EmailService.send_template_email(
+                subject="Password Changed Successfully",
+                template_name="emails/password_changed.html",
+                recipient_list=[user.email],
+                context={"user": user}
+            )
+            if not result.success:
+                logger.warning(f"Failed to send password changed email to {user.email}: {result.error}")
+                
+            return api_response(message="Password has been reset successfully.")
+        else:
+            return api_response(message="The reset link is invalid or has expired.", success=False, status_code=400)
+
+
+class ChangePasswordView(APIView):
+    """
+    POST /api/auth/change-password/
+    Allows logged-in users to change their password by providing the old password.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        
+        if not old_password or not new_password:
+            return api_response(message="Both old and new passwords are required.", success=False, status_code=400)
+            
+        if not user.check_password(old_password):
+            return api_response(message="Incorrect old password.", success=False, status_code=400)
+            
+        from django.contrib.auth.password_validation import validate_password
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        
+        try:
+            validate_password(new_password, user)
+        except DjangoValidationError as e:
+            return api_response(data={'password': list(e.messages)}, message="Password validation failed.", success=False, status_code=400)
+            
+        user.set_password(new_password)
+        user.save()
+        
+        UserActivity.objects.create(
+            user=user,
+            action=UserActivity.ActionType.PASSWORD_RESET,
+            description="User changed their password from profile settings.",
+            ip_address=request.META.get('REMOTE_ADDR')
+        )
+        
+        # Send security notification
+        result = EmailService.send_template_email(
+            subject="Security Notification: Password Changed",
+            template_name="emails/password_changed.html",
+            recipient_list=[user.email],
+            context={"user": user}
+        )
+        if not result.success:
+            logger.warning(f"Failed to send password changed email to {user.email}: {result.error}")
+            
+        return api_response(message="Password changed successfully.")

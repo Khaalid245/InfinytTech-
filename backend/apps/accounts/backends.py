@@ -1,10 +1,15 @@
+import logging
 from datetime import timedelta
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.utils import timezone
+from apps.core.services import EmailService
 from apps.site_settings.services import get_active_site_settings
+
+logger = logging.getLogger(__name__)
 
 UserModel = get_user_model()
 
@@ -90,6 +95,20 @@ class SecurityModelBackend(ModelBackend):
                         description="Account automatically unlocked after timeout.",
                         ip_address=request.META.get('REMOTE_ADDR') if request else None
                     )
+                    
+                    # Send Auto-Unlock Email
+                    frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173')
+                    result = EmailService.send_template_email(
+                        subject="Account Unlocked",
+                        template_name="emails/account_unlocked.html",
+                        recipient_list=[user_locked.email],
+                        context={
+                            "user": user_locked,
+                            "login_url": f"{frontend_url}/login",
+                        }
+                    )
+                    if not result.success:
+                        logger.warning(f"Failed to send account auto-unlocked email to {user_locked.email}: {result.error}")
 
                 user_locked.failed_login_attempts += 1
 
@@ -102,6 +121,19 @@ class SecurityModelBackend(ModelBackend):
                         description=f"Account locked after {max_attempts} failed login attempts.",
                         ip_address=request.META.get('REMOTE_ADDR') if request else None
                     )
+                    
+                    # Send Account Locked Email
+                    result = EmailService.send_template_email(
+                        subject="Security Alert: Account Locked",
+                        template_name="emails/account_locked.html",
+                        recipient_list=[user_locked.email],
+                        context={
+                            "user": user_locked,
+                            "lockout_minutes": lockout_minutes,
+                        }
+                    )
+                    if not result.success:
+                        logger.warning(f"Failed to send account locked email to {user_locked.email}: {result.error}")
 
                 user_locked.save(update_fields=["failed_login_attempts", "locked_until"])
 

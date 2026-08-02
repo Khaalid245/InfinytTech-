@@ -311,8 +311,8 @@ class EmailService:
         automatically derived by stripping HTML tags.
         """
         if not plain_content:
-            import re
-            plain_content = re.sub(r"<[^>]+>", "", html_content)
+            from django.utils.html import strip_tags
+            plain_content = strip_tags(html_content)
             plain_content = " ".join(plain_content.split())  # normalise whitespace
 
         return cls.send_email(
@@ -384,7 +384,7 @@ class EmailService:
         subject = f"Test Email from {company}"
         
         context = {
-            "timestamp": timezone.now().strftime("%Y-%m-%d %H:%M:%S UTC"),
+            "timestamp": timezone.now().strftime("%d %b %Y • %I:%M %p UTC"),
             "smtp_sender_name": site.smtp_sender_name if site else company,
         }
 

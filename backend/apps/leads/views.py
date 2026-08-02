@@ -60,7 +60,7 @@ class LeadSubmitView(APIView):
         # Dispatch emails — failures are logged but NEVER block lead creation
         # ---------------------------------------------------------------
         site = get_active_site_settings()
-        submitted_at = timezone.now().strftime('%Y-%m-%d %H:%M UTC')
+        submitted_at = timezone.now().strftime("%d %b %Y • %I:%M %p UTC")
         frontend_url = getattr(django_settings, 'FRONTEND_URL', 'http://localhost:5173')
         admin_lead_url = None
         if lead.pk:

@@ -9,10 +9,10 @@
     
     <p>If you received this message and it looks properly formatted with your company branding, your SMTP and Email Template configuration is working correctly!</p>
     
-    <div style="background-color: #f3f4f6; padding: 16px; border-radius: 6px; margin: 16px 0;">
-        <p style="margin-top: 0; margin-bottom: 8px;"><strong>Status:</strong> Success ✅</p>
-        <p style="margin-top: 0; margin-bottom: 8px;"><strong>Time:</strong> {{ timestamp }}</p>
-        <p style="margin-bottom: 0;"><strong>Sender Name:</strong> {{ smtp_sender_name|default:company_name }}</p>
+    <div style="background-color: #ffffff; padding: 20px; border-radius: 10px; margin: 16px 0; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <p style="margin-top: 0; margin-bottom: 8px; font-size: 15px;"><strong>Status:</strong> Success ✅</p>
+        <p style="margin-top: 0; margin-bottom: 8px; font-size: 15px;"><strong>Time:</strong> {{ timestamp }}</p>
+        <p style="margin-bottom: 0; font-size: 15px;"><strong>Sender Name:</strong> {{ smtp_sender_name|default:company_name }}</p>
     </div>
     
     <p>You can safely delete this email.</p>

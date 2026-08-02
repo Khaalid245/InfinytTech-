@@ -3,16 +3,23 @@ from rest_framework.decorators import action
 from rest_framework.views import APIView
 from rest_framework.throttling import AnonRateThrottle
 from drf_spectacular.utils import extend_schema
+import logging
 
-from apps.core.response import api_response
-from apps.accounts.permissions import IsAdminOrSuperAdmin
+from django.conf import settings as django_settings
+from django.utils import timezone
 from django.db.models import Count, Q
 from django.db.models.functions import TruncMonth
-from django.utils import timezone
+
+from apps.core.response import api_response
+from apps.core.services import EmailService
+from apps.accounts.permissions import IsAdminOrSuperAdmin
+from apps.site_settings.services import get_active_site_settings
 from .models import Lead, LeadTimeline
 from .serializers import LeadCreateSerializer, LeadAdminSerializer
 from apps.team.views import ApiResponseMixin
 from apps.core.pagination import StandardPagination
+
+logger = logging.getLogger(__name__)
 
 
 class LeadSubmissionRateThrottle(AnonRateThrottle):
@@ -48,6 +55,64 @@ class LeadSubmitView(APIView):
             description='Lead created from public contact form.',
             created_by=None
         )
+
+        # ---------------------------------------------------------------
+        # Dispatch emails — failures are logged but NEVER block lead creation
+        # ---------------------------------------------------------------
+        site = get_active_site_settings()
+        submitted_at = timezone.now().strftime('%Y-%m-%d %H:%M UTC')
+        frontend_url = getattr(django_settings, 'FRONTEND_URL', 'http://localhost:5173')
+        admin_lead_url = None
+        if lead.pk:
+            admin_lead_url = f"{getattr(django_settings, 'FRONTEND_URL', 'http://localhost:5173')}/admin/leads/{lead.pk}"
+
+        # Email #1 — Customer Confirmation
+        try:
+            confirmation_result = EmailService.send_template_email(
+                subject=f"Thank You for Contacting {site.company_name if site else 'Us'}!",
+                template_name='emails/contact_confirmation.html',
+                recipient_list=[lead.email],
+                context={
+                    'lead': lead,
+                    'submitted_at': submitted_at,
+                    'portfolio_url': f"{frontend_url}/portfolio",
+                    'office_phone': site.phone if site else None,
+                },
+            )
+            if not confirmation_result.success:
+                logger.warning(
+                    'Lead %s: customer confirmation email failed — %s',
+                    lead.pk, confirmation_result.error
+                )
+        except Exception:
+            logger.exception('Lead %s: unexpected error sending customer confirmation email.', lead.pk)
+
+        # Email #2 — Internal Notification (sales_email → primary_email fallback)
+        try:
+            internal_recipient = None
+            if site:
+                internal_recipient = site.sales_email or site.primary_email
+            if internal_recipient:
+                notification_result = EmailService.send_template_email(
+                    subject=f"New Contact Form Submission — {lead.first_name} {lead.last_name}",
+                    template_name='emails/contact_notification.html',
+                    recipient_list=[internal_recipient],
+                    context={
+                        'lead': lead,
+                        'submitted_at': submitted_at,
+                        'admin_lead_url': admin_lead_url,
+                    },
+                )
+                if not notification_result.success:
+                    logger.warning(
+                        'Lead %s: internal notification email failed — %s',
+                        lead.pk, notification_result.error
+                    )
+            else:
+                logger.warning('Lead %s: no sales_email or primary_email configured — skipping internal notification.', lead.pk)
+        except Exception:
+            logger.exception('Lead %s: unexpected error sending internal notification email.', lead.pk)
+
         return api_response(
             data=serializer.data,
             message='Lead successfully submitted. Our team will contact you shortly.',

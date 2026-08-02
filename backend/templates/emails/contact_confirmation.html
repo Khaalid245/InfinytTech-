@@ -1,19 +1,59 @@
 {% extends "emails/base.html" %}
 
 {% block content %}
-    <h1>Thank you for contacting us!</h1>
+    <h1 style="font-size: 22px; color: #1a1a2e; margin-bottom: 8px;">Thank You for Reaching Out!</h1>
     
-    <p>Hi {{ name }},</p>
+    <p style="font-size: 15px; color: #4b5563;">Hi <strong>{{ lead.first_name }}</strong>,</p>
     
-    <p>We have received your message and our team will get back to you as soon as possible, usually within 1-2 business days.</p>
-    
-    <p>Here's a copy of what you sent us:</p>
-    
-    <div style="background-color: #f3f4f6; padding: 16px; border-radius: 6px; margin: 16px 0;">
-        <p><strong>Subject:</strong> {{ subject }}</p>
-        <p><strong>Message:</strong></p>
-        <p style="white-space: pre-wrap; margin-bottom: 0;">{{ message }}</p>
+    <p style="font-size: 15px; color: #4b5563;">
+        We've received your message and we're excited to connect with you. A member of the
+        <strong>{{ company_name }}</strong> team will review your inquiry and get back to you
+        within <strong>1–2 business days</strong>.
+    </p>
+
+    {% include "emails/components/divider.html" %}
+
+    <h2 style="font-size: 16px; color: #374151;">Your Submission Details</h2>
+    <div style="background-color:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin:12px 0;">
+        {% if lead.first_name or lead.last_name %}
+        <p style="margin:6px 0; color:#374151;"><strong>Name:</strong> {{ lead.first_name }} {{ lead.last_name }}</p>
+        {% endif %}
+        {% if lead.company %}
+        <p style="margin:6px 0; color:#374151;"><strong>Company:</strong> {{ lead.company }}</p>
+        {% endif %}
+        {% if lead.project_type %}
+        <p style="margin:6px 0; color:#374151;"><strong>Project Type:</strong> {{ lead.project_type }}</p>
+        {% endif %}
+        {% if lead.budget_range %}
+        <p style="margin:6px 0; color:#374151;"><strong>Budget:</strong> {{ lead.budget_range }}</p>
+        {% endif %}
+        <p style="margin:6px 0; color:#374151;"><strong>Submitted:</strong> {{ submitted_at }}</p>
     </div>
-    
-    <p>Best regards,<br>The {{ company_name|default:"InfinytTech" }} Team</p>
+
+    {% include "emails/components/divider.html" %}
+
+    <h2 style="font-size: 16px; color: #374151;">What Happens Next?</h2>
+    <p style="font-size: 14px; color: #6b7280;">
+        Our team will review your requirements and reach out to schedule a discovery call.
+        In the meantime, explore our work below.
+    </p>
+
+    {% if portfolio_url %}
+    {% include "emails/components/button.html" with url=portfolio_url label="View Our Portfolio" %}
+    {% endif %}
+
+    {% include "emails/components/divider.html" %}
+
+    <p style="font-size: 13px; color: #9ca3af;">
+        Have an urgent enquiry? Reply to this email or contact us directly:
+    </p>
+    {% if support_email %}
+    <p style="font-size: 13px; color: #6b7280;">📧 {{ support_email }}</p>
+    {% endif %}
+    {% if office_phone %}
+    <p style="font-size: 13px; color: #6b7280;">📞 {{ office_phone }}</p>
+    {% endif %}
+    {% if office_address %}
+    <p style="font-size: 13px; color: #6b7280;">📍 {{ office_address }}</p>
+    {% endif %}
 {% endblock %}

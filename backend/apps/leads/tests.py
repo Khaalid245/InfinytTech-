@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from unittest.mock import patch
 from rest_framework_simplejwt.tokens import AccessToken
 from apps.leads.models import Lead
 
@@ -178,3 +179,121 @@ class LeadsCRMTestCase(TestCase):
             content_type="application/json"
         )
         self.assertEqual(res.status_code, 429)
+
+
+class LeadEmailIntegrationTests(TestCase):
+    """
+    Phase 21.5 — Contact & Lead Email Integration Tests.
+    All SMTP calls are patched; we only verify dispatch logic and graceful failure handling.
+    """
+
+    def setUp(self):
+        from django.core.cache import cache
+        from apps.site_settings.models import SiteSettings
+        from apps.site_settings.services import clear_site_settings_cache
+        from rest_framework.test import APIClient
+
+        cache.clear()
+        self.client = APIClient()
+        SiteSettings.objects.all().delete()
+        clear_site_settings_cache()
+
+        self.site = SiteSettings.objects.create(
+            company_name='TestCorp',
+            is_active=True,
+            sales_email='sales@testcorp.com',
+            primary_email='info@testcorp.com',
+            support_email='support@testcorp.com',
+            phone='+1234567890',
+        )
+        clear_site_settings_cache()
+
+    LEAD_PAYLOAD = {
+        'first_name': 'Alice',
+        'last_name': 'Smith',
+        'email': 'alice@example.com',
+        'message': 'I need help with a web project.',
+        'phone': '+447700000000',
+        'company': 'AliceCo',
+        'country': 'UK',
+        'project_type': 'Web App',
+        'budget_range': '$10k–$25k',
+    }
+
+    @patch('apps.leads.views.EmailService.send_template_email')
+    def test_customer_confirmation_email_is_sent(self, mock_send):
+        """Submitting a lead dispatches a confirmation email to the visitor."""
+        mock_send.return_value.success = True
+
+        res = self.client.post('/api/leads/contact/', self.LEAD_PAYLOAD, format='json')
+        self.assertEqual(res.status_code, 201)
+
+        calls = [c for c in mock_send.call_args_list if c[1]['template_name'] == 'emails/contact_confirmation.html']
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0][1]['recipient_list'], ['alice@example.com'])
+
+    @patch('apps.leads.views.EmailService.send_template_email')
+    def test_internal_notification_sent_to_sales_email(self, mock_send):
+        """Internal notification goes to sales_email when configured."""
+        mock_send.return_value.success = True
+
+        res = self.client.post('/api/leads/contact/', self.LEAD_PAYLOAD, format='json')
+        self.assertEqual(res.status_code, 201)
+
+        calls = [c for c in mock_send.call_args_list if c[1]['template_name'] == 'emails/contact_notification.html']
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0][1]['recipient_list'], ['sales@testcorp.com'])
+
+    @patch('apps.leads.views.EmailService.send_template_email')
+    def test_internal_notification_fallback_to_primary_email(self, mock_send):
+        """Internal notification falls back to primary_email when sales_email is blank."""
+        from apps.site_settings.services import clear_site_settings_cache
+        self.site.sales_email = ''
+        self.site.save()
+        clear_site_settings_cache()
+
+        mock_send.return_value.success = True
+        res = self.client.post('/api/leads/contact/', self.LEAD_PAYLOAD, format='json')
+        self.assertEqual(res.status_code, 201)
+
+        notification_calls = [c for c in mock_send.call_args_list if c[1]['template_name'] == 'emails/contact_notification.html']
+        self.assertEqual(notification_calls[0][1]['recipient_list'], ['info@testcorp.com'])
+
+    @patch('apps.leads.views.EmailService.send_template_email')
+    def test_lead_created_even_if_email_fails(self, mock_send):
+        """Email delivery failure must never prevent lead creation."""
+        mock_send.side_effect = Exception('SMTP server is down')
+
+        res = self.client.post('/api/leads/contact/', self.LEAD_PAYLOAD, format='json')
+        # Lead must still be created (201), email failure is swallowed
+        self.assertEqual(res.status_code, 201)
+
+        from apps.leads.models import Lead
+        self.assertTrue(Lead.objects.filter(email='alice@example.com').exists())
+
+    @patch('apps.leads.views.EmailService.send_template_email')
+    def test_both_emails_dispatched_on_submission(self, mock_send):
+        """Exactly 2 send_template_email calls are made: one for visitor, one for internal."""
+        mock_send.return_value.success = True
+
+        res = self.client.post('/api/leads/contact/', self.LEAD_PAYLOAD, format='json')
+        self.assertEqual(res.status_code, 201)
+        self.assertEqual(mock_send.call_count, 2)
+
+    @patch('apps.leads.views.EmailService.send_template_email')
+    def test_notification_context_contains_lead_data(self, mock_send):
+        """Internal notification context must include the lead object."""
+        mock_send.return_value.success = True
+
+        self.client.post('/api/leads/contact/', self.LEAD_PAYLOAD, format='json')
+
+        notification_call = next(
+            (c for c in mock_send.call_args_list if c[1]['template_name'] == 'emails/contact_notification.html'),
+            None
+        )
+        self.assertIsNotNone(notification_call)
+        context = notification_call[1]['context']
+        self.assertIn('lead', context)
+        self.assertIn('submitted_at', context)
+        self.assertIn('admin_lead_url', context)
+

@@ -211,24 +211,29 @@ class SessionTimeoutTests(TestCase):
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
 
     def test_active_session_updates_last_activity(self):
-        # Initial activity should be set/updated on request
+        # Set initial activity in the past to avoid Windows timer resolution collision
+        past_activity = timezone.now() - timedelta(seconds=120)
+        self.user.last_activity = past_activity
+        self.user.save(update_fields=['last_activity'])
+
+        # Initial request should update last_activity from past_activity
         res = self.client.get(reverse('auth-me'))
         self.assertEqual(res.status_code, 200)
         
         self.user.refresh_from_db()
         self.assertIsNotNone(self.user.last_activity)
-        first_activity = self.user.last_activity
+        self.assertGreater(self.user.last_activity, past_activity)
         
-        # Perform request after 65 seconds to bypass 60-second database update throttle
-        self.user.last_activity = timezone.now() - timedelta(seconds=65)
-        self.user.save()
+        # Set stale activity beyond throttle to verify subsequent request refreshes it
+        stale_activity = timezone.now() - timedelta(seconds=65)
+        self.user.last_activity = stale_activity
+        self.user.save(update_fields=['last_activity'])
         
         res = self.client.get(reverse('auth-me'))
         self.assertEqual(res.status_code, 200)
         
         self.user.refresh_from_db()
-        self.assertNotEqual(self.user.last_activity, first_activity)
-        self.assertTrue(self.user.last_activity > first_activity)
+        self.assertGreater(self.user.last_activity, stale_activity)
 
     def test_expired_session_fails(self):
         # Manually set last activity to 6 minutes ago (exceeding 5 min timeout)

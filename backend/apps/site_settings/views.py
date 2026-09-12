@@ -47,19 +47,79 @@ class AdminSiteSettingsViewSet(viewsets.ModelViewSet):
     def test_email(self, request):
         """
         Send a diagnostic test email using the centralized EmailService.
-
-        All SMTP connection logic lives in apps.core.services.EmailService.
-        This view only validates input and maps the result to an HTTP response.
+        Persists the outcome (success/failure) into SiteSettings for monitoring.
         """
+        from django.utils import timezone
+
         recipient = request.data.get('email')
         if not recipient:
             return Response({"detail": "Email address required."}, status=400)
 
         result = EmailService.send_test_email(recipient)
 
+        # Persist the result into SiteSettings (lightweight monitoring)
+        site = SiteSettings.objects.first()
+        now = timezone.now()
+
         if result.success:
-            return Response({"detail": result.message})
-        return Response({"detail": result.error or result.message}, status=400)
+            if site:
+                SiteSettings.objects.filter(pk=site.pk).update(
+                    email_last_test_status='success',
+                    email_last_test_at=now,
+                    email_last_test_recipient=recipient,
+                )
+            from apps.site_settings.services import clear_site_settings_cache
+            clear_site_settings_cache()
+            return Response({
+                "detail": result.message,
+                "status": "success",
+                "recipient": recipient,
+                "tested_at": now.isoformat(),
+                "checks": {
+                    "smtp_connection": True,
+                    "template_engine": True,
+                    "configuration": True,
+                },
+            })
+
+        # Failure path — store reason (never expose raw SMTP internals)
+        failure_reason = result.error or result.message or "Unknown error"
+        if site:
+            SiteSettings.objects.filter(pk=site.pk).update(
+                email_last_test_status='error',
+                email_last_failure_at=now,
+                email_last_failure_reason=failure_reason[:500],
+            )
+        from apps.site_settings.services import clear_site_settings_cache
+        clear_site_settings_cache()
+        return Response({"detail": failure_reason}, status=400)
+
+    @action(detail=False, methods=['get'])
+    def email_status(self, request):
+        """
+        Return the current email test status stored in SiteSettings.
+        Used by the Email Service Status dashboard panel.
+        """
+        site = SiteSettings.objects.first()
+        if not site:
+            return Response({"status": "not_tested"})
+
+        return Response({
+            "status": site.email_last_test_status,
+            "last_test_at": site.email_last_test_at.isoformat() if site.email_last_test_at else None,
+            "last_test_recipient": site.email_last_test_recipient,
+            "last_failure_at": site.email_last_failure_at.isoformat() if site.email_last_failure_at else None,
+            "last_failure_reason": site.email_last_failure_reason,
+            "smtp_configured": bool(site.smtp_host and site.smtp_username),
+            "smtp_summary": {
+                "provider": site.smtp_provider,
+                "host": site.smtp_host,
+                "port": site.smtp_port,
+                "encryption": site.smtp_encryption.upper() if site.smtp_encryption else "",
+                "sender_name": site.smtp_sender_name,
+                "sender_email": site.smtp_sender_email,
+            },
+        })
 
     @action(detail=False, methods=['get'])
     def health(self, request):

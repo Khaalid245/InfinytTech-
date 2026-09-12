@@ -70,6 +70,9 @@ export function setupInterceptors(api: AxiosInstance) {
 
             if (data.access) {
               localStorage.setItem('token', data.access);
+              if (data.refresh) {
+                localStorage.setItem('refreshToken', data.refresh);
+              }
               isRefreshing = false;
               processQueue(null, data.access);
               originalRequest.headers.Authorization = `Bearer ${data.access}`;

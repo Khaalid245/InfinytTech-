@@ -16,7 +16,7 @@ export const FOOTER_LINKS = [
     links: [
       { label: 'About Us', href: PATHS.ABOUT },
       { label: 'Our Work', href: PATHS.WORK },
-      { label: 'Methodology', href: PATHS.PROCESS },
+      { label: 'Methodology', href: '/#process' },
       { label: 'Contact', href: PATHS.CONTACT },
     ],
   },

@@ -1,0 +1,3 @@
+"""
+Django apps package initialization.
+"""

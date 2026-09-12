@@ -31,8 +31,35 @@ export const siteSettingsService = {
   },
 
   // Admin Actions
-  async testEmail(email: string): Promise<void> {
-    await api.post('/admin/test_email/', { email });
+  async testEmail(email: string): Promise<{
+    detail: string;
+    status: string;
+    recipient: string;
+    tested_at: string;
+    checks: { smtp_connection: boolean; template_engine: boolean; configuration: boolean };
+  }> {
+    const { data } = await api.post('/admin/test_email/', { email });
+    return data;
+  },
+
+  async getEmailStatus(): Promise<{
+    status: 'not_tested' | 'success' | 'error';
+    last_test_at: string | null;
+    last_test_recipient: string;
+    last_failure_at: string | null;
+    last_failure_reason: string;
+    smtp_configured: boolean;
+    smtp_summary: {
+      provider: string;
+      host: string;
+      port: number | null;
+      encryption: string;
+      sender_name: string;
+      sender_email: string;
+    };
+  }> {
+    const { data } = await api.get('/admin/email_status/');
+    return data;
   },
 
   async getHealth(): Promise<any> {

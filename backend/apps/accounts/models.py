@@ -77,6 +77,11 @@ class User(UUIDModel, TimeStampedModel, AbstractBaseUser, PermissionsMixin):
     def full_name(self):
         return f"{self.first_name} {self.last_name}".strip() or self.email
 
+    @property
+    def username(self):
+        return self.email
+
+
 
 class UserActivity(UUIDModel, TimeStampedModel):
     """

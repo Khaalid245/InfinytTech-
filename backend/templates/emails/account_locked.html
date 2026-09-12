@@ -1,0 +1,22 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+    <h1>Security Alert: Account Locked</h1>
+    
+    <p>Hi {{ user.first_name|default:user.username }},</p>
+    
+    <p>We noticed multiple failed login attempts on your account. For your protection, we have temporarily locked your account.</p>
+    
+    <p><strong>Lockout Duration:</strong> {{ lockout_duration }}</p>
+    <p><strong>Time of Event:</strong> {{ timestamp }}</p>
+    
+    <p>Your account will automatically unlock when the lockout period expires. Alternatively, you can contact our support team to request a manual unlock if this was a mistake.</p>
+    
+    {% if support_email %}
+    {% include "emails/components/button.html" with url="mailto:"|add:support_email label="Contact Support" %}
+    {% endif %}
+    
+    {% include "emails/components/divider.html" %}
+    
+    <p style="font-size: 14px; color: #6b7280;">If you did not attempt to log in recently, your password may be compromised. We recommend resetting your password immediately once your account is unlocked.</p>
+{% endblock %}

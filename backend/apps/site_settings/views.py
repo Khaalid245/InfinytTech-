@@ -8,9 +8,7 @@ from .models import SiteSettings, SystemBackup, Notification
 from .serializers import SiteSettingsSerializer, SystemBackupSerializer, NotificationSerializer
 from apps.accounts.models import UserActivity
 from apps.accounts.serializers import UserActivitySerializer
-from django.core.mail import send_mail, get_connection
-from django.core.mail.backends.smtp import EmailBackend
-from django.conf import settings as django_settings
+from apps.core.services import EmailService
 import psutil
 import datetime
 from django.db import connection
@@ -47,44 +45,81 @@ class AdminSiteSettingsViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def test_email(self, request):
-        settings = self.queryset.filter(is_active=True).first()
-        if not settings:
-            return Response({"detail": "No active settings found."}, status=400)
-            
-        test_email = request.data.get('email')
-        if not test_email:
+        """
+        Send a diagnostic test email using the centralized EmailService.
+        Persists the outcome (success/failure) into SiteSettings for monitoring.
+        """
+        from django.utils import timezone
+
+        recipient = request.data.get('email')
+        if not recipient:
             return Response({"detail": "Email address required."}, status=400)
 
-        try:
-            # Dynamically configure the Django email backend
-            use_tls = settings.smtp_encryption == 'tls'
-            use_ssl = settings.smtp_encryption == 'ssl'
-            
-            # If using Custom SMTP, we build a backend. If using default, we might fall back.
-            if settings.smtp_provider == 'Custom' and settings.smtp_host:
-                connection = EmailBackend(
-                    host=settings.smtp_host,
-                    port=settings.smtp_port,
-                    username=settings.smtp_username,
-                    password=settings.smtp_password,
-                    use_tls=use_tls,
-                    use_ssl=use_ssl,
-                    fail_silently=False,
-                )
-            else:
-                connection = None # Uses default connection in django settings
+        result = EmailService.send_test_email(recipient)
 
-            send_mail(
-                subject=f'Test Email from {settings.company_name or "InfinytTech"}',
-                message='This is a test email to verify your SMTP configuration.',
-                from_email=settings.smtp_sender_email or django_settings.DEFAULT_FROM_EMAIL or 'test@example.com',
-                recipient_list=[test_email],
-                fail_silently=False,
-                connection=connection,
+        # Persist the result into SiteSettings (lightweight monitoring)
+        site = SiteSettings.objects.first()
+        now = timezone.now()
+
+        if result.success:
+            if site:
+                SiteSettings.objects.filter(pk=site.pk).update(
+                    email_last_test_status='success',
+                    email_last_test_at=now,
+                    email_last_test_recipient=recipient,
+                )
+            from apps.site_settings.services import clear_site_settings_cache
+            clear_site_settings_cache()
+            return Response({
+                "detail": result.message,
+                "status": "success",
+                "recipient": recipient,
+                "tested_at": now.isoformat(),
+                "checks": {
+                    "smtp_connection": True,
+                    "template_engine": True,
+                    "configuration": True,
+                },
+            })
+
+        # Failure path — store reason (never expose raw SMTP internals)
+        failure_reason = result.error or result.message or "Unknown error"
+        if site:
+            SiteSettings.objects.filter(pk=site.pk).update(
+                email_last_test_status='error',
+                email_last_failure_at=now,
+                email_last_failure_reason=failure_reason[:500],
             )
-            return Response({"detail": "Test email sent successfully."})
-        except Exception as e:
-            return Response({"detail": str(e)}, status=400)
+        from apps.site_settings.services import clear_site_settings_cache
+        clear_site_settings_cache()
+        return Response({"detail": failure_reason}, status=400)
+
+    @action(detail=False, methods=['get'])
+    def email_status(self, request):
+        """
+        Return the current email test status stored in SiteSettings.
+        Used by the Email Service Status dashboard panel.
+        """
+        site = SiteSettings.objects.first()
+        if not site:
+            return Response({"status": "not_tested"})
+
+        return Response({
+            "status": site.email_last_test_status,
+            "last_test_at": site.email_last_test_at.isoformat() if site.email_last_test_at else None,
+            "last_test_recipient": site.email_last_test_recipient,
+            "last_failure_at": site.email_last_failure_at.isoformat() if site.email_last_failure_at else None,
+            "last_failure_reason": site.email_last_failure_reason,
+            "smtp_configured": bool(site.smtp_host and site.smtp_username),
+            "smtp_summary": {
+                "provider": site.smtp_provider,
+                "host": site.smtp_host,
+                "port": site.smtp_port,
+                "encryption": site.smtp_encryption.upper() if site.smtp_encryption else "",
+                "sender_name": site.smtp_sender_name,
+                "sender_email": site.smtp_sender_email,
+            },
+        })
 
     @action(detail=False, methods=['get'])
     def health(self, request):

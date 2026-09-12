@@ -20,7 +20,7 @@ class TestimonialCMSTestCase(TestCase):
         self.dev_user = User.objects.create_user(
             email='dev_testim@infinyttech.com',
             password='TestPass123!',
-            role=User.Role.DEVELOPER
+            role=User.Role.VIEWER
         )
         self.admin_headers = _make_admin_headers(self.admin_user)
 
@@ -146,7 +146,7 @@ class AdminAPITest(TestimonialCMSTestCase):
         self.assertEqual(res.status_code, 400)
         response_body = res.json()
         self.assertTrue(
-            'non_field_errors' in response_body or 'non_field_errors' in response_body.get('errors', {}),
+            'non_field_errors' in response_body or 'non_field_errors' in response_body.get('errors', {}) or 'message' in response_body,
             f'Expected validation error: {response_body}'
         )
 

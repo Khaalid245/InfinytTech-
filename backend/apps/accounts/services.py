@@ -70,3 +70,4 @@ def enforce_session_timeout(user, request=None, is_jwt=False):
     if should_update:
         user.last_activity = now
         user.save(update_fields=['last_activity'])
+

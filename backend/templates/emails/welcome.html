@@ -1,0 +1,17 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+    <h1>Welcome to {{ company_name|default:"InfinytTech" }}!</h1>
+    
+    <p>Hi {{ user.first_name|default:user.username }},</p>
+    
+    <p>Thank you for creating an account with us. We're excited to have you on board!</p>
+    
+    <p>To get started, please log in and explore your dashboard.</p>
+    
+    {% include "emails/components/button.html" with url=login_url label="Log In to Your Account" %}
+    
+    <p>If you have any questions or need assistance, feel free to reply to this email or contact our support team.</p>
+    
+    <p>Best regards,<br>The {{ company_name|default:"InfinytTech" }} Team</p>
+{% endblock %}

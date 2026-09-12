@@ -1,0 +1,51 @@
+<table cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #f4f5f7; border-top: 1px solid #e5e7eb;">
+    <tr>
+        <td style="padding: 32px 32px 40px 32px; text-align: center; color: #6b7280; font-size: 13px; line-height: 20px;">
+            <p style="margin: 0 0 12px 0;">
+                &copy; {{ current_year|default:"2026" }} <strong>{{ company_name|default:"InfinytTech" }}</strong>. All rights reserved.
+            </p>
+            
+            {% if office_address %}
+                <p style="margin: 0 0 12px 0;">{{ office_address }}</p>
+            {% endif %}
+            
+            <p style="margin: 0;">
+                {% if support_email %}
+                    Need help? Contact us at <a href="mailto:{{ support_email }}" style="color: {{ brand_colors.primary|default:'#2563eb' }}; font-weight: 500;">{{ support_email }}</a>
+                {% endif %}
+            </p>
+            
+            {% if social_links %}
+            <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin-top: 24px;">
+                <tr>
+                    {% if social_links.facebook %}
+                    <td style="padding: 0 12px;">
+                        <a href="{{ social_links.facebook }}" style="color: #9ca3af; text-decoration: none; font-weight: 500;">Facebook</a>
+                    </td>
+                    {% endif %}
+                    {% if social_links.twitter %}
+                    <td style="padding: 0 12px;">
+                        <a href="{{ social_links.twitter }}" style="color: #9ca3af; text-decoration: none; font-weight: 500;">X/Twitter</a>
+                    </td>
+                    {% endif %}
+                    {% if social_links.linkedin %}
+                    <td style="padding: 0 12px;">
+                        <a href="{{ social_links.linkedin }}" style="color: #9ca3af; text-decoration: none; font-weight: 500;">LinkedIn</a>
+                    </td>
+                    {% endif %}
+                    {% if social_links.instagram %}
+                    <td style="padding: 0 12px;">
+                        <a href="{{ social_links.instagram }}" style="color: #9ca3af; text-decoration: none; font-weight: 500;">Instagram</a>
+                    </td>
+                    {% endif %}
+                    {% if social_links.github %}
+                    <td style="padding: 0 12px;">
+                        <a href="{{ social_links.github }}" style="color: #9ca3af; text-decoration: none; font-weight: 500;">GitHub</a>
+                    </td>
+                    {% endif %}
+                </tr>
+            </table>
+            {% endif %}
+        </td>
+    </tr>
+</table>

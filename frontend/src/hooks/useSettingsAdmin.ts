@@ -20,8 +20,9 @@ export function useSettingsAdmin() {
       queryClient.invalidateQueries({ queryKey: ['siteSettings'] });
       toast.success('Settings updated successfully');
     },
-    onError: () => {
-      toast.error('Failed to update settings');
+    onError: (error: any) => {
+      const message = error.response?.data?.detail || error.response?.data?.message || 'Failed to update settings';
+      toast.error(message);
     },
   });
 
@@ -30,10 +31,20 @@ export function useSettingsAdmin() {
     mutationFn: (email: string) => siteSettingsService.testEmail(email),
     onSuccess: () => {
       toast.success('Test email sent successfully');
+      queryClient.invalidateQueries({ queryKey: ['email-status'] });
     },
-    onError: () => {
-      toast.error('Failed to send test email');
+    onError: (error: any) => {
+      queryClient.invalidateQueries({ queryKey: ['email-status'] });
+      const message = error.response?.data?.detail || error.response?.data?.message || 'Failed to send test email';
+      toast.error(message);
     },
+  });
+
+  // Email Service Status (persistent, from DB)
+  const { data: emailStatus, isLoading: isLoadingEmailStatus } = useQuery({
+    queryKey: ['email-status'],
+    queryFn: () => siteSettingsService.getEmailStatus(),
+    refetchInterval: 60_000, // refresh every 60s
   });
 
   // System Health
@@ -95,6 +106,8 @@ export function useSettingsAdmin() {
     updateSettings,
     
     testEmail,
+    emailStatus,
+    isLoadingEmailStatus,
     
     healthData,
     isLoadingHealth,

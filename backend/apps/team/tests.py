@@ -36,7 +36,7 @@ class TeamCMSTestCase(TestCase):
         self.dev_user = User.objects.create_user(
             email='dev_team@infinyttech.com',
             password='TestPass123!',
-            role=User.Role.DEVELOPER
+            role=User.Role.VIEWER
         )
         self.admin_headers = _make_admin_headers(self.admin_user)
 

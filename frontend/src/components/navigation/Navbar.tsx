@@ -128,32 +128,12 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
     return () => window.removeEventListener('resize', updateUnderlinePosition);
   }, [updateUnderlinePosition, isScrolled]);
 
-  // 5. URL Path-to-Scroll Router Listener (Navbar & Footer Links)
+  // 5. Scroll to top on fresh home page load
   useEffect(() => {
-    const path = location.pathname;
-    
-    const pathRouteMap: Record<string, string> = {
-      '/': 'hero',
-      '/process': 'process',
-    };
-
-    const targetSectionId = pathRouteMap[path];
-    if (targetSectionId) {
-      const timer = setTimeout(() => {
-        const element = document.getElementById(targetSectionId);
-        if (element) {
-          const headerOffset = window.scrollY > 30 ? 90 : 120;
-          const elementPosition = element.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth',
-          });
-        }
-      }, 150);
-      return () => clearTimeout(timer);
+    if (location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'instant' });
     }
-  }, [location.pathname]);
+  }, []);
 
   // Lock scroll when mobile menu is open
   useEffect(() => {
@@ -373,10 +353,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
             <Button
               to="/contact"
               variant="primary"
-              onClick={(e) => {
-                const contactItem = NAV_ITEMS.find((i) => i.id === 'contact');
-                if (contactItem) handleLinkClick(e, contactItem);
-              }}
+              onClick={() => setIsMobileMenuOpen(false)}
               className={cn(
                 'px-4 py-2',
                 useHeroText ? 'bg-white text-[#0B0D0F] border-white hover:bg-white/90 hover:border-white/90' : (isDark ? 'bg-[#D4A017] text-[#0B0D0F] border-[#D4A017] hover:bg-[#E6B325] hover:border-[#E6B325]' : 'bg-[#0F172A] text-white border-[#0F172A] hover:bg-slate-800')
@@ -549,10 +526,7 @@ export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate 
           <Button
             to="/contact"
             variant="secondary"
-            onClick={(e) => {
-              const contactItem = NAV_ITEMS.find((i) => i.id === 'contact');
-              if (contactItem) handleLinkClick(e, contactItem);
-            }}
+            onClick={() => setIsMobileMenuOpen(false)}
             className={cn(
               'w-full min-h-[48px]',
               isDark

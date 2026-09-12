@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Outlet, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet, Link, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Heading from './components/ui/Heading';
 import Text from './components/ui/Text';
@@ -242,7 +242,7 @@ export const App: React.FC = () => {
             <Route path="/insights/:slug" element={<BlogPostDetailPage theme={theme} />} />
 
             <Route path="/login" element={<AdminLoginPage />} />
-            <Route path="*" element={<HomePage theme={theme} />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
 
           {/* Admin Routes with AdminLayout */}

@@ -1,0 +1,15 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+    <h1>Your Account is Unlocked</h1>
+    
+    <p>Hi {{ user.first_name|default:user.username }},</p>
+    
+    <p>Good news! Your account has been unlocked and you can now log in normally.</p>
+    
+    {% include "emails/components/button.html" with url=login_url label="Log In Now" %}
+    
+    <p>If you have any trouble logging in, please try resetting your password or contact our support team for assistance.</p>
+    
+    <p>Best regards,<br>The {{ company_name|default:"InfinytTech" }} Team</p>
+{% endblock %}

@@ -27,7 +27,7 @@ class BlogCMSTestCase(TestCase):
         self.dev_user = User.objects.create_user(
             email="developer_blog@infinyttech.com",
             password=self.password,
-            role=User.Role.DEVELOPER
+            role=User.Role.VIEWER
         )
 
         # 3. Create test database records

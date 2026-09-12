@@ -145,7 +145,7 @@ class SiteSettingsSerializer(serializers.ModelSerializer):
 
         instance = super().update(instance, validated_data)
 
-        if smtp_password is not None:
+        if smtp_password:
             instance.smtp_password = smtp_password
             instance.save()
 

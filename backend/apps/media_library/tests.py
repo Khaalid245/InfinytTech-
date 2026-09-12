@@ -30,7 +30,7 @@ class MediaLibraryTestCase(TestCase):
         self.non_admin = User.objects.create_user(
             email="user_media@infinyttech.com",
             password="testpassword123",
-            role=User.Role.DEVELOPER
+            role=User.Role.VIEWER
         )
         token_dev = AccessToken.for_user(self.non_admin)
         self.dev_auth_header = f"Bearer {token_dev}"

@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 from datetime import timedelta
+from unittest.mock import patch
 from rest_framework.test import APIClient
 from apps.accounts.models import User
 from apps.site_settings.models import SiteSettings
@@ -528,3 +529,104 @@ class RateLimitingTests(TestCase):
         })
         self.assertEqual(res.status_code, 200)
         self.assertIn('access', res.data)
+
+
+class EmailIntegrationTests(TestCase):
+    """
+    Tests for Phase 21.4 — Authentication & Lifecycle Email Integration.
+    """
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+        self.client = APIClient()
+        SiteSettings.objects.all().delete()
+        self.settings = SiteSettings.objects.create(
+            company_name='TestCorp',
+            is_active=True,
+            max_login_attempts=3,
+            lockout_duration=5,
+        )
+        clear_site_settings_cache()
+        
+        self.admin = User.objects.create_superuser(
+            email='admin@example.com',
+            password='AdminPassword123!',
+            first_name='Admin',
+            last_name='User'
+        )
+        self.user = User.objects.create_user(
+            email='user@example.com',
+            password='Password123!',
+            first_name='Reg',
+            last_name='User'
+        )
+
+    @patch('apps.accounts.views.EmailService.send_template_email')
+    def test_welcome_email_sent_on_user_creation(self, mock_send):
+        mock_send.return_value.success = True
+        self.client.force_authenticate(user=self.admin)
+        
+        res = self.client.post(reverse('users-list'), {
+            'email': 'newguy@example.com',
+            'first_name': 'New',
+            'last_name': 'Guy',
+            'role': 'viewer',
+            'password': 'ValidPassword123!'
+        })
+        self.assertEqual(res.status_code, 201)
+        
+        mock_send.assert_called_once()
+        args, kwargs = mock_send.call_args
+        self.assertEqual(kwargs['template_name'], 'emails/welcome.html')
+        self.assertEqual(kwargs['recipient_list'], ['newguy@example.com'])
+
+    @patch('apps.accounts.views.EmailService.send_template_email')
+    def test_forgot_password_sends_email(self, mock_send):
+        mock_send.return_value.success = True
+        
+        res = self.client.post(reverse('auth-forgot-password'), {
+            'email': self.user.email
+        })
+        self.assertEqual(res.status_code, 200)
+        
+        mock_send.assert_called_once()
+        args, kwargs = mock_send.call_args
+        self.assertEqual(kwargs['template_name'], 'emails/password_reset.html')
+        self.assertEqual(kwargs['recipient_list'], [self.user.email])
+        self.assertIn('uid=', kwargs['context']['reset_url'])
+        self.assertIn('token=', kwargs['context']['reset_url'])
+
+    @patch('apps.accounts.backends.EmailService.send_template_email')
+    def test_account_lockout_sends_email(self, mock_send):
+        mock_send.return_value.success = True
+        
+        # 3 failed logins to trigger lockout
+        for _ in range(3):
+            res = self.client.post(reverse('auth-login'), {
+                'email': self.user.email,
+                'password': 'wrongpassword'
+            })
+            
+        self.assertEqual(res.status_code, 403)
+        mock_send.assert_called_once()
+        args, kwargs = mock_send.call_args
+        self.assertEqual(kwargs['template_name'], 'emails/account_locked.html')
+        self.assertEqual(kwargs['recipient_list'], [self.user.email])
+
+    @patch('apps.accounts.views.EmailService.send_template_email')
+    def test_admin_unlock_sends_email(self, mock_send):
+        mock_send.return_value.success = True
+        self.client.force_authenticate(user=self.admin)
+        
+        # Lock user first manually
+        self.user.failed_login_attempts = 3
+        self.user.locked_until = timezone.now() + timedelta(minutes=5)
+        self.user.save()
+        
+        res = self.client.post(reverse('users-unlock', kwargs={'pk': self.user.pk}))
+        self.assertEqual(res.status_code, 200)
+        
+        mock_send.assert_called_once()
+        args, kwargs = mock_send.call_args
+        self.assertEqual(kwargs['template_name'], 'emails/account_unlocked.html')
+        self.assertEqual(kwargs['recipient_list'], [self.user.email])

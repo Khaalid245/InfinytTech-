@@ -1,0 +1,52 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+    <h1>
+        🔔 New Contact Form Submission
+    </h1>
+    <p style="color: #6b7280; font-size: 14px;">Received {{ submitted_at }}</p>
+
+    {% include "emails/components/divider.html" %}
+
+    <h2>Lead Details</h2>
+    <div style="background-color:#ffffff; border:1px solid #e5e7eb; border-radius:10px; padding:20px; margin:16px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <p style="margin:8px 0; color:#374151; font-size:15px;"><strong>Name:</strong> {{ lead.first_name }} {{ lead.last_name }}</p>
+        <p style="margin:8px 0; color:#374151; font-size:15px;"><strong>Email:</strong> <a href="mailto:{{ lead.email }}" style="color:{{ brand_colors.primary|default:'#2563eb' }}; font-weight:500;">{{ lead.email }}</a></p>
+        {% if lead.phone %}
+        <p style="margin:8px 0; color:#374151; font-size:15px;"><strong>Phone:</strong> {{ lead.phone }}</p>
+        {% endif %}
+        {% if lead.whatsapp %}
+        <p style="margin:8px 0; color:#374151; font-size:15px;"><strong>WhatsApp:</strong> {{ lead.whatsapp }}</p>
+        {% endif %}
+        {% if lead.company %}
+        <p style="margin:8px 0; color:#374151; font-size:15px;"><strong>Company:</strong> {{ lead.company }}</p>
+        {% endif %}
+        {% if lead.industry %}
+        <p style="margin:8px 0; color:#374151; font-size:15px;"><strong>Industry:</strong> {{ lead.industry }}</p>
+        {% endif %}
+        {% if lead.country %}
+        <p style="margin:8px 0; color:#374151; font-size:15px;"><strong>Country:</strong> {{ lead.country }}</p>
+        {% endif %}
+        {% if lead.project_type %}
+        <p style="margin:8px 0; color:#374151; font-size:15px;"><strong>Project Type:</strong> {{ lead.project_type }}</p>
+        {% endif %}
+        {% if lead.budget_range %}
+        <p style="margin:8px 0; color:#374151; font-size:15px;"><strong>Budget:</strong> {{ lead.budget_range }}</p>
+        {% endif %}
+        {% if lead.company_size %}
+        <p style="margin:8px 0; color:#374151; font-size:15px;"><strong>Company Size:</strong> {{ lead.company_size }}</p>
+        {% endif %}
+    </div>
+
+    {% include "emails/components/divider.html" %}
+
+    <h2>Message</h2>
+    <div style="background-color:#fffbeb; border-left:4px solid #f59e0b; padding:16px 20px; border-radius:8px; margin:16px 0;">
+        <p style="white-space:pre-wrap; margin:0; font-size:15px; color:#374151; line-height:24px;">{{ lead.message }}</p>
+    </div>
+
+    {% if admin_lead_url %}
+    {% include "emails/components/divider.html" %}
+    {% include "emails/components/button.html" with url=admin_lead_url label="View Lead in Admin Panel" %}
+    {% endif %}
+{% endblock %}

@@ -70,6 +70,23 @@ class SiteSettings(UUIDModel, TimeStampedModel):
     smtp_sender_name = models.CharField(max_length=255, blank=True)
     smtp_sender_email = models.EmailField(blank=True)
 
+    # Email Test Status (lightweight monitoring – Phase 21.5E)
+    # Full email log table belongs to Phase 21.6.
+    EMAIL_TEST_STATUS_CHOICES = [
+        ('not_tested', 'Not Tested'),
+        ('success', 'Operational'),
+        ('error', 'Error'),
+    ]
+    email_last_test_status = models.CharField(
+        max_length=20, choices=EMAIL_TEST_STATUS_CHOICES,
+        default='not_tested', blank=True,
+    )
+    email_last_test_at = models.DateTimeField(null=True, blank=True)
+    email_last_test_recipient = models.EmailField(blank=True)
+    email_last_failure_at = models.DateTimeField(null=True, blank=True)
+    email_last_failure_reason = models.CharField(max_length=500, blank=True)
+
+
     # Security
     password_policy = models.CharField(max_length=255, choices=PasswordPolicy.choices, default=PasswordPolicy.STRICT)
     session_timeout = models.PositiveIntegerField(

@@ -48,6 +48,28 @@ export default function TeamMemberDrawer({ isOpen, onClose, member, departments 
   const { mutateAsync: createMember, isPending: isCreating } = useCreateTeamMember();
   const { mutateAsync: updateMember, isPending: isUpdating } = useUpdateTeamMember();
 
+  const resetForm = () => {
+    setFirstName('');
+    setLastName('');
+    setSlug('');
+    setPosition('');
+    setDepartmentId('');
+    setYearsOfExperience('');
+    setShortBio('');
+    setBiography('');
+    setEmail('');
+    setPhone('');
+    setLinkedin('');
+    setGithub('');
+    setTwitter('');
+    setWebsite('');
+    setDisplayOrder(0);
+    setIsFeatured(false);
+    setIsActive(true);
+    setSkills([]);
+    setSelectedPhoto(null);
+  };
+
   useEffect(() => {
     if (member) {
       setFirstName(member.first_name);
@@ -96,28 +118,6 @@ export default function TeamMemberDrawer({ isOpen, onClose, member, departments 
       resetForm();
     }
   }, [member, isOpen]);
-
-  const resetForm = () => {
-    setFirstName('');
-    setLastName('');
-    setSlug('');
-    setPosition('');
-    setDepartmentId('');
-    setYearsOfExperience('');
-    setShortBio('');
-    setBiography('');
-    setEmail('');
-    setPhone('');
-    setLinkedin('');
-    setGithub('');
-    setTwitter('');
-    setWebsite('');
-    setDisplayOrder(0);
-    setIsFeatured(false);
-    setIsActive(true);
-    setSkills([]);
-    setSelectedPhoto(null);
-  };
 
   const handleAddSkill = () => {
     if (newSkill.trim() && !skills.includes(newSkill.trim())) {

@@ -26,6 +26,39 @@ const MediaUploadModal: React.FC<MediaUploadModalProps> = ({ onClose, folders = 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { mutateAsync: uploadMedia } = useUploadMedia();
 
+  const startUpload = async (job: UploadJob) => {
+    setJobs(prev => prev.map(j => j.id === job.id ? { ...j, status: 'uploading' } : j));
+    
+    try {
+      await uploadMedia({
+        file: job.file,
+        folderId: destinationFolderId || undefined,
+        onProgress: (p) => {
+          setJobs(prev => prev.map(j => j.id === job.id ? { ...j, progress: p } : j));
+        }
+      });
+      setJobs(prev => prev.map(j => j.id === job.id ? { ...j, status: 'success', progress: 100 } : j));
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.data?.file?.[0] || err.message || 'Upload failed';
+      setJobs(prev => prev.map(j => j.id === job.id ? { ...j, status: 'error', error: errorMsg } : j));
+    }
+  };
+
+  const processFiles = (files: File[]) => {
+    const newJobs = files.map(file => {
+      const isImage = file.type.startsWith('image/');
+      return {
+        id: Math.random().toString(36).substr(2, 9),
+        file,
+        progress: 0,
+        status: 'pending' as const,
+        previewUrl: isImage ? URL.createObjectURL(file) : undefined
+      };
+    });
+    setJobs(prev => [...prev, ...newJobs]);
+    newJobs.forEach(job => startUpload(job));
+  };
+
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -52,38 +85,6 @@ const MediaUploadModal: React.FC<MediaUploadModalProps> = ({ onClose, folders = 
     }
   };
 
-  const processFiles = (files: File[]) => {
-    const newJobs = files.map(file => {
-      const isImage = file.type.startsWith('image/');
-      return {
-        id: Math.random().toString(36).substr(2, 9),
-        file,
-        progress: 0,
-        status: 'pending' as const,
-        previewUrl: isImage ? URL.createObjectURL(file) : undefined
-      };
-    });
-    setJobs(prev => [...prev, ...newJobs]);
-    newJobs.forEach(job => startUpload(job));
-  };
-
-  const startUpload = async (job: UploadJob) => {
-    setJobs(prev => prev.map(j => j.id === job.id ? { ...j, status: 'uploading' } : j));
-    
-    try {
-      await uploadMedia({
-        file: job.file,
-        folderId: destinationFolderId || undefined,
-        onProgress: (p) => {
-          setJobs(prev => prev.map(j => j.id === job.id ? { ...j, progress: p } : j));
-        }
-      });
-      setJobs(prev => prev.map(j => j.id === job.id ? { ...j, status: 'success', progress: 100 } : j));
-    } catch (err: any) {
-      const errorMsg = err.response?.data?.data?.file?.[0] || err.message || 'Upload failed';
-      setJobs(prev => prev.map(j => j.id === job.id ? { ...j, status: 'error', error: errorMsg } : j));
-    }
-  };
 
   const removeJob = (id: string) => {
     setJobs(prev => prev.filter(j => j.id !== id));

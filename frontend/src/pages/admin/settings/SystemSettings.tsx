@@ -12,6 +12,26 @@ interface HealthCardProps {
   icon: React.ElementType;
 }
 
+const HealthCard: React.FC<HealthCardProps> = ({ title, status, value, icon: Icon }) => {
+  const isHealthy = status === 'Healthy' || (typeof value === 'number' && value < 80);
+  return (
+    <div className="bg-surface border border-border-primary p-4 rounded-lg flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <div className={`p-2 rounded-md ${isHealthy ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
+          <Icon className="w-5 h-5" />
+        </div>
+        <div>
+          <div className="text-sm font-medium text-primary-text">{title}</div>
+          <div className="text-xs text-secondary-text">{status}</div>
+        </div>
+      </div>
+      {value !== undefined && (
+        <div className="text-lg font-semibold text-primary-text">{value}{typeof value === 'number' ? '%' : ''}</div>
+      )}
+    </div>
+  );
+};
+
 const SystemSettings: React.FC = () => {
   const { 
     settings, updateSettings,
@@ -34,26 +54,6 @@ const SystemSettings: React.FC = () => {
   if (isLoadingHealth || isLoadingBackups || isLoadingNotifications || isLoadingAuditLogs) {
     return <div className="p-8"><LoadingState /></div>;
   }
-
-  const HealthCard: React.FC<HealthCardProps> = ({ title, status, value, icon: Icon }) => {
-    const isHealthy = status === 'Healthy' || (typeof value === 'number' && value < 80);
-    return (
-      <div className="bg-surface border border-border-primary p-4 rounded-lg flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-md ${isHealthy ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
-            <Icon className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="text-sm font-medium text-primary-text">{title}</div>
-            <div className="text-xs text-secondary-text">{status}</div>
-          </div>
-        </div>
-        {value !== undefined && (
-          <div className="text-lg font-semibold text-primary-text">{value}{typeof value === 'number' ? '%' : ''}</div>
-        )}
-      </div>
-    );
-  };
 
   return (
     <div className="p-6 md:p-8 space-y-12">

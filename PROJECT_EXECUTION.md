@@ -398,10 +398,51 @@ Phase 22.7: Final Production Readiness Audit & Release Tag v1.6.0 (P1)
 
 ---
 
+### Phase 22.6 — Live End-to-End Workflow Verification & Smoke QA
+- **Status:** 🟢 VERIFIED
+- **Date:** September 12, 2026
+- **Automated Integration Script Verification (`backend/verify_live_e2e.py`):**
+  - Executed against live running Django dev server (`http://127.0.0.1:8000`) and live MySQL database.
+  - **Step 1 (Public Lead Submission):** `POST /api/leads/contact/` with valid visitor payload returned **HTTP 201 Created**. Lead ID `adb4ae41-2793-46ac-93f3-c9b12e467c9d` successfully generated.
+  - **Step 2 (Admin Authentication):** `POST /api/auth/login/` with `admin@infinyttech.com` returned **HTTP 200 OK** and valid JWT `access` & `refresh` tokens.
+  - **Step 3 (Profile Verification):** `GET /api/auth/me/` with Bearer token confirmed user identity and `super_admin` role.
+  - **Step 4 (Admin Inquiries Listing):** `GET /api/leads/` verified newly submitted visitor lead is present in the administrative lead store with status `new`.
+  - **Step 5 (Admin Status Workflow):** `PATCH /api/leads/<id>/` successfully updated status to `contacted` and priority to `high`.
+  - **Step 6 (SMTP Diagnostics):** `GET /api/site-settings/admin/email_status/` returned **HTTP 200 OK** with real-time SMTP diagnostic status.
+  - **Step 7 (Admin Logout):** `POST /api/auth/logout/` with refresh token returned **HTTP 205 Reset Content**; user `last_activity` cleared and refresh token blacklisted.
+- **Database & Lifecycle Verification:**
+  - Database query verified `Lead` and related `LeadTimeline` records created:
+    - `('CREATED', 'Lead created from public contact form.')`
+    - `('STATUS_CHANGED', "Status changed from 'New' to 'Contacted'.")`
+    - `('NOTE_ADDED', 'Internal notes were updated.')`
+- **Manual QA & Browser Verification:**
+  - Executed automated browser session via `browser_subagent` on live frontend (`http://localhost:5173`).
+  - **Video Recording Artifact:** `e2e_flow_verify_1789193650754.webp`.
+  - **Public Lead Form Flow:**
+    - Navigated to `/contact` and scrolled smoothly to `#contact-form`.
+    - Filled full form: "Jane Smith", "jane.smith@technova.io", "+1 415 555 0199", "TechNova Solutions", checked privacy policy.
+    - Screenshot captured: `filled_contact_form_1789193721825.png`.
+    - Submitted form, received instant visual confirmation "Thank you for reaching out!".
+    - Screenshot captured: `contact_form_success_1789193760129.png`.
+    - Verified in MySQL database that Jane Smith's lead record and initial timeline event were created (`Lead: Jane Smith TechNova Solutions Product & Experience Design Contact Form`).
+  - **Admin Login & Dashboard Flow:**
+    - Navigated to `/login`.
+    - Filled administrative credentials (`admin@infinyttech.com`).
+    - Screenshot captured: `filled_login_form_1789193789564.png`.
+    - Clicked "Sign In", authenticated via JWT, successfully redirected to `/admin/dashboard`.
+    - Rendered the complete Admin Dashboard UI with lead counts, analytics, and navigation.
+    - Screenshot captured: `admin_dashboard_1789193807745.png`.
+- **Regression Suite Verification:**
+  - `python manage.py test`: **175/175 tests passing (100% OK in 73.2s)**.
+  - `npx eslint . --quiet`: **0 errors (Exit code 0)**.
+  - `npm run build`: **0 errors, built in 854ms**.
+
+---
+
 ## 20. Remaining Work
 
-- Phase 22.6: Live End-to-End Workflow Verification & Smoke QA (P1)
 - Phase 22.7: Final Production Readiness Audit & Release Tag v1.6.0 (P1)
+
 
 
 

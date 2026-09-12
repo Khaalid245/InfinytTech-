@@ -56,6 +56,19 @@ export default function TestimonialDrawer({ isOpen, onClose, testimonial, client
   const { mutateAsync: createTestimonial, isPending: isCreating } = useCreateTestimonial();
   const { mutateAsync: updateTestimonial, isPending: isUpdating } = useUpdateTestimonial();
 
+  const resetForm = () => {
+    setClientId('');
+    setRelatedProjectId('');
+    setAuthorName('');
+    setAuthorPosition('');
+    setTestimonialText('');
+    setRating(5);
+    setFeatured(false);
+    setIsPublished(true);
+    setSelectedPhoto(null);
+    setErrors({});
+  };
+
   useEffect(() => {
     if (testimonial) {
       setClientId(testimonial.client?.id || '');
@@ -95,19 +108,6 @@ export default function TestimonialDrawer({ isOpen, onClose, testimonial, client
     }
     setErrors({});
   }, [testimonial, isOpen]);
-
-  const resetForm = () => {
-    setClientId('');
-    setRelatedProjectId('');
-    setAuthorName('');
-    setAuthorPosition('');
-    setTestimonialText('');
-    setRating(5);
-    setFeatured(false);
-    setIsPublished(true);
-    setSelectedPhoto(null);
-    setErrors({});
-  };
 
   const validate = () => {
     const newErrors: Record<string, string> = {};

@@ -45,6 +45,18 @@ export default function ClientDrawer({ isOpen, onClose, client }: ClientDrawerPr
   const { mutateAsync: createClient, isPending: isCreating } = useCreateClient();
   const { mutateAsync: updateClient, isPending: isUpdating } = useUpdateClient();
 
+  const resetForm = () => {
+    setCompanyName('');
+    setSlug('');
+    setIndustry('');
+    setWebsite('');
+    setCountry('');
+    setCompanySize('');
+    setIsActive(true);
+    setSelectedLogo(null);
+    setErrors({});
+  };
+
   useEffect(() => {
     if (client) {
       setCompanyName(client.company_name);
@@ -83,18 +95,6 @@ export default function ClientDrawer({ isOpen, onClose, client }: ClientDrawerPr
     }
     setErrors({});
   }, [client, isOpen]);
-
-  const resetForm = () => {
-    setCompanyName('');
-    setSlug('');
-    setIndustry('');
-    setWebsite('');
-    setCountry('');
-    setCompanySize('');
-    setIsActive(true);
-    setSelectedLogo(null);
-    setErrors({});
-  };
 
   const validate = () => {
     const newErrors: Record<string, string> = {};

@@ -18,10 +18,10 @@ export function PasswordChecklist({ value = '' }: PasswordChecklistProps) {
   const satisfiedCount = rules.filter(rule => rule.test(value)).length;
   const allMet = satisfiedCount === rules.length;
 
-  let strengthLabel = 'Weak';
-  let strengthColor = 'bg-red-500 text-red-500';
-  let strengthTextColor = 'text-red-500';
-  let barsFilled = 1;
+  let strengthLabel: string;
+  let strengthColor: string;
+  let strengthTextColor: string;
+  let barsFilled: number;
 
   if (satisfiedCount >= 5) {
     strengthLabel = 'Excellent';

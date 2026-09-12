@@ -6,4 +6,4 @@ export { default as ContactPage } from './ContactPage';
 export { default as WorkPage } from './WorkPage';
 export { default as InsightsPage } from './InsightsPage';
 export { default as BlogPostDetailPage } from './BlogPostDetailPage';
-
+export { default as HomePage } from './HomePage';

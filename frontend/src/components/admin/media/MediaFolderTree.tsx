@@ -59,7 +59,9 @@ const MediaFolderTree: React.FC<MediaFolderTreeProps> = ({ folders, selectedFold
                   fileIds.forEach(id => onDropFile(id, null));
                   return;
                 }
-              } catch (err) {}
+              } catch {
+                // Ignore malformed JSON in drag event
+              }
             }
 
             const fileId = e.dataTransfer.getData('mediaId');
@@ -145,7 +147,9 @@ const TreeNode: React.FC<{
                 fileIds.forEach(id => onDropFile(id, node.id));
                 return;
               }
-            } catch (err) {}
+            } catch {
+              // Ignore malformed JSON in drag event
+            }
           }
 
           const fileId = e.dataTransfer.getData('mediaId');

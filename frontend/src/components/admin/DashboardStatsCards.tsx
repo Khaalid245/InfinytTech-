@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Layers, FileText, Users, MessageSquare, Image, Target, Settings, Briefcase } from 'lucide-react';
 import Card from '../ui/Card';
 import Text from '../ui/Text';
@@ -9,6 +10,8 @@ interface DashboardStatsCardsProps {
 }
 
 const DashboardStatsCards: React.FC<DashboardStatsCardsProps> = ({ overview }) => {
+  const navigate = useNavigate();
+
   const cards = [
     {
       id: 'portfolio',
@@ -17,7 +20,8 @@ const DashboardStatsCards: React.FC<DashboardStatsCardsProps> = ({ overview }) =
       description: `${overview.portfolio.published} Published • ${overview.portfolio.featured} Featured`,
       icon: Briefcase,
       color: 'text-blue-500',
-      bgColor: 'bg-blue-500/10'
+      bgColor: 'bg-blue-500/10',
+      path: '/admin/portfolio'
     },
     {
       id: 'blog',
@@ -26,7 +30,8 @@ const DashboardStatsCards: React.FC<DashboardStatsCardsProps> = ({ overview }) =
       description: `${overview.blog.published} Published • ${overview.blog.drafts} Drafts`,
       icon: FileText,
       color: 'text-orange-500',
-      bgColor: 'bg-orange-500/10'
+      bgColor: 'bg-orange-500/10',
+      path: '/admin/blog'
     },
     {
       id: 'services',
@@ -35,7 +40,8 @@ const DashboardStatsCards: React.FC<DashboardStatsCardsProps> = ({ overview }) =
       description: `${overview.services.categories} Categories`,
       icon: Layers,
       color: 'text-purple-500',
-      bgColor: 'bg-purple-500/10'
+      bgColor: 'bg-purple-500/10',
+      path: '/admin/services'
     },
     {
       id: 'team',
@@ -44,7 +50,8 @@ const DashboardStatsCards: React.FC<DashboardStatsCardsProps> = ({ overview }) =
       description: `${overview.team.departments} Departments`,
       icon: Users,
       color: 'text-cyan-500',
-      bgColor: 'bg-cyan-500/10'
+      bgColor: 'bg-cyan-500/10',
+      path: '/admin/team'
     },
     {
       id: 'testimonials',
@@ -53,7 +60,8 @@ const DashboardStatsCards: React.FC<DashboardStatsCardsProps> = ({ overview }) =
       description: `${overview.testimonials.featured} Featured`,
       icon: MessageSquare,
       color: 'text-pink-500',
-      bgColor: 'bg-pink-500/10'
+      bgColor: 'bg-pink-500/10',
+      path: '/admin/testimonials'
     },
     {
       id: 'media',
@@ -62,7 +70,8 @@ const DashboardStatsCards: React.FC<DashboardStatsCardsProps> = ({ overview }) =
       description: `${overview.media.images} Images • ${overview.media.svgs} SVGs`,
       icon: Image,
       color: 'text-indigo-500',
-      bgColor: 'bg-indigo-500/10'
+      bgColor: 'bg-indigo-500/10',
+      path: '/admin/media'
     },
     {
       id: 'leads',
@@ -71,7 +80,8 @@ const DashboardStatsCards: React.FC<DashboardStatsCardsProps> = ({ overview }) =
       description: `${overview.leads.new} New • ${overview.leads.won} Won`,
       icon: Target,
       color: 'text-green-500',
-      bgColor: 'bg-green-500/10'
+      bgColor: 'bg-green-500/10',
+      path: '/admin/leads'
     },
     {
       id: 'settings',
@@ -80,7 +90,8 @@ const DashboardStatsCards: React.FC<DashboardStatsCardsProps> = ({ overview }) =
       description: overview.site_settings.active_config > 0 ? 'Configured' : 'Missing Config',
       icon: Settings,
       color: 'text-slate-500',
-      bgColor: 'bg-slate-500/10'
+      bgColor: 'bg-slate-500/10',
+      path: '/admin/settings'
     }
   ];
 
@@ -90,7 +101,16 @@ const DashboardStatsCards: React.FC<DashboardStatsCardsProps> = ({ overview }) =
         <Card 
           key={card.id} 
           variant="outline" 
-          className="flex flex-col justify-between h-36 p-5 bg-surface-light border border-border-primary hover:border-accent-primary/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group"
+          onClick={() => navigate(card.path)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              navigate(card.path);
+            }
+          }}
+          className="flex flex-col justify-between h-36 p-5 bg-surface-light border border-border-primary hover:border-accent-primary/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group focus:outline-none focus:ring-2 focus:ring-accent-primary"
         >
           <div className="flex items-center justify-between">
             <div className={`p-2 rounded-lg transition-transform duration-300 group-hover:scale-110 ${card.bgColor}`}>

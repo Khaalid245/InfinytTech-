@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Plus, Edit2, Trash2, ShieldAlert } from 'lucide-react';
+import toast from 'react-hot-toast';
 import Button from '../../../components/ui/Button';
 import DataTable, { type ColumnDef } from '../../../components/admin/shared/DataTable';
 import Badge from '../../../components/ui/Badge';
 import { useAdminDepartments, useDeleteDepartment } from '../../../hooks/useTeamAdmin';
 import DepartmentModal from '../../../components/admin/team/DepartmentModal';
+import ConfirmDialog from '../../../components/admin/shared/ConfirmDialog';
 import type { Department } from '../../../types/team';
 
 const AdminTeamDepartmentsPage: React.FC = () => {
@@ -13,6 +15,16 @@ const AdminTeamDepartmentsPage: React.FC = () => {
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDept, setSelectedDept] = useState<Department | null>(null);
+  const [deleteDialog, setDeleteDialog] = useState<{
+    isOpen: boolean;
+    dept?: Department;
+    title: string;
+    description: string;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+  });
 
   const handleCreate = () => {
     setSelectedDept(null);
@@ -24,18 +36,29 @@ const AdminTeamDepartmentsPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (dept: Department) => {
+  const handleDelete = (dept: Department) => {
     if (dept.members_count && dept.members_count > 0) {
-      alert(`Cannot delete ${dept.name} because it contains ${dept.members_count} members. Please move or delete the members first.`);
+      toast.error(`Cannot delete ${dept.name} because it contains ${dept.members_count} members. Please move or delete the members first.`);
       return;
     }
     
-    if (window.confirm(`Are you sure you want to delete ${dept.name}?`)) {
-      try {
-        await deleteDepartment(dept.id);
-      } catch (err) {
-        console.error('Failed to delete', err);
-      }
+    setDeleteDialog({
+      isOpen: true,
+      dept,
+      title: 'Delete Department',
+      description: `Are you sure you want to delete ${dept.name}? This action cannot be undone.`
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteDialog.dept) return;
+    try {
+      await deleteDepartment(deleteDialog.dept.id);
+      toast.success('Department deleted successfully');
+      setDeleteDialog({ isOpen: false, title: '', description: '' });
+    } catch (err) {
+      console.error('Failed to delete', err);
+      toast.error('Failed to delete department.');
     }
   };
 
@@ -133,6 +156,16 @@ const AdminTeamDepartmentsPage: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         department={selectedDept}
+      />
+
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        onClose={() => setDeleteDialog({ isOpen: false, title: '', description: '' })}
+        onConfirm={handleConfirmDelete}
+        title={deleteDialog.title}
+        description={deleteDialog.description}
+        confirmText="Delete"
+        variant="danger"
       />
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Search, AlertCircle } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import Heading from '../../components/ui/Heading';
 import Text from '../../components/ui/Text';
 import Button from '../../components/ui/Button';
@@ -10,6 +11,7 @@ import ServicesTable from '../../components/admin/services/ServicesTable';
 import ServicesTableSkeleton from '../../components/admin/services/ServicesTableSkeleton';
 import ServiceFormModal from '../../components/admin/services/ServiceFormModal';
 import BulkActionsBar from '../../components/admin/portfolio/BulkActionsBar';
+import ConfirmDialog from '../../components/admin/shared/ConfirmDialog';
 
 import { 
   useAdminServices, 
@@ -37,6 +39,17 @@ const AdminServicesPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | undefined>();
   const [selectedSlugs, setSelectedSlugs] = useState<Set<string>>(new Set());
+  const [deleteDialog, setDeleteDialog] = useState<{
+    isOpen: boolean;
+    slug?: string;
+    isBulk?: boolean;
+    title: string;
+    description: string;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+  });
 
   // Queries & Mutations
   const { data, isLoading, isError, isRefetching, refetch } = useAdminServices(filters);
@@ -89,48 +102,70 @@ const AdminServicesPage: React.FC = () => {
     try {
       if (editingService) {
         await updateMutation.mutateAsync({ slug: editingService.slug, data: formData });
+        toast.success('Service updated successfully');
       } else {
         await createMutation.mutateAsync(formData);
+        toast.success('Service created successfully');
       }
       handleCloseModal();
       refetch();
     } catch (error) {
       console.error('Failed to save service:', error);
-      alert('Failed to save service. Check console for details.');
+      toast.error('Failed to save service. Check form inputs.');
     }
   };
 
-  const handleDelete = async (slug: string) => {
-    if (window.confirm('Are you sure you want to delete this service? This action cannot be undone.')) {
-      try {
-        await deleteMutation.mutateAsync(slug);
+  const handleDelete = (slug: string) => {
+    setDeleteDialog({
+      isOpen: true,
+      slug,
+      isBulk: false,
+      title: 'Delete Service',
+      description: 'Are you sure you want to delete this service? This action cannot be undone.'
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      if (deleteDialog.isBulk) {
+        const promises = Array.from(selectedSlugs).map(slug => deleteMutation.mutateAsync(slug));
+        await Promise.all(promises);
+        setSelectedSlugs(new Set());
+        toast.success(`Selected services deleted successfully`);
+      } else if (deleteDialog.slug) {
+        await deleteMutation.mutateAsync(deleteDialog.slug);
         setSelectedSlugs(prev => {
           const next = new Set(prev);
-          next.delete(slug);
+          next.delete(deleteDialog.slug!);
           return next;
         });
-      } catch (error) {
-        console.error('Failed to delete service:', error);
-        alert('Failed to delete service.');
+        toast.success('Service deleted successfully');
       }
+      setDeleteDialog({ isOpen: false, title: '', description: '' });
+      refetch();
+    } catch (error) {
+      console.error('Failed to delete service:', error);
+      toast.error('Failed to delete service.');
     }
   };
 
   const handleToggleStatus = async (slug: string, currentStatus: boolean) => {
     try {
       await updateMutation.mutateAsync({ slug, data: { is_active: !currentStatus } });
+      toast.success(!currentStatus ? 'Service published' : 'Service moved to inactive');
     } catch (error) {
       console.error('Failed to toggle status:', error);
-      alert('Failed to update status.');
+      toast.error('Failed to update status.');
     }
   };
 
   const handleToggleFeatured = async (slug: string, currentFeatured: boolean) => {
     try {
       await updateMutation.mutateAsync({ slug, data: { is_featured: !currentFeatured } });
+      toast.success(!currentFeatured ? 'Service featured on homepage' : 'Service unfeatured');
     } catch (error) {
       console.error('Failed to toggle featured:', error);
-      alert('Failed to update featured status.');
+      toast.error('Failed to update featured status.');
     }
   };
 
@@ -139,14 +174,17 @@ const AdminServicesPage: React.FC = () => {
     if (selectedSlugs.size === 0) return;
     
     if (action === 'delete') {
-      if (!window.confirm(`Are you sure you want to delete ${selectedSlugs.size} services?`)) {
-        return;
-      }
+      setDeleteDialog({
+        isOpen: true,
+        isBulk: true,
+        title: 'Delete Selected Services',
+        description: `Are you sure you want to delete ${selectedSlugs.size} services? This action cannot be undone.`
+      });
+      return;
     }
 
     const promises = Array.from(selectedSlugs).map(slug => {
       switch (action) {
-        case 'delete': return deleteMutation.mutateAsync(slug);
         case 'publish': return updateMutation.mutateAsync({ slug, data: { is_active: true } });
         case 'draft': return updateMutation.mutateAsync({ slug, data: { is_active: false } });
         case 'feature': return updateMutation.mutateAsync({ slug, data: { is_featured: true } });
@@ -157,9 +195,10 @@ const AdminServicesPage: React.FC = () => {
     try {
       await Promise.all(promises);
       setSelectedSlugs(new Set()); // Clear selection on success
+      toast.success(`Bulk ${action} applied successfully`);
     } catch (error) {
-      console.error(`Bulk ${action} failed:`, error);
-      alert(`Some services failed to update during bulk ${action}.`);
+      console.error('Failed to execute bulk action:', error);
+      toast.error(`Some services failed to update during bulk ${action}.`);
     }
   };
 
@@ -278,6 +317,17 @@ const AdminServicesPage: React.FC = () => {
         onFeature={() => handleBulkAction('feature')}
         onUnfeature={() => handleBulkAction('unfeature')}
         isProcessing={isSubmitting || deleteMutation.isPending}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        onClose={() => setDeleteDialog({ isOpen: false, title: '', description: '' })}
+        onConfirm={handleConfirmDelete}
+        title={deleteDialog.title}
+        description={deleteDialog.description}
+        confirmText="Delete"
+        variant="danger"
       />
 
     </div>

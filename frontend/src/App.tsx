@@ -134,6 +134,7 @@ export const App: React.FC = () => {
               <Route index element={<AdminUsersPage />} />
             </Route>
             <Route path="roles" element={<AdminRolesPage />} />
+            <Route path="profile" element={<Navigate to="/admin/settings" replace />} />
           </Route>
         </Routes>
       </Router>

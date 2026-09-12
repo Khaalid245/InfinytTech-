@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Container from '../../components/layout/Container';
 import Heading from '../../components/ui/Heading';
 import Text from '../../components/ui/Text';
@@ -15,6 +16,7 @@ import SystemHealth from '../../components/admin/SystemHealth';
 import RecentActivity from '../../components/admin/RecentActivity';
 
 const AdminDashboardPage: React.FC = () => {
+  const navigate = useNavigate();
   const { data, isLoading, isError, error, refetch, isRefetching } = useDashboard();
 
   useEffect(() => {
@@ -137,12 +139,54 @@ const AdminDashboardPage: React.FC = () => {
         <section className="space-y-4">
           <Heading variant="h4" className="text-sm uppercase tracking-wider text-secondary-text font-semibold">Quick Actions</Heading>
           <div className="flex flex-wrap gap-3">
-            <Button variant="secondary" className="bg-surface-light hover:bg-surface-dark shadow-sm hover:shadow" leftIcon={<Briefcase className="w-4 h-4 text-blue-500" />}>Create Portfolio</Button>
-            <Button variant="secondary" className="bg-surface-light hover:bg-surface-dark shadow-sm hover:shadow" leftIcon={<FileText className="w-4 h-4 text-orange-500" />}>Write Blog</Button>
-            <Button variant="secondary" className="bg-surface-light hover:bg-surface-dark shadow-sm hover:shadow" leftIcon={<LayersIcon className="text-purple-500" />} >Create Service</Button>
-            <Button variant="secondary" className="bg-surface-light hover:bg-surface-dark shadow-sm hover:shadow" leftIcon={<ImageIcon className="w-4 h-4 text-indigo-500" />}>Upload Media</Button>
-            <Button variant="secondary" className="bg-surface-light hover:bg-surface-dark shadow-sm hover:shadow" leftIcon={<Users className="w-4 h-4 text-cyan-500" />}>Add Team Member</Button>
-            <Button variant="primary" className="shadow-md hover:shadow-lg transition-shadow" leftIcon={<Target className="w-4 h-4" />}>View Leads</Button>
+            <Button 
+              variant="secondary" 
+              className="bg-surface-light hover:bg-surface-dark shadow-sm hover:shadow cursor-pointer" 
+              leftIcon={<Briefcase className="w-4 h-4 text-blue-500" />}
+              onClick={() => navigate('/admin/portfolio')}
+            >
+              Create Portfolio
+            </Button>
+            <Button 
+              variant="secondary" 
+              className="bg-surface-light hover:bg-surface-dark shadow-sm hover:shadow cursor-pointer" 
+              leftIcon={<FileText className="w-4 h-4 text-orange-500" />}
+              onClick={() => navigate('/admin/blog')}
+            >
+              Write Blog
+            </Button>
+            <Button 
+              variant="secondary" 
+              className="bg-surface-light hover:bg-surface-dark shadow-sm hover:shadow cursor-pointer" 
+              leftIcon={<LayersIcon className="text-purple-500" />}
+              onClick={() => navigate('/admin/services')}
+            >
+              Create Service
+            </Button>
+            <Button 
+              variant="secondary" 
+              className="bg-surface-light hover:bg-surface-dark shadow-sm hover:shadow cursor-pointer" 
+              leftIcon={<ImageIcon className="w-4 h-4 text-indigo-500" />}
+              onClick={() => navigate('/admin/media')}
+            >
+              Upload Media
+            </Button>
+            <Button 
+              variant="secondary" 
+              className="bg-surface-light hover:bg-surface-dark shadow-sm hover:shadow cursor-pointer" 
+              leftIcon={<Users className="w-4 h-4 text-cyan-500" />}
+              onClick={() => navigate('/admin/team')}
+            >
+              Add Team Member
+            </Button>
+            <Button 
+              variant="primary" 
+              className="shadow-md hover:shadow-lg transition-shadow cursor-pointer" 
+              leftIcon={<Target className="w-4 h-4" />}
+              onClick={() => navigate('/admin/leads')}
+            >
+              View Leads
+            </Button>
           </div>
         </section>
 

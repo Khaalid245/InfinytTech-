@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Search, AlertCircle } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import Heading from '../../components/ui/Heading';
 import Button from '../../components/ui/Button';
 
@@ -9,6 +10,7 @@ import BlogTable from '../../components/admin/blog/BlogTable';
 import BlogTableSkeleton from '../../components/admin/blog/BlogTableSkeleton';
 import BlogFormModal from '../../components/admin/blog/BlogFormModal';
 import BulkActionsBar from '../../components/admin/portfolio/BulkActionsBar';
+import ConfirmDialog from '../../components/admin/shared/ConfirmDialog';
 
 import { 
   useAdminBlogPosts, 
@@ -35,6 +37,17 @@ const AdminBlogPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<BlogPost | undefined>();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [deleteDialog, setDeleteDialog] = useState<{
+    isOpen: boolean;
+    id?: string;
+    isBulk?: boolean;
+    title: string;
+    description: string;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+  });
 
   // Queries & Mutations
   const { data, isLoading, isError, isRefetching, refetch } = useAdminBlogPosts(filters);
@@ -49,22 +62,11 @@ const AdminBlogPage: React.FC = () => {
     const nextFilters = { ...filters, ...newFilters };
     setFilters(nextFilters);
     
-    // Update URL params
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams();
     if (nextFilters.page && nextFilters.page > 1) params.set('page', nextFilters.page.toString());
-    else params.delete('page');
-    
     if (nextFilters.search) params.set('search', nextFilters.search);
-    else params.delete('search');
-    
     if (nextFilters.category) params.set('category', nextFilters.category);
-    else params.delete('category');
-    
     if (nextFilters.status) params.set('status', nextFilters.status);
-    else params.delete('status');
-    
-    if (nextFilters.featured !== undefined) params.set('featured', nextFilters.featured.toString());
-    else params.delete('featured');
     
     setSearchParams(params, { replace: true });
   };
@@ -80,8 +82,14 @@ const AdminBlogPage: React.FC = () => {
   };
 
   const handleDuplicate = (post: BlogPost) => {
-    // Open create mode but pre-filled with this post's data
-    const duplicatedPost = { ...post, slug: '' }; // blank slug to auto-generate
+    const duplicatedPost: Partial<BlogPost> = {
+      ...post,
+      id: undefined,
+      title: `${post.title} (Copy)`,
+      slug: `${post.slug}-copy`,
+      status: 'draft',
+      published_at: undefined,
+    };
     setEditingPost(duplicatedPost as BlogPost);
     setIsModalOpen(true);
   };
@@ -95,30 +103,50 @@ const AdminBlogPage: React.FC = () => {
     try {
       if (editingPost && editingPost.id) {
         await updateMutation.mutateAsync({ id: editingPost.id, data: formData });
+        toast.success('Blog post updated successfully');
       } else {
         await createMutation.mutateAsync(formData);
+        toast.success('Blog post created successfully');
       }
       handleCloseModal();
       refetch();
     } catch (error) {
       console.error('Failed to save post:', error);
-      alert('Failed to save post. Check console for details.');
+      toast.error('Failed to save post. Check form inputs.');
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
-      try {
-        await deleteMutation.mutateAsync(id);
+  const handleDelete = (id: string) => {
+    setDeleteDialog({
+      isOpen: true,
+      id,
+      isBulk: false,
+      title: 'Delete Blog Post',
+      description: 'Are you sure you want to delete this post? This action cannot be undone.'
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      if (deleteDialog.isBulk) {
+        const promises = Array.from(selectedIds).map(id => deleteMutation.mutateAsync(id));
+        await Promise.all(promises);
+        setSelectedIds(new Set());
+        toast.success('Selected posts deleted successfully');
+      } else if (deleteDialog.id) {
+        await deleteMutation.mutateAsync(deleteDialog.id);
         setSelectedIds(prev => {
           const next = new Set(prev);
-          next.delete(id);
+          next.delete(deleteDialog.id!);
           return next;
         });
-      } catch (error) {
-        console.error('Failed to delete post:', error);
-        alert('Failed to delete post.');
+        toast.success('Post deleted successfully');
       }
+      setDeleteDialog({ isOpen: false, title: '', description: '' });
+      refetch();
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+      toast.error('Failed to delete post.');
     }
   };
 
@@ -126,18 +154,20 @@ const AdminBlogPage: React.FC = () => {
     try {
       const newStatus = currentStatus === 'published' ? 'draft' : 'published';
       await updateMutation.mutateAsync({ id, data: { status: newStatus } });
+      toast.success(newStatus === 'published' ? 'Post published' : 'Post moved to draft');
     } catch (error) {
       console.error('Failed to toggle status:', error);
-      alert('Failed to update status.');
+      toast.error('Failed to update post status.');
     }
   };
 
   const handleToggleFeatured = async (id: string, currentFeatured: boolean) => {
     try {
       await updateMutation.mutateAsync({ id, data: { is_featured: !currentFeatured } });
+      toast.success(!currentFeatured ? 'Post featured on homepage' : 'Post removed from featured');
     } catch (error) {
       console.error('Failed to toggle featured:', error);
-      alert('Failed to update featured status.');
+      toast.error('Failed to update featured status.');
     }
   };
 
@@ -146,14 +176,17 @@ const AdminBlogPage: React.FC = () => {
     if (selectedIds.size === 0) return;
     
     if (action === 'delete') {
-      if (!window.confirm(`Are you sure you want to delete ${selectedIds.size} posts?`)) {
-        return;
-      }
+      setDeleteDialog({
+        isOpen: true,
+        isBulk: true,
+        title: 'Delete Selected Posts',
+        description: `Are you sure you want to delete ${selectedIds.size} posts? This action cannot be undone.`
+      });
+      return;
     }
 
     const promises = Array.from(selectedIds).map(id => {
       switch (action) {
-        case 'delete': return deleteMutation.mutateAsync(id);
         case 'publish': return updateMutation.mutateAsync({ id, data: { status: 'published' } });
         case 'draft': return updateMutation.mutateAsync({ id, data: { status: 'draft' } });
         case 'feature': return updateMutation.mutateAsync({ id, data: { is_featured: true } });
@@ -164,9 +197,10 @@ const AdminBlogPage: React.FC = () => {
     try {
       await Promise.all(promises);
       setSelectedIds(new Set());
+      toast.success(`Bulk ${action} applied successfully`);
     } catch (error) {
       console.error(`Bulk ${action} failed:`, error);
-      alert(`Some posts failed to update during bulk ${action}.`);
+      toast.error(`Some posts failed to update during bulk ${action}.`);
     }
   };
 
@@ -292,6 +326,17 @@ const AdminBlogPage: React.FC = () => {
         onFeature={() => handleBulkAction('feature')}
         onUnfeature={() => handleBulkAction('unfeature')}
         isProcessing={isSubmitting || deleteMutation.isPending}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        onClose={() => setDeleteDialog({ isOpen: false, title: '', description: '' })}
+        onConfirm={handleConfirmDelete}
+        title={deleteDialog.title}
+        description={deleteDialog.description}
+        confirmText="Delete"
+        variant="danger"
       />
 
     </div>

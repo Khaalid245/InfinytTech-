@@ -4,6 +4,8 @@ import { useIndustries } from '../hooks/useServices';
 import { getLucideIcon } from '../utils/iconHelper';
 import { Landmark, ArrowRight } from 'lucide-react';
 
+import { EmptyState } from '../components/ui/EmptyState';
+
 interface IndustriesSectionProps {
   theme: 'dark' | 'light';
 }
@@ -66,8 +68,16 @@ export const IndustriesSection: React.FC<IndustriesSectionProps> = ({ theme }) =
   if (isError) {
     return (
       <section className={cn("w-full py-24 transition-colors duration-300 relative overflow-hidden", bg)} aria-label="Industries We Serve">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-20">
-          <p className={textSecondary}>Error loading industries. Please try again later.</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <EmptyState
+            title="Unable to load industries"
+            description="We encountered an issue fetching our industry solutions. Please check your network connection or try again."
+            actionText="Browse Core Services"
+            onAction={() => {
+              const el = document.getElementById('capabilities');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+          />
         </div>
       </section>
     );
@@ -76,8 +86,16 @@ export const IndustriesSection: React.FC<IndustriesSectionProps> = ({ theme }) =
   if (industries.length === 0) {
     return (
       <section className={cn("w-full py-24 transition-colors duration-300 relative overflow-hidden", bg)} aria-label="Industries We Serve">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-20">
-          <p className={textSecondary}>No industries available.</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <EmptyState
+            title="Industry Solutions"
+            description="Our specialized industry case studies and capability maps are currently being updated by our engineering team."
+            actionText="Explore Capabilities"
+            onAction={() => {
+              const el = document.getElementById('capabilities');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+          />
         </div>
       </section>
     );

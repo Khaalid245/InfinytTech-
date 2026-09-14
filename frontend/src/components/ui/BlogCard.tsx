@@ -50,7 +50,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({
         <div className="p-6 md:p-8 flex flex-col flex-grow">
           <div className="flex items-center gap-3 mb-4 text-caption text-secondary-text">
             {category && (
-              <span className="uppercase font-semibold tracking-wider text-accent-primary bg-neutral-900 px-2 py-0.5 rounded-sm text-[10px]">
+              <span className="uppercase font-semibold tracking-wider text-accent-primary bg-surface-light border border-border-primary px-2.5 py-0.5 rounded text-[10px]">
                 {category}
               </span>
             )}
@@ -61,7 +61,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({
           
           <Heading
             variant="h3"
-            className="mb-3 text-xl font-medium leading-snug tracking-tight group-hover:text-neutral-700 transition-colors"
+            className="mb-3 text-xl font-medium leading-snug tracking-tight group-hover:text-accent-primary transition-colors"
           >
             {title}
           </Heading>

@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { cn } from '../../utils/cn';
+import { submitLead } from '../../services/leads.service';
+import toast from 'react-hot-toast';
 
 // ─── Standard, thin-stroke (2px) inline SVGs ─────────────────────────────
 const Icon = {
@@ -38,12 +41,14 @@ const TIME_SLOTS = ['09:00 AM', '10:30 AM', '01:00 PM', '03:30 PM', '05:00 PM'];
 
 export default function BookingModal({ theme }: BookingModalProps) {
   const isDark = theme === 'dark';
+  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [schedulerStep, setSchedulerStep] = useState<number>(1); // 1: Date/Time, 2: Form, 3: Success
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [bookingName, setBookingName] = useState<string>('');
   const [bookingEmail, setBookingEmail] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   // Listen to the custom window event to open this modal
   useEffect(() => {
@@ -244,10 +249,32 @@ export default function BookingModal({ theme }: BookingModalProps) {
         {/* STEP 2: Name & Email Form */}
         {schedulerStep === 2 && (
           <form 
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
-              if (bookingName.trim() && bookingEmail.trim()) {
+              if (!bookingName.trim() || !bookingEmail.trim()) return;
+
+              setIsSubmitting(true);
+              try {
+                const formattedDate = businessDays.find(d => d.raw === selectedDate)?.formatted || selectedDate;
+                const nameParts = bookingName.trim().split(' ');
+                const first_name = nameParts[0] || 'Client';
+                const last_name = nameParts.slice(1).join(' ') || '';
+
+                await submitLead({
+                  first_name,
+                  last_name,
+                  email: bookingEmail.trim(),
+                  project_type: 'Discovery Call',
+                  budget_range: 'N/A',
+                  message: `Scheduled Discovery Call on ${formattedDate} at ${selectedTime} (UTC+3)`,
+                });
+                queryClient.invalidateQueries({ queryKey: ['leads'] });
+                queryClient.invalidateQueries({ queryKey: ['dashboard'] });
                 setSchedulerStep(3);
+              } catch (err: any) {
+                toast.error(err.response?.data?.message || err.response?.data?.detail || 'Unable to schedule discovery call. Please try again.');
+              } finally {
+                setIsSubmitting(false);
               }
             }}
             className="space-y-4"
@@ -257,11 +284,12 @@ export default function BookingModal({ theme }: BookingModalProps) {
               <input
                 type="text"
                 required
+                disabled={isSubmitting}
                 value={bookingName}
                 onChange={(e) => setBookingName(e.target.value)}
                 placeholder="Enter your name"
                 className={cn(
-                  'w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all duration-200',
+                  'w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all duration-200 disabled:opacity-50',
                   inputBg
                 )}
               />
@@ -272,11 +300,12 @@ export default function BookingModal({ theme }: BookingModalProps) {
               <input
                 type="email"
                 required
+                disabled={isSubmitting}
                 value={bookingEmail}
                 onChange={(e) => setBookingEmail(e.target.value)}
                 placeholder="Enter your business email"
                 className={cn(
-                  'w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all duration-200',
+                  'w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all duration-200 disabled:opacity-50',
                   inputBg
                 )}
               />
@@ -303,9 +332,10 @@ export default function BookingModal({ theme }: BookingModalProps) {
             <div className="flex gap-3 pt-2">
               <button
                 type="button"
+                disabled={isSubmitting}
                 onClick={() => setSchedulerStep(1)}
                 className={cn(
-                  'flex-1 py-3.5 rounded-xl text-sm font-semibold border transition-all duration-200 active:scale-95 cursor-pointer',
+                  'flex-1 py-3.5 rounded-xl text-sm font-semibold border transition-all duration-200 active:scale-95 cursor-pointer disabled:opacity-50',
                   isDark ? 'bg-transparent border-[#23262D] hover:bg-[#181B1F]' : 'bg-white border-slate-200 hover:bg-slate-50'
                 )}
               >
@@ -313,14 +343,25 @@ export default function BookingModal({ theme }: BookingModalProps) {
               </button>
               <button
                 type="submit"
+                disabled={isSubmitting}
                 className={cn(
-                  'flex-1 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 active:scale-95 cursor-pointer',
+                  'flex-1 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 active:scale-95 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2',
                   isDark 
                     ? 'bg-[#D4A017] text-[#0B0D0F] hover:bg-[#E6B325]' 
                     : 'bg-[#0F172A] text-white hover:bg-slate-800'
                 )}
               >
-                Confirm Booking
+                {isSubmitting ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    <span>Securing Slot...</span>
+                  </>
+                ) : (
+                  'Confirm Booking'
+                )}
               </button>
             </div>
           </form>

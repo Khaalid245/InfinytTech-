@@ -458,11 +458,16 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                     </div>
 
                     <div>
-                      <span className={cn("font-mono text-[9px] tracking-wider block leading-none mb-1", isOpen ? accentText : textMuted)}>
-                        0{idx + 1}
-                      </span>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className={cn("font-mono text-[9px] tracking-wider block leading-none", isOpen ? accentText : textMuted)}>
+                          0{idx + 1}
+                        </span>
+                        <span className={cn("text-[10px] uppercase font-bold tracking-wider opacity-75", textSecondary)}>
+                          {item.category}
+                        </span>
+                      </div>
                       <h3 className={cn("text-sm font-extrabold tracking-tight", textPrimary)}>
-                        {item.category}
+                        {item.title}
                       </h3>
                     </div>
                   </div>

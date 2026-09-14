@@ -17,11 +17,11 @@ interface NavbarProps {
 // ─── Navigation Items Definition ───
 const NAV_ITEMS = [
   { label: 'Home', href: '/', id: 'home', sectionId: 'hero' },
-  { label: 'Services', href: '/services', id: 'services', sectionId: undefined },
-  { label: 'Portfolio', href: '/work', id: 'portfolio', sectionId: undefined },
+  { label: 'Services', href: '/services', id: 'services', sectionId: 'services' },
+  { label: 'Portfolio', href: '/work', id: 'portfolio', sectionId: 'portfolio' },
   { label: 'About', href: '/about', id: 'about', sectionId: undefined },
-  { label: 'Blog', href: '/blog', id: 'blog', sectionId: undefined },
-  { label: 'Contact', href: '/contact', id: 'contact', sectionId: undefined },
+  { label: 'Blog', href: '/blog', id: 'blog', sectionId: 'blog' },
+  { label: 'Contact', href: '/contact', id: 'contact', sectionId: 'contact' },
 ] as const;
 
 export default function Navbar({ currentTheme, theme, onThemeToggle, onNavigate }: NavbarProps) {

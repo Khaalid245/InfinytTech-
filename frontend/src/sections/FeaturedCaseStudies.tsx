@@ -159,7 +159,7 @@ export const FeaturedCaseStudies: React.FC<FeaturedCaseStudiesProps> = ({ theme 
               className="text-4xl sm:text-5xl font-black mt-2 mb-4 tracking-tight leading-[1.1]"
               style={{ color: primary }}
             >
-              Solutions Designed<br className="hidden sm:inline" />
+              Solutions Designed <br className="hidden sm:inline" />
               To Solve Real Problems.
             </h2>
             <p

@@ -80,19 +80,19 @@ const AdminLoginPage: React.FC = () => {
           </Text>
         </div>
 
-        <div className="bg-surface-light border border-border-primary rounded-xl p-8 shadow-2xl">
+        <div className="bg-surface-light border border-border-primary rounded-2xl p-8 shadow-elegant-lg">
           {error && (
-            <div className="mb-6 p-4 rounded-md bg-red-500/10 border border-red-500/20 text-red-500 flex items-start gap-3 text-sm">
+            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 flex items-start gap-3 text-sm">
               <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleLogin} className="space-y-5">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-primary-text block">Email Address</label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                   <Mail className="h-4 w-4 text-secondary-text" />
                 </div>
                 <input
@@ -100,7 +100,7 @@ const AdminLoginPage: React.FC = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-primary-bg border border-border-primary text-primary-text rounded-md pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all"
+                  className="w-full bg-surface-muted/40 focus:bg-surface-light border border-border-primary text-primary-text rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent-primary/40 focus:border-accent-primary transition-all"
                   placeholder="admin@infinyttech.com"
                 />
               </div>
@@ -111,7 +111,7 @@ const AdminLoginPage: React.FC = () => {
                 <label className="text-sm font-medium text-primary-text block">Password</label>
               </div>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                   <Lock className="h-4 w-4 text-secondary-text" />
                 </div>
                 <input
@@ -119,7 +119,7 @@ const AdminLoginPage: React.FC = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-primary-bg border border-border-primary text-primary-text rounded-md pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all"
+                  className="w-full bg-surface-muted/40 focus:bg-surface-light border border-border-primary text-primary-text rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent-primary/40 focus:border-accent-primary transition-all"
                   placeholder="••••••••"
                 />
               </div>
@@ -128,7 +128,7 @@ const AdminLoginPage: React.FC = () => {
             <Button
               type="submit"
               variant="primary"
-              className="w-full justify-center py-3"
+              className="w-full justify-center py-3 rounded-xl shadow-sm hover:shadow-md transition-all font-medium"
               disabled={isLoading}
             >
               {isLoading ? 'Authenticating...' : 'Sign In'}

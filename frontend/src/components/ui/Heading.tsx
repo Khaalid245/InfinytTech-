@@ -10,10 +10,10 @@ interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {
 }
 
 const styles: Record<HeadingLevel, string> = {
-  h1: 'text-h1 font-medium tracking-tight text-primary-text',
-  h2: 'text-h2 font-medium tracking-tight text-primary-text',
-  h3: 'text-h3 font-medium tracking-tight text-primary-text',
-  h4: 'text-h4 font-medium tracking-tight text-primary-text',
+  h1: 'text-h1 font-bold tracking-tight text-primary-text',
+  h2: 'text-h2 font-bold tracking-tight text-primary-text',
+  h3: 'text-h3 font-semibold tracking-tight text-primary-text',
+  h4: 'text-h4 font-semibold tracking-tight text-primary-text',
 };
 
 export const Heading: React.FC<HeadingProps> = ({

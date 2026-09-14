@@ -15,6 +15,8 @@ import { useSiteSettings } from '../hooks/useSiteSettings';
 import { Search } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { resolveImageUrl } from '../utils/imageHelper';
+import { SchemaOrg } from '../components/seo/SchemaOrg';
+import Breadcrumb from '../components/ui/Breadcrumb';
 
 interface InsightsPageProps {
   theme: 'dark' | 'light';
@@ -133,8 +135,27 @@ export default function InsightsPage({ theme }: InsightsPageProps) {
   const isDark = theme === 'dark';
 
   return (
-    <div className="py-20 animate-fade-in">
+    <div className="pt-24 pb-20 animate-fade-in">
+      <SchemaOrg
+        breadcrumbs={[
+          { name: 'Insights & Articles', url: '/blog' },
+        ]}
+        schema={{
+          '@type': 'Blog',
+          name: `${settings?.company_name || 'Infinity Technologies'} Engineering Insights`,
+          description: 'Perspectives on engineering, distributed systems, and premium design systems.',
+        }}
+      />
+
       <Container size="lg">
+        {/* Breadcrumb Navigation */}
+        <div className="mb-6">
+          <Breadcrumb
+            theme={theme}
+            items={[{ label: 'Insights & Blog', href: '/blog', isCurrent: true }]}
+          />
+        </div>
+
         {/* Hero Header */}
         <div className="border-b border-border-primary pb-10 mb-12">
           <div className="max-w-3xl">

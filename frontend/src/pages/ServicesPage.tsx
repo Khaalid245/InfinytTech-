@@ -5,6 +5,9 @@ import WorkflowTimeline from '../sections/WorkflowTimeline';
 import WhyInfinytTechSection from '../sections/WhyInfinytTechSection';
 import ServicesFaqSection from '../sections/ServicesFaqSection';
 import InteractiveCtaSection from '../sections/InteractiveCtaSection';
+import { SchemaOrg } from '../components/seo/SchemaOrg';
+import Breadcrumb from '../components/ui/Breadcrumb';
+import Container from '../components/layout/Container';
 
 interface ServicesPageProps {
   theme: 'dark' | 'light';
@@ -13,6 +16,40 @@ interface ServicesPageProps {
 export default function ServicesPage({ theme }: ServicesPageProps) {
   return (
     <div className="animate-fade-in">
+      <SchemaOrg
+        breadcrumbs={[
+          { name: 'Services & Solutions', url: '/services' },
+        ]}
+        schema={{
+          '@type': 'Service',
+          serviceType: 'Enterprise Software Engineering & Digital Transformation',
+          provider: {
+            '@type': 'Organization',
+            name: 'Infinity Technologies',
+          },
+          areaServed: 'Worldwide',
+          hasOfferCatalog: {
+            '@type': 'OfferCatalog',
+            name: 'Engineering Offerings',
+            itemListElement: [
+              { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Enterprise Systems Engineering' } },
+              { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Cloud & DevOps Architecture' } },
+              { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'AI & Data Intelligence' } },
+              { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Product & UX Design' } },
+            ],
+          },
+        }}
+      />
+
+      <div className="pt-24 pb-2 border-b border-border-primary/40 bg-surface-muted/30">
+        <Container size="lg">
+          <Breadcrumb
+            theme={theme}
+            items={[{ label: 'Services & Solutions', href: '/services', isCurrent: true }]}
+          />
+        </Container>
+      </div>
+
       {/* 1. Hero */}
       <ServicesHeroSection theme={theme} />
 

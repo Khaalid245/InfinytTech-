@@ -24,6 +24,7 @@ import ContactSection from '../sections/ContactSection';
 import { useBlogPosts } from '../hooks/useBlog';
 import { useSiteSettings } from '../hooks/useSiteSettings';
 import { resolveImageUrl } from '../utils/imageHelper';
+import { SchemaOrg } from '../components/seo/SchemaOrg';
 
 interface HomePageProps {
   theme: 'dark' | 'light';
@@ -116,6 +117,19 @@ export const HomePage: FC<HomePageProps> = ({ theme }) => {
   const { data: settings } = useSiteSettings();
   return (
     <div>
+      <SchemaOrg
+        schema={{
+          '@type': 'WebSite',
+          name: settings?.company_name || 'Infinity Technologies',
+          url: typeof window !== 'undefined' ? window.location.origin : '',
+          description: settings?.company_description || settings?.default_meta_description || 'Enterprise Software Engineering and AI Transformation.',
+          potentialAction: {
+            '@type': 'SearchAction',
+            target: `${typeof window !== 'undefined' ? window.location.origin : ''}/work?q={search_term_string}`,
+            'query-input': 'required name=search_term_string',
+          },
+        }}
+      />
       <FadeUp viewportAmount={0} duration={0.8}>
         <div id="hero">
           <HeroSection theme={theme} />

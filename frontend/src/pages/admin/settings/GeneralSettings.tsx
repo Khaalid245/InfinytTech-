@@ -22,6 +22,10 @@ const GeneralSettings: React.FC = () => {
         company_timezone: settings.company_timezone,
         default_language: settings.default_language,
         default_currency: settings.default_currency,
+        completed_projects: settings.completed_projects ?? 0,
+        happy_clients: settings.happy_clients ?? 0,
+        countries_served: settings.countries_served ?? 0,
+        years_experience: settings.years_experience ?? 0,
       });
     }
   }, [settings, reset]);
@@ -104,6 +108,39 @@ const GeneralSettings: React.FC = () => {
               { value: 'Asia/Tokyo', label: 'Asia/Tokyo (JST)' },
             ]}
           />
+        </div>
+
+        {/* Business Statistics Section */}
+        <div className="pt-6 border-t border-border-primary">
+          <h3 className="text-base font-semibold text-primary-text mb-1">Business Statistics & KPI Metrics</h3>
+          <p className="text-xs text-secondary-text mb-4">Numbers displayed live in the homepage counter and impact sections.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Input 
+              label="Completed Projects" 
+              type="number"
+              min="0"
+              {...register('completed_projects', { valueAsNumber: true })} 
+            />
+            <Input 
+              label="Happy Clients (%)" 
+              type="number"
+              min="0"
+              max="100"
+              {...register('happy_clients', { valueAsNumber: true })} 
+            />
+            <Input 
+              label="Countries Served" 
+              type="number"
+              min="0"
+              {...register('countries_served', { valueAsNumber: true })} 
+            />
+            <Input 
+              label="Years Experience" 
+              type="number"
+              min="0"
+              {...register('years_experience', { valueAsNumber: true })} 
+            />
+          </div>
         </div>
 
         <div className="pt-6 border-t border-border-primary flex justify-end">

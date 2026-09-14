@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { cn } from '../utils/cn';
-import { X } from 'lucide-react';
+import { X, Search, RotateCcw } from 'lucide-react';
 import { useProjects, useCategories, useProjectDetail } from '../hooks/usePortfolio';
 import type { ProjectListItem } from '../types/portfolio';
 import TestimonialCard from '../components/ui/TestimonialCard';
@@ -47,6 +47,7 @@ export const PortfolioGridSection: React.FC<PortfolioGridSectionProps> = ({ them
   const isDark = theme === 'dark';
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
 
   const gold    = '#D4A017';
   const bg      = isDark ? 'bg-[#0B0D0F]' : 'bg-[#F8FAFC]';
@@ -96,23 +97,45 @@ export const PortfolioGridSection: React.FC<PortfolioGridSectionProps> = ({ them
 
   const allProjects = projectsPage?.results ?? [];
 
-  // ── Dynamic filter tabs ────────────────────────────────────────────────────
+  // ── Dynamic filter tabs with Live Project Counts ───────────────────────────
   const filterTabs = useMemo(() => {
-    const tabs = [{ label: 'All Projects', value: 'all' }];
+    const tabs: Array<{ label: string; value: string; count: number }> = [
+      { label: 'All Projects', value: 'all', count: allProjects.length },
+    ];
     if (categories) {
-      const usedSlugs = new Set(allProjects.map(p => p.category?.slug).filter(Boolean));
+      const countsByCat: Record<string, number> = {};
+      allProjects.forEach(p => {
+        const slug = p.category?.slug;
+        if (slug) {
+          countsByCat[slug] = (countsByCat[slug] || 0) + 1;
+        }
+      });
       categories
-        .filter(c => usedSlugs.has(c.slug))
-        .forEach(c => tabs.push({ label: c.name, value: c.slug }));
+        .filter(c => (countsByCat[c.slug] || 0) > 0)
+        .forEach(c => tabs.push({ label: c.name, value: c.slug, count: countsByCat[c.slug] || 0 }));
     }
     return tabs;
   }, [categories, allProjects]);
 
-  // ── Client-side filtering by category slug ────────────────────────────────
+  // ── Client-side Live Search & Category Filtering ──────────────────────────
   const filteredProjects = useMemo(() => {
-    if (activeCategory === 'all') return allProjects;
-    return allProjects.filter(p => p.category?.slug === activeCategory);
-  }, [allProjects, activeCategory]);
+    let list = allProjects;
+    if (activeCategory !== 'all') {
+      list = list.filter(p => p.category?.slug === activeCategory);
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter(p => 
+        p.title.toLowerCase().includes(q) ||
+        p.short_description?.toLowerCase().includes(q) ||
+        p.client_name?.toLowerCase().includes(q) ||
+        p.technologies?.some(t => t.name.toLowerCase().includes(q)) ||
+        p.tags?.some(t => t.name.toLowerCase().includes(q)) ||
+        p.category?.name.toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }, [allProjects, activeCategory, searchQuery]);
 
   // ── Body scroll lock when modal open ──────────────────────────────────────
   useEffect(() => {
@@ -163,7 +186,7 @@ export const PortfolioGridSection: React.FC<PortfolioGridSectionProps> = ({ them
       <div className="max-w-[1200px] mx-auto">
 
         {/* Section Header */}
-        <div className="mb-16 text-center">
+        <div className="mb-12 text-center">
           <span
             className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] px-4 py-1.5 rounded-full border mb-4"
             style={{ color: gold, borderColor: isDark ? '#252527' : '#E2E8F0', backgroundColor: isDark ? 'rgba(20,20,22,0.9)' : '#F1F5F9' }}
@@ -174,10 +197,43 @@ export const PortfolioGridSection: React.FC<PortfolioGridSectionProps> = ({ them
           <h2 className={cn('text-4xl sm:text-5xl font-black mt-2 mb-4 tracking-tight leading-[1.1]', textPri)}>
             Explore More Projects.
           </h2>
+          <p className={cn('text-sm sm:text-base max-w-xl mx-auto leading-relaxed', textSec)}>
+            Browse through our full archive of engineering case studies, enterprise systems, and client solutions.
+          </p>
         </div>
 
-        {/* Category Filter Navigation */}
-        <div className="flex flex-wrap justify-center gap-2 mb-16 max-w-4xl mx-auto">
+        {/* ── Live Search & Discovery Bar ── */}
+        <div className="max-w-xl mx-auto mb-8">
+          <div className="relative flex items-center">
+            <Search className={cn("absolute left-4 w-4 h-4 pointer-events-none", textSec)} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search case studies by keyword, tech, or industry..."
+              className={cn(
+                "w-full pl-11 pr-10 py-3 rounded-2xl text-sm border shadow-xs transition-all",
+                "focus:outline-none focus:ring-2 focus:ring-[#D4A017]/40 focus:border-[#D4A017]",
+                isDark 
+                  ? "bg-[#121417] border-[#23262D] text-[#F8FAFC] placeholder-slate-500" 
+                  : "bg-white border-slate-200 text-[#0F172A] placeholder-slate-400"
+              )}
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                aria-label="Clear search"
+                className="absolute right-3.5 p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Category Filter Navigation with Live Counts */}
+        <div className="flex flex-wrap justify-center gap-2 mb-6 max-w-4xl mx-auto">
           {(catsLoading || projectsLoading)
             ? [90, 120, 100, 130, 110, 95].map(w => (
                 <div
@@ -193,19 +249,52 @@ export const PortfolioGridSection: React.FC<PortfolioGridSectionProps> = ({ them
                     key={cat.value}
                     onClick={() => setActiveCategory(cat.value)}
                     className={cn(
-                      'px-5 py-2.5 rounded-full text-xs font-semibold border transition-all duration-300 active:scale-95 cursor-pointer',
+                      'inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold border transition-all duration-300 active:scale-95 cursor-pointer',
                       isActive
-                        ? 'border-[#D4A017] bg-[#D4A017] text-[#0B0D0F] shadow-lg shadow-amber-600/10'
+                        ? 'border-[#D4A017] bg-[#D4A017] text-[#0B0D0F] shadow-lg shadow-amber-600/15 font-bold'
                         : isDark
                         ? 'border-[#23262D] bg-[#121417] text-[#94A3B8] hover:border-[#23262D] hover:text-[#F8FAFC]'
-                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 shadow-xs'
                     )}
                   >
-                    {cat.label}
+                    <span>{cat.label}</span>
+                    <span
+                      className={cn(
+                        'px-1.5 py-0.5 rounded-full text-[10px] font-mono leading-none transition-colors',
+                        isActive
+                          ? 'bg-black/20 text-[#0B0D0F] font-bold'
+                          : isDark
+                          ? 'bg-[#181B1F] text-[#64748B]'
+                          : 'bg-slate-100 text-slate-500'
+                      )}
+                    >
+                      {cat.count}
+                    </span>
                   </button>
                 );
               })
           }
+        </div>
+
+        {/* Real-time Discovery Results Counter */}
+        <div className="flex items-center justify-between mb-8 px-2 max-w-4xl mx-auto text-xs">
+          <p className={textSec}>
+            Showing <strong className={textPri}>{filteredProjects.length}</strong> of <strong className={textPri}>{allProjects.length}</strong> case studies
+            {activeCategory !== 'all' && ` in ${filterTabs.find(t => t.value === activeCategory)?.label || ''}`}
+            {searchQuery && ` matching "${searchQuery}"`}
+          </p>
+          {(activeCategory !== 'all' || searchQuery) && (
+            <button
+              onClick={() => {
+                setActiveCategory('all');
+                setSearchQuery('');
+              }}
+              className="inline-flex items-center gap-1.5 text-accent-primary hover:underline font-medium cursor-pointer"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              Reset Filters
+            </button>
+          )}
         </div>
 
         {/* Project Grid */}
@@ -224,11 +313,24 @@ export const PortfolioGridSection: React.FC<PortfolioGridSectionProps> = ({ them
           </div>
         ) : filteredProjects.length === 0 ? (
           <div
-            className="rounded-2xl border p-12 text-center"
-            style={{ borderColor: borderRaw, background: isDark ? '#121417' : '#FFFFFF' }}
+            className={cn("rounded-2xl border p-12 text-center max-w-lg mx-auto shadow-sm", cardBg, border)}
           >
-            <p className="text-3xl mb-3" aria-hidden="true">📂</p>
-            <p className={cn('font-semibold', textSec)}>No portfolio projects available yet.</p>
+            <div className="w-12 h-12 rounded-full bg-amber-500/10 text-accent-primary flex items-center justify-center mx-auto mb-4">
+              <Search className="w-6 h-6" />
+            </div>
+            <h3 className={cn('text-lg font-bold mb-2', textPri)}>No Matching Projects Found</h3>
+            <p className={cn('text-sm mb-6 leading-relaxed', textSec)}>
+              We couldn't find any case studies matching "{searchQuery}" in this category. Try adjusting your search query or reset filters.
+            </p>
+            <button
+              onClick={() => {
+                setActiveCategory('all');
+                setSearchQuery('');
+              }}
+              className="px-5 py-2.5 rounded-xl bg-accent-primary text-black font-semibold text-xs shadow-sm hover:brightness-105 transition-all cursor-pointer"
+            >
+              Clear Search & Show All
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

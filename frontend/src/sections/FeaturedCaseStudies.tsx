@@ -98,15 +98,21 @@ export const FeaturedCaseStudies: React.FC<FeaturedCaseStudiesProps> = ({ theme 
 
   // ── Filter tabs: "All Projects" + dynamic categories present in results ───
   const filterTabs = useMemo(() => {
-    const tabs: Array<{ label: string; value: string }> = [
-      { label: 'All Projects', value: 'all' },
+    const tabs: Array<{ label: string; value: string; count: number }> = [
+      { label: 'All Projects', value: 'all', count: projects.length },
     ];
     if (categories) {
       // Only show categories that have at least one featured project
-      const usedSlugs = new Set(projects.map(p => p.category?.slug).filter(Boolean));
+      const countsByCat: Record<string, number> = {};
+      projects.forEach(p => {
+        const slug = p.category?.slug;
+        if (slug) {
+          countsByCat[slug] = (countsByCat[slug] || 0) + 1;
+        }
+      });
       categories
-        .filter(c => usedSlugs.has(c.slug))
-        .forEach(c => tabs.push({ label: c.name, value: c.slug }));
+        .filter(c => (countsByCat[c.slug] || 0) > 0)
+        .forEach(c => tabs.push({ label: c.name, value: c.slug, count: countsByCat[c.slug] || 0 }));
     }
     return tabs;
   }, [categories, projects]);
@@ -186,14 +192,26 @@ export const FeaturedCaseStudies: React.FC<FeaturedCaseStudiesProps> = ({ theme 
                     <button
                       key={f.value}
                       onClick={() => handleFilter(f.value)}
-                      className="px-4 py-2 rounded-full text-sm font-semibold border transition-all duration-200 active:scale-95 cursor-pointer"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold border transition-all duration-200 active:scale-95 cursor-pointer"
                       style={{
                         borderColor: isActive ? accent : border,
                         background:  isActive ? accent : cardBg,
-                        color:       isActive ? (isDark ? '#0B0D0F' : '#FFFFFF') : sub,
+                        color:       isActive ? (isDark ? '#0B0D0F' : '#0B0D0F') : sub,
                       }}
                     >
-                      {f.label}
+                      <span>{f.label}</span>
+                      <span
+                        className={cn(
+                          'px-1.5 py-0.5 rounded-full text-[10px] font-mono leading-none transition-colors',
+                          isActive
+                            ? 'bg-black/20 text-[#0B0D0F] font-bold'
+                            : isDark
+                            ? 'bg-[#181B1F] text-[#64748B]'
+                            : 'bg-slate-100 text-slate-500'
+                        )}
+                      >
+                        {f.count}
+                      </span>
                     </button>
                   );
                 })

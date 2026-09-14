@@ -15,7 +15,10 @@ const queryClient = new QueryClient({
         if (status === 429 || status === 401 || status === 403) return false;
         return failureCount < 1;
       },
-      refetchOnWindowFocus: false,
+      staleTime: 1000 * 30, // 30 seconds default freshness
+      gcTime: 1000 * 60 * 10, // 10 minutes cache garbage collection
+      refetchOnWindowFocus: true, // Automatically revalidate when tab is focused
+      refetchOnReconnect: true, // Revalidate upon network reconnect
     },
   },
 })

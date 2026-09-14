@@ -45,9 +45,11 @@ const AdminTopNav: React.FC<AdminTopNavProps> = ({ onMenuClick }) => {
   const { role, logout } = useAuth();
   const { data: dashboardData } = useDashboard();
 
-  const [theme, setTheme] = useState<'dark' | 'light'>(
-    document.documentElement.classList.contains('dark') ? 'dark' : 'light'
-  );
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light' || saved === 'dark') return saved;
+    return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+  });
 
   // Dropdown states
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -133,6 +135,7 @@ const AdminTopNav: React.FC<AdminTopNavProps> = ({ onMenuClick }) => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    localStorage.setItem('theme', newTheme);
   };
 
   const handleModuleSelect = (path: string) => {

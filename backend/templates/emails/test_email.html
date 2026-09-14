@@ -12,7 +12,7 @@
     <div style="background-color: #ffffff; padding: 20px; border-radius: 10px; margin: 16px 0; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
         <p style="margin-top: 0; margin-bottom: 8px; font-size: 15px;"><strong>Status:</strong> Success ✅</p>
         <p style="margin-top: 0; margin-bottom: 8px; font-size: 15px;"><strong>Time:</strong> {{ timestamp }}</p>
-        <p style="margin-bottom: 0; font-size: 15px;"><strong>Sender Name:</strong> {{ smtp_sender_name|default:company_name }}</p>
+        <p style="margin-bottom: 0; font-size: 15px;"><strong>Sender Name:</strong> {{ smtp_sender_name|default:company_name|default:"InfinytTech" }}</p>
     </div>
     
     <p>You can safely delete this email.</p>

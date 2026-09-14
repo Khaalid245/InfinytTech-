@@ -272,7 +272,7 @@ class ForgotPasswordView(APIView):
     def post(self, request):
         email = request.data.get('email')
         if not email:
-            return api_response(message="Email is required.", success=False, status_code=400)
+            return api_response(message="Email is required.", success=False, status=400)
             
         user = User.objects.filter(email=email).first()
         if user and user.is_active:
@@ -321,7 +321,7 @@ class ResetPasswordConfirmView(APIView):
         new_password = request.data.get('password')
         
         if not all([uidb64, token, new_password]):
-            return api_response(message="UID, token, and new password are required.", success=False, status_code=400)
+            return api_response(message="UID, token, and new password are required.", success=False, status=400)
             
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
@@ -336,7 +336,7 @@ class ResetPasswordConfirmView(APIView):
             try:
                 validate_password(new_password, user)
             except DjangoValidationError as e:
-                return api_response(data={'password': list(e.messages)}, message="Password validation failed.", success=False, status_code=400)
+                return api_response(data={'password': list(e.messages)}, message="Password validation failed.", success=False, status=400)
                 
             user.set_password(new_password)
             user.save()
@@ -360,7 +360,7 @@ class ResetPasswordConfirmView(APIView):
                 
             return api_response(message="Password has been reset successfully.")
         else:
-            return api_response(message="The reset link is invalid or has expired.", success=False, status_code=400)
+            return api_response(message="The reset link is invalid or has expired.", success=False, status=400)
 
 
 class ChangePasswordView(APIView):
@@ -376,10 +376,10 @@ class ChangePasswordView(APIView):
         new_password = request.data.get('new_password')
         
         if not old_password or not new_password:
-            return api_response(message="Both old and new passwords are required.", success=False, status_code=400)
+            return api_response(message="Both old and new passwords are required.", success=False, status=400)
             
         if not user.check_password(old_password):
-            return api_response(message="Incorrect old password.", success=False, status_code=400)
+            return api_response(message="Incorrect old password.", success=False, status=400)
             
         from django.contrib.auth.password_validation import validate_password
         from django.core.exceptions import ValidationError as DjangoValidationError
@@ -387,7 +387,7 @@ class ChangePasswordView(APIView):
         try:
             validate_password(new_password, user)
         except DjangoValidationError as e:
-            return api_response(data={'password': list(e.messages)}, message="Password validation failed.", success=False, status_code=400)
+            return api_response(data={'password': list(e.messages)}, message="Password validation failed.", success=False, status=400)
             
         user.set_password(new_password)
         user.save()

@@ -18,6 +18,7 @@ export function useSettingsAdmin() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-settings'] });
       queryClient.invalidateQueries({ queryKey: ['siteSettings'] });
+      queryClient.invalidateQueries({ queryKey: ['email-status'] });
       toast.success('Settings updated successfully');
     },
     onError: (error: any) => {

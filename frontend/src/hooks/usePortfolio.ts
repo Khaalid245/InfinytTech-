@@ -86,7 +86,9 @@ export function useAdminProjects(filters: ProjectFilters = {}) {
   return useQuery({
     queryKey:  portfolioKeys.adminProjects(filters),
     queryFn:   () => getAdminProjects(filters),
-    staleTime: 1000 * 30, // shorter stale time for admin
+    staleTime: 1000 * 15, // 15s freshness for admin
+    refetchInterval: 1000 * 30, // 30s background sync
+    refetchIntervalInBackground: false,
   });
 }
 
@@ -105,6 +107,7 @@ export function useCreateProject() {
     mutationFn: (data: ProjectFormData) => createProject(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: portfolioKeys.all });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 }
@@ -115,6 +118,7 @@ export function useUpdateProject() {
     mutationFn: ({ slug, data }: { slug: string; data: Partial<ProjectFormData> }) => updateProject(slug, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: portfolioKeys.all });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 }
@@ -125,6 +129,7 @@ export function useDeleteProject() {
     mutationFn: (slug: string) => deleteProject(slug),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: portfolioKeys.all });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 }

@@ -174,7 +174,7 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({
               <td className="px-4 py-3 text-right">
                 <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <a 
-                    href={`/work/${project.slug}`} 
+                    href={`/work?project=${project.slug}`} 
                     target="_blank" 
                     rel="noreferrer"
                     className="p-1.5 text-secondary-text hover:text-accent-primary hover:bg-accent-primary/10 rounded transition-colors"

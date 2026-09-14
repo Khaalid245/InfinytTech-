@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useSettingsAdmin } from '../../../hooks/useSettingsAdmin';
 import Input from '../../../components/ui/Input';
@@ -8,7 +9,7 @@ import LoadingState from '../../../components/ui/LoadingState';
 import {
   Send, Eye, EyeOff, CheckCircle2, XCircle, AlertCircle,
   Clock, Wifi, FileCode2, Settings2, Server, ShieldCheck, Mail,
-  Activity,
+  Activity, Shield,
 } from 'lucide-react';
 import type { SiteSettings } from '../../../types/siteSettings.types';
 import toast from 'react-hot-toast';
@@ -82,6 +83,7 @@ function formatTs(iso: string | null): { date: string; time: string } {
 // ── Main Component ───────────────────────────────────────────────────────────
 
 const EmailSettings: React.FC = () => {
+  const navigate = useNavigate();
   const {
     settings,
     isLoadingSettings,
@@ -170,23 +172,35 @@ const EmailSettings: React.FC = () => {
             <p className="text-xs text-secondary-text leading-relaxed">{statusConfig.description}</p>
           </div>
 
-          {/* Last Activity checks */}
+          {/* Sub-Service checks */}
           <div className="mt-4 space-y-2.5">
             {([
-              { icon: Wifi, label: 'SMTP Connection', ok: emailStatus?.status === 'success' },
-              { icon: FileCode2, label: 'Template Engine', ok: emailStatus?.status === 'success' },
-              { icon: Settings2, label: 'Configuration', ok: emailStatus?.smtp_configured },
-            ] as const).map(({ icon: Icon, label, ok }) => (
+              {
+                icon: Wifi,
+                label: 'SMTP Connection',
+                state: emailStatus?.status === 'success' ? 'healthy' : emailStatus?.status === 'error' ? 'failed' : 'pending',
+              },
+              {
+                icon: FileCode2,
+                label: 'Template Engine',
+                state: emailStatus?.last_failure_reason?.toLowerCase().includes('template') ? 'failed' : 'healthy',
+              },
+              {
+                icon: Settings2,
+                label: 'Configuration',
+                state: emailStatus?.smtp_configured ? 'healthy' : 'pending',
+              },
+            ] as const).map(({ icon: Icon, label, state }) => (
               <div key={label} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Icon className="w-3.5 h-3.5 text-secondary-text" />
                   <span className="text-xs text-secondary-text">{label}</span>
                 </div>
-                {emailStatus?.status === 'success' || (label === 'Configuration' && ok) ? (
+                {state === 'healthy' ? (
                   <span className="flex items-center gap-1 text-xs text-emerald-500 font-medium">
                     <CheckCircle2 className="w-3 h-3" /> Healthy
                   </span>
-                ) : emailStatus?.status === 'error' ? (
+                ) : state === 'failed' ? (
                   <span className="flex items-center gap-1 text-xs text-red-500 font-medium">
                     <XCircle className="w-3 h-3" /> Failed
                   </span>
@@ -392,17 +406,25 @@ const EmailSettings: React.FC = () => {
             <div className="space-y-2">
               <button
                 type="button"
-                disabled
-                title="Available in Phase 21.6"
-                className="w-full flex items-center justify-between text-xs text-secondary-text border border-dashed border-border-primary rounded-lg px-3 py-2.5 cursor-not-allowed opacity-60"
+                onClick={() => navigate('/admin/settings/security')}
+                className="w-full flex items-center justify-between text-xs text-primary-text border border-border-primary hover:border-accent/40 bg-surface-light hover:bg-surface rounded-lg px-3 py-2.5 transition-all text-left"
               >
                 <span className="flex items-center gap-2">
-                  <Activity className="w-3.5 h-3.5" />
-                  View Email Logs
+                  <Shield className="w-3.5 h-3.5 text-accent" />
+                  Security & Audit Logs
                 </span>
-                <span className="text-[10px] uppercase tracking-wider font-semibold bg-surface-light border border-border-primary rounded px-1.5 py-0.5">
-                  Coming Soon
+                <span className="text-[10px] text-secondary-text">Manage</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/admin/settings/system')}
+                className="w-full flex items-center justify-between text-xs text-primary-text border border-border-primary hover:border-accent/40 bg-surface-light hover:bg-surface rounded-lg px-3 py-2.5 transition-all text-left"
+              >
+                <span className="flex items-center gap-2">
+                  <Activity className="w-3.5 h-3.5 text-emerald-500" />
+                  System Diagnostics
                 </span>
+                <span className="text-[10px] text-secondary-text">Inspect</span>
               </button>
             </div>
           </div>

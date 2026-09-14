@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Search } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import Heading from '../../components/ui/Heading';
 import Text from '../../components/ui/Text';
 import Button from '../../components/ui/Button';
@@ -10,6 +11,7 @@ import PortfolioTable from '../../components/admin/portfolio/PortfolioTable';
 import PortfolioTableSkeleton from '../../components/admin/portfolio/PortfolioTableSkeleton';
 import PortfolioFormModal from '../../components/admin/portfolio/PortfolioFormModal';
 import BulkActionsBar from '../../components/admin/portfolio/BulkActionsBar';
+import ConfirmDialog from '../../components/admin/shared/ConfirmDialog';
 import { AlertCircle } from 'lucide-react';
 
 import { 
@@ -44,6 +46,17 @@ const AdminPortfolioPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<ProjectListItem | undefined>();
   const [selectedSlugs, setSelectedSlugs] = useState<Set<string>>(new Set());
+  const [deleteDialog, setDeleteDialog] = useState<{
+    isOpen: boolean;
+    slug?: string;
+    isBulk?: boolean;
+    title: string;
+    description: string;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+  });
 
   // Queries & Mutations
   const { data, isLoading, isError, isRefetching, refetch } = useAdminProjects(filters);
@@ -123,19 +136,39 @@ const AdminPortfolioPage: React.FC = () => {
 
       handleCloseModal();
       refetch();
-    } catch (error) {
+      toast.success(editingProject ? 'Project updated successfully' : 'Project created successfully');
+    } catch (error: any) {
       console.error('Failed to save project:', error);
-      alert('Failed to save project. Check console for details.');
+      toast.error(error?.response?.data?.message || 'Failed to save project. Check form inputs.');
     }
   };
 
-  const handleDelete = async (slug: string) => {
-    if (window.confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
-      try {
-        await deleteMutation.mutateAsync(slug);
-      } catch (error) {
-        console.error('Failed to delete project:', error);
+  const handleDelete = (slug: string) => {
+    setDeleteDialog({
+      isOpen: true,
+      slug,
+      isBulk: false,
+      title: 'Delete Project',
+      description: 'Are you sure you want to delete this project? This action cannot be undone.',
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      if (deleteDialog.isBulk) {
+        const promises = Array.from(selectedSlugs).map(slug => deleteMutation.mutateAsync(slug));
+        await Promise.all(promises);
+        setSelectedSlugs(new Set());
+        toast.success('Selected projects deleted successfully');
+      } else if (deleteDialog.slug) {
+        await deleteMutation.mutateAsync(deleteDialog.slug);
+        toast.success('Project deleted successfully');
       }
+    } catch (error) {
+      console.error('Deletion failed:', error);
+      toast.error('Failed to delete project.');
+    } finally {
+      setDeleteDialog({ isOpen: false, title: '', description: '' });
     }
   };
 
@@ -143,16 +176,21 @@ const AdminPortfolioPage: React.FC = () => {
     const newStatus = project.status === 'published' ? 'draft' : 'published';
     try {
       await updateMutation.mutateAsync({ slug: project.slug, data: { status: newStatus } });
+      toast.success(newStatus === 'published' ? 'Project published' : 'Project moved to draft');
     } catch (error) {
       console.error('Failed to toggle status:', error);
+      toast.error('Failed to toggle project status.');
     }
   };
 
   const handleToggleFeatured = async (project: ProjectListItem) => {
+    const nextFeatured = !project.is_featured;
     try {
-      await updateMutation.mutateAsync({ slug: project.slug, data: { is_featured: !project.is_featured } });
+      await updateMutation.mutateAsync({ slug: project.slug, data: { is_featured: nextFeatured } });
+      toast.success(nextFeatured ? 'Project featured on homepage' : 'Project removed from featured');
     } catch (error) {
       console.error('Failed to toggle featured:', error);
+      toast.error('Failed to toggle featured status.');
     }
   };
 
@@ -161,12 +199,17 @@ const AdminPortfolioPage: React.FC = () => {
     if (selectedSlugs.size === 0) return;
     
     if (action === 'delete') {
-      if (!window.confirm(`Are you sure you want to delete ${selectedSlugs.size} projects?`)) return;
+      setDeleteDialog({
+        isOpen: true,
+        isBulk: true,
+        title: 'Delete Selected Projects',
+        description: `Are you sure you want to delete ${selectedSlugs.size} selected projects? This action cannot be undone.`,
+      });
+      return;
     }
 
     const promises = Array.from(selectedSlugs).map(slug => {
       switch (action) {
-        case 'delete': return deleteMutation.mutateAsync(slug);
         case 'publish': return updateMutation.mutateAsync({ slug, data: { status: 'published' } });
         case 'draft': return updateMutation.mutateAsync({ slug, data: { status: 'draft' } });
         case 'feature': return updateMutation.mutateAsync({ slug, data: { is_featured: true } });
@@ -177,9 +220,10 @@ const AdminPortfolioPage: React.FC = () => {
     try {
       await Promise.all(promises);
       setSelectedSlugs(new Set()); // Clear selection on success
+      toast.success(`Bulk ${action} applied successfully`);
     } catch (error) {
       console.error(`Bulk ${action} failed:`, error);
-      alert(`Some projects failed to update during bulk ${action}.`);
+      toast.error(`Some projects failed to update during bulk ${action}.`);
     }
   };
 
@@ -298,6 +342,17 @@ const AdminPortfolioPage: React.FC = () => {
         onFeature={() => handleBulkAction('feature')}
         onUnfeature={() => handleBulkAction('unfeature')}
         isProcessing={isSubmitting || deleteMutation.isPending}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        onClose={() => setDeleteDialog({ isOpen: false, title: '', description: '' })}
+        onConfirm={handleConfirmDelete}
+        title={deleteDialog.title}
+        description={deleteDialog.description}
+        confirmText="Delete"
+        variant="danger"
       />
 
     </div>

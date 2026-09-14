@@ -1,10 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { Plus, Edit2, Trash2, Search, Filter } from 'lucide-react';
+import toast from 'react-hot-toast';
 import Button from '../../../components/ui/Button';
 import DataTable, { type ColumnDef } from '../../../components/admin/shared/DataTable';
 import Badge from '../../../components/ui/Badge';
 import { useAdminClients, useDeleteClient } from '../../../hooks/useTestimonialsAdmin';
 import ClientDrawer from '../../../components/admin/testimonials/ClientDrawer';
+import ConfirmDialog from '../../../components/admin/shared/ConfirmDialog';
 import type { Client } from '../../../types/testimonials';
 import { resolveImageUrl } from '../../../utils/imageHelper';
 
@@ -14,6 +16,16 @@ export default function AdminClientsPage() {
   
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [deleteDialog, setDeleteDialog] = useState<{
+    isOpen: boolean;
+    client?: Client;
+    title: string;
+    description: string;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+  });
   
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -37,18 +49,29 @@ export default function AdminClientsPage() {
     setIsDrawerOpen(true);
   };
 
-  const handleDelete = async (client: Client) => {
+  const handleDelete = (client: Client) => {
     if (client.testimonials_count && client.testimonials_count > 0) {
-      window.alert(`Cannot delete ${client.company_name} because they have ${client.testimonials_count} associated testimonial(s). Please delete the testimonials first or unpublish the client instead.`);
+      toast.error(`Cannot delete ${client.company_name} because they have ${client.testimonials_count} associated testimonial(s). Please delete the testimonials first.`);
       return;
     }
 
-    if (window.confirm(`Are you sure you want to delete ${client.company_name}?`)) {
-      try {
-        await deleteClient(client.id);
-      } catch (err) {
-        console.error('Failed to delete', err);
-      }
+    setDeleteDialog({
+      isOpen: true,
+      client,
+      title: 'Delete Client',
+      description: `Are you sure you want to delete ${client.company_name}? This action cannot be undone.`
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteDialog.client) return;
+    try {
+      await deleteClient(deleteDialog.client.id);
+      toast.success('Client deleted successfully');
+      setDeleteDialog({ isOpen: false, title: '', description: '' });
+    } catch (err) {
+      console.error('Failed to delete', err);
+      toast.error('Failed to delete client.');
     }
   };
 
@@ -236,6 +259,16 @@ export default function AdminClientsPage() {
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
         client={selectedClient}
+      />
+
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        onClose={() => setDeleteDialog({ isOpen: false, title: '', description: '' })}
+        onConfirm={handleConfirmDelete}
+        title={deleteDialog.title}
+        description={deleteDialog.description}
+        confirmText="Delete"
+        variant="danger"
       />
     </div>
   );

@@ -39,6 +39,7 @@ export const Image: React.FC<ImageProps> = ({
           src={imageSrc}
           alt={alt}
           loading="lazy"
+          decoding="async"
           onLoad={() => setIsLoaded(true)}
           onError={() => setHasError(true)}
           className={cn(

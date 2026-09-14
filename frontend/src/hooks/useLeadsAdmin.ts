@@ -18,6 +18,9 @@ export function useAdminLeads(params?: Record<string, any>) {
   return useQuery({
     queryKey: leadsKeys.list(params || {}),
     queryFn: () => getLeads(params),
+    staleTime: 10 * 1000, // 10s freshness
+    refetchInterval: 20 * 1000, // Real-time background sync every 20s for new client leads
+    refetchIntervalInBackground: false,
   });
 }
 
@@ -26,6 +29,7 @@ export function useAdminLead(id: string) {
     queryKey: leadsKeys.detail(id),
     queryFn: () => getLeadById(id),
     enabled: !!id,
+    staleTime: 10 * 1000,
   });
 }
 
@@ -36,11 +40,10 @@ export function useUpdateLead() {
     mutationFn: ({ id, data }: { id: string; data: Partial<Lead> }) =>
       updateLead(id, data),
     onSuccess: () => {
-      // toast.success('Lead updated successfully');
       queryClient.invalidateQueries({ queryKey: leadsKeys.all });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
     onError: (error: any) => {
-      // toast.error(error.response?.data?.message || 'Failed to update lead');
       console.error(error);
     },
   });
@@ -52,11 +55,10 @@ export function useDeleteLead() {
   return useMutation({
     mutationFn: (id: string) => deleteLead(id),
     onSuccess: () => {
-      // toast.success('Lead deleted successfully');
       queryClient.invalidateQueries({ queryKey: leadsKeys.all });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
     onError: (error: any) => {
-      // toast.error(error.response?.data?.message || 'Failed to delete lead');
       console.error(error);
     },
   });
@@ -69,11 +71,10 @@ export function useBulkUpdateLeads() {
     mutationFn: (data: { lead_ids: string[]; status?: string; assigned_to?: string | null }) =>
       bulkUpdateLeads(data),
     onSuccess: () => {
-      // toast.success('Leads updated successfully');
       queryClient.invalidateQueries({ queryKey: leadsKeys.all });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
     onError: (error: any) => {
-      // toast.error(error.response?.data?.message || 'Failed to update leads');
       console.error(error);
     },
   });
@@ -85,11 +86,10 @@ export function useBulkDeleteLeads() {
   return useMutation({
     mutationFn: (data: { lead_ids: string[] }) => bulkDeleteLeads(data),
     onSuccess: () => {
-      // toast.success('Leads deleted successfully');
       queryClient.invalidateQueries({ queryKey: leadsKeys.all });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
     onError: (error: any) => {
-      // toast.error(error.response?.data?.message || 'Failed to delete leads');
       console.error(error);
     },
   });
@@ -99,5 +99,8 @@ export function useLeadAnalytics() {
   return useQuery({
     queryKey: leadsKeys.analytics(),
     queryFn: () => getAnalytics(),
+    staleTime: 15 * 1000,
+    refetchInterval: 30 * 1000,
+    refetchIntervalInBackground: false,
   });
 }

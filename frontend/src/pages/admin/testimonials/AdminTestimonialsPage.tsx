@@ -1,10 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { Plus, Edit2, Trash2, Search, Filter } from 'lucide-react';
+import toast from 'react-hot-toast';
 import Button from '../../../components/ui/Button';
 import DataTable, { type ColumnDef } from '../../../components/admin/shared/DataTable';
 import Badge from '../../../components/ui/Badge';
 import { useAdminTestimonials, useAdminClients, useDeleteTestimonial } from '../../../hooks/useTestimonialsAdmin';
 import TestimonialDrawer from '../../../components/admin/testimonials/TestimonialDrawer';
+import ConfirmDialog from '../../../components/admin/shared/ConfirmDialog';
 import type { Testimonial } from '../../../types/testimonials';
 import { resolveImageUrl } from '../../../utils/imageHelper';
 
@@ -15,6 +17,16 @@ export default function AdminTestimonialsPage() {
   
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedTestimonial, setSelectedTestimonial] = useState<Testimonial | null>(null);
+  const [deleteDialog, setDeleteDialog] = useState<{
+    isOpen: boolean;
+    testimonial?: Testimonial;
+    title: string;
+    description: string;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+  });
   
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,13 +53,24 @@ export default function AdminTestimonialsPage() {
     setIsDrawerOpen(true);
   };
 
-  const handleDelete = async (testimonial: Testimonial) => {
-    if (window.confirm(`Are you sure you want to delete the testimonial from ${testimonial.author_name}?`)) {
-      try {
-        await deleteTestimonial(testimonial.id);
-      } catch (err) {
-        console.error('Failed to delete', err);
-      }
+  const handleDelete = (testimonial: Testimonial) => {
+    setDeleteDialog({
+      isOpen: true,
+      testimonial,
+      title: 'Delete Testimonial',
+      description: `Are you sure you want to delete the testimonial from ${testimonial.author_name}? This action cannot be undone.`
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteDialog.testimonial) return;
+    try {
+      await deleteTestimonial(deleteDialog.testimonial.id);
+      toast.success('Testimonial deleted successfully');
+      setDeleteDialog({ isOpen: false, title: '', description: '' });
+    } catch (err) {
+      console.error('Failed to delete', err);
+      toast.error('Failed to delete testimonial.');
     }
   };
 
@@ -264,6 +287,16 @@ export default function AdminTestimonialsPage() {
         onClose={() => setIsDrawerOpen(false)}
         testimonial={selectedTestimonial}
         clients={clients}
+      />
+
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        onClose={() => setDeleteDialog({ isOpen: false, title: '', description: '' })}
+        onConfirm={handleConfirmDelete}
+        title={deleteDialog.title}
+        description={deleteDialog.description}
+        confirmText="Delete"
+        variant="danger"
       />
     </div>
   );

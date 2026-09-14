@@ -85,7 +85,9 @@ export function useAdminServices(filters: AdminServiceFilters = {}) {
   return useQuery({
     queryKey: servicesKeys.adminList(filters),
     queryFn: () => getAdminServices(filters),
-    staleTime: 1000 * 60 * 2,
+    staleTime: 1000 * 15, // 15s freshness
+    refetchInterval: 1000 * 30, // 30s background sync
+    refetchIntervalInBackground: false,
     retry: 1,
   });
 }
@@ -95,6 +97,7 @@ export function useAdminServiceDetail(slug: string) {
     queryKey: servicesKeys.adminDetail(slug),
     queryFn: () => getAdminServiceDetail(slug),
     enabled: !!slug,
+    staleTime: 1000 * 15,
     retry: 1,
   });
 }
@@ -105,6 +108,7 @@ export function useCreateService() {
     mutationFn: (data: ServiceFormData) => createService(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: servicesKeys.all });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 }
@@ -141,6 +145,7 @@ export function useUpdateService() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: servicesKeys.all });
       queryClient.invalidateQueries({ queryKey: servicesKeys.adminDetail(variables.slug) });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 }
@@ -151,6 +156,7 @@ export function useDeleteService() {
     mutationFn: (slug: string) => deleteService(slug),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: servicesKeys.all });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 }

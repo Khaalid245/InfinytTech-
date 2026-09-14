@@ -1,10 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { Plus, Edit2, Trash2, Search, Filter } from 'lucide-react';
+import toast from 'react-hot-toast';
 import Button from '../../../components/ui/Button';
 import DataTable, { type ColumnDef } from '../../../components/admin/shared/DataTable';
 import Badge from '../../../components/ui/Badge';
 import { useAdminTeamMembers, useAdminDepartments, useDeleteTeamMember } from '../../../hooks/useTeamAdmin';
 import TeamMemberDrawer from '../../../components/admin/team/TeamMemberDrawer';
+import ConfirmDialog from '../../../components/admin/shared/ConfirmDialog';
 import type { TeamMember } from '../../../types/team';
 import { resolveImageUrl } from '../../../utils/imageHelper';
 
@@ -15,6 +17,16 @@ const AdminTeamPage: React.FC = () => {
   
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+  const [deleteDialog, setDeleteDialog] = useState<{
+    isOpen: boolean;
+    member?: TeamMember;
+    title: string;
+    description: string;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+  });
   
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -46,13 +58,24 @@ const AdminTeamPage: React.FC = () => {
     setIsDrawerOpen(true);
   };
 
-  const handleDelete = async (member: TeamMember) => {
-    if (window.confirm(`Are you sure you want to delete ${member.full_name}?`)) {
-      try {
-        await deleteMember(member.id);
-      } catch (err) {
-        console.error('Failed to delete', err);
-      }
+  const handleDelete = (member: TeamMember) => {
+    setDeleteDialog({
+      isOpen: true,
+      member,
+      title: 'Delete Team Member',
+      description: `Are you sure you want to delete ${member.full_name}? This action cannot be undone.`
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteDialog.member) return;
+    try {
+      await deleteMember(deleteDialog.member.id);
+      toast.success('Team member deleted successfully');
+      setDeleteDialog({ isOpen: false, title: '', description: '' });
+    } catch (err) {
+      console.error('Failed to delete', err);
+      toast.error('Failed to delete team member.');
     }
   };
 
@@ -234,6 +257,16 @@ const AdminTeamPage: React.FC = () => {
         onClose={() => setIsDrawerOpen(false)}
         member={selectedMember}
         departments={departments}
+      />
+
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        onClose={() => setDeleteDialog({ isOpen: false, title: '', description: '' })}
+        onConfirm={handleConfirmDelete}
+        title={deleteDialog.title}
+        description={deleteDialog.description}
+        confirmText="Delete"
+        variant="danger"
       />
     </div>
   );

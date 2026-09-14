@@ -1,5 +1,4 @@
 import { Shield, Check, Minus } from 'lucide-react';
-import AdminLayout from '../../../components/admin/layout/AdminLayout';
 
 interface PermissionMatrix {
   module: string;
@@ -83,8 +82,7 @@ const PermissionIcon = ({ hasPermission }: { hasPermission: boolean }) => {
 
 export default function AdminRolesPage() {
   return (
-    <AdminLayout>
-      <div className="p-4 lg:p-8 max-w-[1600px] mx-auto animate-fade-in space-y-8">
+    <div className="p-4 lg:p-8 max-w-[1600px] mx-auto animate-fade-in space-y-8">
         
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
@@ -155,7 +153,6 @@ export default function AdminRolesPage() {
           </p>
         </div>
 
-      </div>
-    </AdminLayout>
+    </div>
   );
 }

@@ -39,23 +39,25 @@ const AdminLoginPage: React.FC = () => {
           return;
         }
 
+        if (data.user) {
+          localStorage.setItem('user', JSON.stringify(data.user));
+        }
+
         login(data.access, role, data.refresh || null);
         navigate('/admin/dashboard', { replace: true });
       } else {
         throw new Error('Invalid response from server.');
       }
     } catch (err: any) {
-      if (err.response?.status === 401) {
-        const detail = err.response?.data?.detail || '';
-        if (detail.toLowerCase().includes('locked')) {
-          setError('This account is temporarily locked due to too many failed login attempts. Please try again later or contact your administrator.');
-        } else {
-          setError('Invalid email or password.');
-        }
+      const detail = err.response?.data?.detail || '';
+      if (detail.toLowerCase().includes('locked') || detail.toLowerCase().includes('failed login')) {
+        setError('This account is temporarily locked due to too many failed login attempts. Please try again later or contact your administrator.');
+      } else if (err.response?.status === 401) {
+        setError('Invalid email or password.');
       } else if (err.response?.status === 403) {
-        setError('Access denied. You do not have administrator privileges.');
+        setError(detail || 'Access denied. You do not have administrator privileges.');
       } else {
-        setError(err.message || 'An error occurred during login.');
+        setError(detail || err.message || 'An error occurred during login.');
       }
     } finally {
       setIsLoading(false);

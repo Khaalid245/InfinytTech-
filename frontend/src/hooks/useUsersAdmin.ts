@@ -6,6 +6,9 @@ export function useAdminUsers(filters: any = {}) {
   return useQuery({
     queryKey: ['users', 'list', filters],
     queryFn: () => usersService.getUsers(filters),
+    staleTime: 15 * 1000,
+    refetchInterval: 30 * 1000,
+    refetchIntervalInBackground: false,
     placeholderData: (previousData) => previousData,
   });
 }
@@ -33,6 +36,7 @@ export function useCreateUser() {
     mutationFn: usersService.createUser,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       toast.success('User created successfully');
     },
     onError: (error: any) => {
@@ -50,6 +54,7 @@ export function useUpdateUser() {
     mutationFn: ({ id, data }: { id: string; data: any }) => usersService.updateUser(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       toast.success('User updated successfully');
     },
     onError: (error: any) => {
@@ -67,6 +72,7 @@ export function useDeleteUser() {
     mutationFn: usersService.deleteUser,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       toast.success('User deleted successfully');
     },
     onError: (error: any) => {
@@ -87,6 +93,7 @@ export function useToggleUserStatus() {
     mutationFn: usersService.toggleUserStatus,
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       toast.success(data?.is_active ? 'User activated' : 'User deactivated');
     },
     onError: (error: any) => {
@@ -123,8 +130,9 @@ export function useUnlockUser() {
   return useMutation({
     mutationFn: usersService.unlockUser,
     onSuccess: () => {
-      // Invalidate both user list and details query for the specific user
+      // Invalidate both user list, details, and dashboard counters
       queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       toast.success('Account unlocked successfully');
     },
     onError: (error: any) => {

@@ -3,7 +3,7 @@
 {% block content %}
     <h1>Your Account is Unlocked</h1>
     
-    <p>Hi {{ user.first_name|default:user.username }},</p>
+    <p>Hi {{ user.first_name|default:user.email }},</p>
     
     <p>Good news! Your account has been unlocked and you can now log in normally.</p>
     

@@ -348,10 +348,17 @@ class EmailService:
             logo_url = site.primary_logo.url
         context.setdefault("primary_logo", logo_url)
         
-        context.setdefault("brand_colors", site.brand_colors if site and site.brand_colors else {})
-        context.setdefault("support_email", site.support_email if site else None)
-        context.setdefault("office_address", site.office_address if site else None)
-        context.setdefault("social_links", site.social_links if site and site.social_links else {})
+        social_links_dict = {}
+        if site:
+            try:
+                if hasattr(site, 'social_links') and hasattr(site.social_links, 'filter'):
+                    for link in site.social_links.filter(is_active=True):
+                        social_links_dict[link.platform.lower()] = link.url
+                elif isinstance(site.social_links, dict):
+                    social_links_dict = site.social_links
+            except Exception:
+                social_links_dict = {}
+        context.setdefault("social_links", social_links_dict)
         
         context.setdefault("current_year", timezone.now().year)
         context.setdefault("subject", subject)

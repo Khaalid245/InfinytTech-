@@ -4,7 +4,6 @@ import {
 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 
-import AdminLayout from '../../../components/admin/layout/AdminLayout';
 import DataTable from '../../../components/admin/shared/DataTable';
 import type { ColumnDef } from '../../../components/admin/shared/DataTable';
 import ConfirmDialog from '../../../components/admin/shared/ConfirmDialog';
@@ -175,7 +174,7 @@ export default function AdminUsersPage() {
   const sales = users.filter((u: UserListResponse) => u.role === 'sales').length;
 
   return (
-    <AdminLayout>
+    <>
       <div className="p-4 lg:p-8 space-y-6 max-w-[1600px] mx-auto animate-fade-in">
         
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
@@ -314,6 +313,6 @@ export default function AdminUsersPage() {
         onConfirm={handleBulkDelete}
         variant="danger"
       />
-    </AdminLayout>
+    </>
   );
 }

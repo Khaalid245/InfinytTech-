@@ -7,7 +7,6 @@ import {
   PieChart, Pie, Cell
 } from 'recharts';
 
-import AdminLayout from '../../../components/admin/layout/AdminLayout';
 import DataTable from '../../../components/admin/shared/DataTable';
 import type { ColumnDef } from '../../../components/admin/shared/DataTable';
 import ConfirmDialog from '../../../components/admin/shared/ConfirmDialog';
@@ -147,7 +146,7 @@ export default function AdminLeadsPage() {
   };
 
   return (
-    <AdminLayout>
+    <>
       <div className="p-4 lg:p-8 space-y-6 max-w-[1600px] mx-auto">
         
         {/* KPI Dashboard */}
@@ -321,6 +320,6 @@ export default function AdminLeadsPage() {
         onConfirm={handleBulkDelete}
         variant="danger"
       />
-    </AdminLayout>
+    </>
   );
 }

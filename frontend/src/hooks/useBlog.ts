@@ -69,7 +69,9 @@ export function useAdminBlogPosts(filters: AdminBlogFilters = {}) {
   return useQuery({
     queryKey: blogKeys.adminList(filters),
     queryFn: () => getAdminBlogPosts(filters),
-    staleTime: 1000 * 60 * 2,
+    staleTime: 1000 * 15, // 15s freshness
+    refetchInterval: 1000 * 30, // 30s background sync
+    refetchIntervalInBackground: false,
   });
 }
 
@@ -78,6 +80,7 @@ export function useAdminBlogPostDetail(id: string) {
     queryKey: blogKeys.adminDetail(id),
     queryFn: () => getAdminBlogPostDetail(id),
     enabled: !!id,
+    staleTime: 1000 * 15,
   });
 }
 
@@ -87,6 +90,7 @@ export function useCreateBlogPost() {
     mutationFn: (data: BlogFormData) => createBlogPost(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: blogKeys.all });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 }
@@ -121,6 +125,7 @@ export function useUpdateBlogPost() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: blogKeys.all });
       queryClient.invalidateQueries({ queryKey: blogKeys.adminDetail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 }
@@ -131,6 +136,7 @@ export function useDeleteBlogPost() {
     mutationFn: (id: string) => deleteBlogPost(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: blogKeys.all });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 }

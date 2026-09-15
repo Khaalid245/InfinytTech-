@@ -1,59 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { cn } from '../utils/cn';
-
-// ─── Standard, thin-stroke (2px) inline SVGs ─────────────────────────────
-const Icon = {
-  Layout: ({ className }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden>
-      <rect x="3" y="3" width="18" height="18" rx="2" />
-      <path d="M3 9h18M9 21V9" />
-    </svg>
-  ),
-  Code: ({ className }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden>
-      <polyline points="16 18 22 12 16 6" />
-      <polyline points="8 6 2 12 8 18" />
-    </svg>
-  ),
-  Cpu: ({ className }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden>
-      <rect x="4" y="4" width="16" height="16" rx="2" />
-      <rect x="9" y="9" width="6" height="6" />
-      <path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2" />
-    </svg>
-  ),
-  Sparkles: ({ className }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden>
-      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
-      <path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5 5 3Z" />
-      <path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1 1-2.5Z" />
-    </svg>
-  ),
-  Layers: ({ className }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden>
-      <polygon points="12 2 2 7 12 12 22 7 12 2" />
-      <polyline points="2 17 12 22 22 17" />
-      <polyline points="2 12 17 22 12" />
-    </svg>
-  ),
-  Cloud: ({ className }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden>
-      <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
-    </svg>
-  ),
-  Smartphone: ({ className }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden>
-      <rect x="5" y="2" width="14" height="20" rx="2" />
-      <path d="M12 18h.01" />
-    </svg>
-  ),
-};
+import { useTechnologies } from '../hooks/usePortfolio';
+import { getLucideIcon } from '../utils/iconHelper';
+import { 
+  Code2, 
+  Cpu, 
+  Layers, 
+  Sparkles, 
+  Cloud, 
+  Database, 
+  Smartphone, 
+  Server, 
+  Globe, 
+  Braces,
+  Boxes,
+  type LucideIcon
+} from 'lucide-react';
+import type { Technology } from '../types/portfolio';
 
 // ─── Interfaces ──────────────────────────────────────────────────────────
 interface TechItem {
+  id: string;
   name: string;
+  slug: string;
   category: 'runtime' | 'ai' | 'cloud' | 'db';
-  icon: React.FC<{ className?: string }>;
+  icon: LucideIcon;
   description: string;
 }
 
@@ -61,92 +32,106 @@ interface TechStackSectionProps {
   theme: 'dark' | 'light';
 }
 
-// ─── Simplified Static Stack Data ────────────────────────────────────────
-const TECH_STACK: TechItem[] = [
-  {
-    name: 'Next.js',
-    category: 'runtime',
-    icon: Icon.Layout,
-    description: 'Modern React framework for fast, SEO-friendly web applications.',
-  },
-  {
-    name: 'Go (Golang)',
-    category: 'runtime',
-    icon: Icon.Code,
-    description: 'High-performance backend technology used for scalable APIs, microservices, and distributed systems.',
-  },
-  {
-    name: 'Python',
-    category: 'ai',
-    icon: Icon.Cpu,
-    description: 'Powering automation, data processing, and AI solutions.',
-  },
-  {
-    name: 'PyTorch',
-    category: 'ai',
-    icon: Icon.Sparkles,
-    description: 'Open-source machine learning framework for training and deploying AI models.',
-  },
-  {
-    name: 'Kubernetes',
-    category: 'cloud',
-    icon: Icon.Layers,
-    description: 'Infrastructure platform that helps applications scale reliably across cloud environments.',
-  },
-  {
-    name: 'Terraform',
-    category: 'cloud',
-    icon: Icon.Cloud,
-    description: 'Automates cloud infrastructure management for consistent, reliable deployments.',
-  },
-  {
-    name: 'PostgreSQL',
-    category: 'db',
-    icon: Icon.Code,
-    description: 'Reliable relational database for scalable applications.',
-  },
-  {
-    name: 'Flutter',
-    category: 'runtime',
-    icon: Icon.Smartphone,
-    description: 'Cross-platform mobile UI framework for native iOS and Android experiences.',
-  },
-];
+// ─── Curated descriptions map ───────────────────────────────────────────
+const TECH_DESCRIPTIONS: Record<string, { category: 'runtime' | 'ai' | 'cloud' | 'db'; description: string; defaultIcon: LucideIcon }> = {
+  'nextjs': { category: 'runtime', defaultIcon: Globe, description: 'Modern React framework for fast, SEO-friendly, server-rendered web platforms.' },
+  'next.js': { category: 'runtime', defaultIcon: Globe, description: 'Modern React framework for fast, SEO-friendly, server-rendered web platforms.' },
+  'react': { category: 'runtime', defaultIcon: Code2, description: 'Component-driven UI library for building interactive, high-performance web applications.' },
+  'typescript': { category: 'runtime', defaultIcon: Braces, description: 'Strictly typed JavaScript superset for reliable, enterprise-scale software engineering.' },
+  'go': { category: 'runtime', defaultIcon: Server, description: 'High-performance backend language for scalable APIs, microservices, and distributed systems.' },
+  'go (golang)': { category: 'runtime', defaultIcon: Server, description: 'High-performance backend language for scalable APIs, microservices, and distributed systems.' },
+  'django': { category: 'runtime', defaultIcon: Server, description: 'Enterprise Python framework for secure, scalable backends and robust APIs.' },
+  'flutter': { category: 'runtime', defaultIcon: Smartphone, description: 'Cross-platform mobile UI framework for native iOS and Android experiences.' },
+  'nodejs': { category: 'runtime', defaultIcon: Code2, description: 'Asynchronous event-driven JavaScript runtime for fast, scalable network applications.' },
+  'node.js': { category: 'runtime', defaultIcon: Code2, description: 'Asynchronous event-driven JavaScript runtime for fast, scalable network applications.' },
+  
+  'python': { category: 'ai', defaultIcon: Cpu, description: 'Powering automated workflows, high-throughput data processing, and AI integrations.' },
+  'pytorch': { category: 'ai', defaultIcon: Sparkles, description: 'Open-source machine learning framework for training and deploying deep learning models.' },
+  'tensorflow': { category: 'ai', defaultIcon: Sparkles, description: 'End-to-end open source platform for machine learning and neural networks.' },
+  'openai': { category: 'ai', defaultIcon: Sparkles, description: 'Large language models and AI embeddings for intelligent conversational workflows.' },
+
+  'aws': { category: 'cloud', defaultIcon: Cloud, description: 'Cloud infrastructure delivering elastic scalability, enterprise security, and global reach.' },
+  'kubernetes': { category: 'cloud', defaultIcon: Layers, description: 'Container orchestration platform that scales applications reliably across cloud clusters.' },
+  'terraform': { category: 'cloud', defaultIcon: Cloud, description: 'Infrastructure-as-Code automating multi-cloud provisioning and reproducible deployments.' },
+  'docker': { category: 'cloud', defaultIcon: Boxes, description: 'Containerization engine standardizing build, test, and release pipelines.' },
+
+  'postgresql': { category: 'db', defaultIcon: Database, description: 'Advanced open-source relational database with ACID compliance and high query concurrency.' },
+  'mysql': { category: 'db', defaultIcon: Database, description: 'Proven enterprise relational database engine powering modern transactional systems.' },
+  'graphql': { category: 'db', defaultIcon: Braces, description: 'Flexible query language for APIs enabling declarative, efficient client data fetching.' },
+  'redis': { category: 'db', defaultIcon: Database, description: 'In-memory data structure store used as a distributed cache and real-time message broker.' },
+};
 
 const CATEGORIES = [
   { key: 'all', label: 'All Technologies' },
   { key: 'runtime', label: 'Languages & Runtimes' },
   { key: 'ai', label: 'AI & Machine Learning' },
   { key: 'cloud', label: 'Cloud & Scaling' },
-  { key: 'db', label: 'Databases & Edge' },
+  { key: 'db', label: 'Databases & APIs' },
 ] as const;
 
 export default function TechStackSection({ theme }: TechStackSectionProps) {
   const isDark = theme === 'dark';
   const [activeTechFilter, setActiveTechFilter] = useState<string>('all');
-  
-  // State to manage smooth fade/scale transition when switching filters
-  const [visibleTech, setVisibleTech] = useState<TechItem[]>(TECH_STACK);
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
+
+  // Fetch dynamic technologies from MySQL database
+  const { data: dbTechnologies, isLoading } = useTechnologies();
+
+  // Map database technologies or fallbacks
+  const allTechItems: TechItem[] = useMemo(() => {
+    if (dbTechnologies && dbTechnologies.length > 0) {
+      return dbTechnologies.map((t: Technology) => {
+        const key = t.slug.toLowerCase();
+        const matched = TECH_DESCRIPTIONS[key] || TECH_DESCRIPTIONS[t.name.toLowerCase()];
+        
+        // Infer category if not directly mapped
+        let category: 'runtime' | 'ai' | 'cloud' | 'db' = 'runtime';
+        if (matched) {
+          category = matched.category;
+        } else if (key.includes('ai') || key.includes('ml') || key.includes('torch') || key.includes('gpt') || key.includes('python')) {
+          category = 'ai';
+        } else if (key.includes('cloud') || key.includes('aws') || key.includes('docker') || key.includes('kube') || key.includes('infra')) {
+          category = 'cloud';
+        } else if (key.includes('sql') || key.includes('db') || key.includes('redis') || key.includes('graph') || key.includes('mongo')) {
+          category = 'db';
+        }
+
+        const iconComponent = getLucideIcon(t.icon_name, matched?.defaultIcon || Code2);
+
+        return {
+          id: t.id,
+          name: t.name,
+          slug: t.slug,
+          category,
+          icon: iconComponent,
+          description: matched?.description || 'Enterprise-grade technology engineered for high performance, reliability, and security.',
+        };
+      });
+    }
+
+    // Default fallback if database query is loading / empty
+    return Object.entries(TECH_DESCRIPTIONS).slice(0, 8).map(([slug, meta], idx) => ({
+      id: `fallback-${idx}`,
+      name: slug.charAt(0).toUpperCase() + slug.slice(1),
+      slug,
+      category: meta.category,
+      icon: meta.defaultIcon,
+      description: meta.description,
+    }));
+  }, [dbTechnologies]);
+
+  // Filtered technology items
+  const visibleTech = useMemo(() => {
+    if (activeTechFilter === 'all') return allTechItems;
+    return allTechItems.filter((item) => item.category === activeTechFilter);
+  }, [allTechItems, activeTechFilter]);
 
   const handleTechFilterChange = (filter: string) => {
     if (filter === activeTechFilter) return;
-
     setIsTransitioning(true);
     setActiveTechFilter(filter);
+    setTimeout(() => setIsTransitioning(false), 200);
   };
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setVisibleTech(
-        activeTechFilter === 'all'
-          ? TECH_STACK
-          : TECH_STACK.filter((item) => item.category === activeTechFilter)
-      );
-      setIsTransitioning(false);
-    }, 200); // Matches transition duration
-    return () => clearTimeout(timer);
-  }, [activeTechFilter]);
 
   // Color mappings based on active theme
   const bgColors = isDark ? 'bg-[#0B0D0F] border-t border-[#23262D]' : 'bg-[#FAFAFA] border-t border-[#E2E8F0]';
@@ -214,12 +199,35 @@ export default function TechStackSection({ theme }: TechStackSectionProps) {
         </div>
 
         {/* ─── 3. Dynamic Periodic Grid Layout ─── */}
-        <div 
-          className={cn(
-            'grid grid-cols-2 lg:grid-cols-4 gap-6 transition-all duration-300',
-            isTransitioning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
-          )}
-        >
+        {isLoading ? (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div
+                key={i}
+                className={cn(
+                  'rounded-2xl border p-5 md:p-6 min-h-[160px] animate-pulse flex flex-col justify-between',
+                  isDark ? 'bg-[#121417] border-[#23262D]' : 'bg-white border-[#E2E8F0]'
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <div className={cn('w-10 h-10 rounded-xl', isDark ? 'bg-zinc-800' : 'bg-slate-100')} />
+                  <div className={cn('w-16 h-4 rounded', isDark ? 'bg-zinc-800' : 'bg-slate-100')} />
+                </div>
+                <div className="space-y-2">
+                  <div className={cn('w-28 h-5 rounded', isDark ? 'bg-zinc-800' : 'bg-slate-100')} />
+                  <div className={cn('w-full h-3.5 rounded', isDark ? 'bg-zinc-800' : 'bg-slate-100')} />
+                  <div className={cn('w-4/5 h-3.5 rounded', isDark ? 'bg-zinc-800' : 'bg-slate-100')} />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div 
+            className={cn(
+              'grid grid-cols-2 lg:grid-cols-4 gap-6 transition-all duration-300',
+              isTransitioning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
+            )}
+          >
           {visibleTech.map((tech) => {
             const IconComponent = tech.icon;
             
@@ -279,6 +287,7 @@ export default function TechStackSection({ theme }: TechStackSectionProps) {
             );
           })}
         </div>
+        )}
 
       </div>
     </section>

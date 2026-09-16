@@ -84,9 +84,11 @@ export default function TechStackSection({ theme }: TechStackSectionProps) {
         const key = t.slug.toLowerCase();
         const matched = TECH_DESCRIPTIONS[key] || TECH_DESCRIPTIONS[t.name.toLowerCase()];
         
-        // Infer category if not directly mapped
+        // Infer or use database category
         let category: 'runtime' | 'ai' | 'cloud' | 'db' = 'runtime';
-        if (matched) {
+        if (t.category && ['runtime', 'ai', 'cloud', 'db'].includes(t.category)) {
+          category = t.category as 'runtime' | 'ai' | 'cloud' | 'db';
+        } else if (matched) {
           category = matched.category;
         } else if (key.includes('ai') || key.includes('ml') || key.includes('torch') || key.includes('gpt') || key.includes('python')) {
           category = 'ai';
@@ -104,7 +106,7 @@ export default function TechStackSection({ theme }: TechStackSectionProps) {
           slug: t.slug,
           category,
           icon: iconComponent,
-          description: matched?.description || 'Enterprise-grade technology engineered for high performance, reliability, and security.',
+          description: t.description || matched?.description || 'Enterprise-grade technology engineered for high performance, reliability, and security.',
         };
       });
     }

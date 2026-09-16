@@ -14,9 +14,13 @@ import {
   createProject,
   updateProject,
   deleteProject,
+  getAdminTechnologies,
+  createTechnology,
+  updateTechnology,
+  deleteTechnology,
 } from '../services/portfolio.service';
 import type { ProjectFilters } from '../services/portfolio.service';
-import type { ProjectFormData } from '../types/portfolio';
+import type { ProjectFormData, Technology } from '../types/portfolio';
 
 // ─── Cache key factory (keeps keys co-located and type-safe) ─────────────────
 export const portfolioKeys = {
@@ -133,3 +137,44 @@ export function useDeleteProject() {
     },
   });
 }
+
+// ─── Admin Technology Hooks ─────────────────────────────────────────────────
+
+export function useAdminTechnologies() {
+  return useQuery({
+    queryKey: ['portfolio', 'admin', 'technologies'],
+    queryFn: () => getAdminTechnologies(),
+    staleTime: 1000 * 15,
+  });
+}
+
+export function useCreateTechnology() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: Partial<Technology>) => createTechnology(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['portfolio'] });
+    },
+  });
+}
+
+export function useUpdateTechnology() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ slug, data }: { slug: string; data: Partial<Technology> }) => updateTechnology(slug, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['portfolio'] });
+    },
+  });
+}
+
+export function useDeleteTechnology() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (slug: string) => deleteTechnology(slug),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['portfolio'] });
+    },
+  });
+}
+

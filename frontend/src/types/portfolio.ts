@@ -17,7 +17,10 @@ export interface Technology {
   id: string;
   name: string;
   slug: string;
+  category?: 'runtime' | 'ai' | 'cloud' | 'db' | string;
+  description?: string;
   icon_name: string;
+  display_order?: number;
   is_active: boolean;
   created_at: string;
   updated_at: string;

@@ -44,7 +44,15 @@ const navSections: NavSection[] = [
   {
     title: 'Content & Media',
     items: [
-      { path: '/admin/portfolio', label: 'Portfolio', icon: Briefcase },
+      { 
+        path: '/admin/portfolio', 
+        label: 'Portfolio & Stack', 
+        icon: Briefcase,
+        children: [
+          { path: '/admin/portfolio', label: 'All Projects' },
+          { path: '/admin/portfolio/technologies', label: 'Tech Stack (CMS)' },
+        ]
+      },
       { path: '/admin/services', label: 'Services', icon: Layers },
       { 
         path: '/admin/blog', 

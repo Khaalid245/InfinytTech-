@@ -23,6 +23,7 @@ const AdminLoginPage = lazy(() => import('./pages/admin/AdminLoginPage'));
 const AdminLayout = lazy(() => import('./components/admin/layout/AdminLayout'));
 const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage'));
 const AdminPortfolioPage = lazy(() => import('./pages/admin/AdminPortfolioPage'));
+const AdminTechnologiesPage = lazy(() => import('./pages/admin/portfolio/AdminTechnologiesPage'));
 const AdminServicesPage = lazy(() => import('./pages/admin/AdminServicesPage'));
 const AdminBlogPage = lazy(() => import('./pages/admin/AdminBlogPage'));
 const AdminBlogCategoriesPage = lazy(() => import('./pages/admin/AdminBlogCategoriesPage'));
@@ -106,7 +107,10 @@ export const App: React.FC = () => {
           }>
             <Route index element={<AdminDashboardPage />} />
             <Route path="dashboard" element={<AdminDashboardPage />} />
-            <Route path="portfolio" element={<AdminPortfolioPage />} />
+            <Route path="portfolio">
+              <Route index element={<AdminPortfolioPage />} />
+              <Route path="technologies" element={<AdminTechnologiesPage />} />
+            </Route>
             <Route path="services" element={<AdminServicesPage />} />
             <Route path="blog">
               <Route index element={<AdminBlogPage />} />

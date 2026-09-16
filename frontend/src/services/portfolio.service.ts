@@ -173,3 +173,24 @@ export async function updateProjectGalleryImage(slug: string, imageId: string, d
 export async function removeProjectGalleryImage(slug: string, imageId: string): Promise<void> {
   await api.delete(`/admin/projects/${slug}/images/${imageId}/`);
 }
+
+// ─── Admin Technologies Endpoints ───────────────────────────────────────────
+
+export async function getAdminTechnologies(): Promise<Technology[]> {
+  const { data } = await api.get<ApiResponse<Technology[]>>('/admin/technologies/');
+  return data.data;
+}
+
+export async function createTechnology(formData: Partial<Technology>): Promise<Technology> {
+  const { data } = await api.post<ApiResponse<Technology>>('/admin/technologies/', formData);
+  return data.data;
+}
+
+export async function updateTechnology(slug: string, formData: Partial<Technology>): Promise<Technology> {
+  const { data } = await api.patch<ApiResponse<Technology>>(`/admin/technologies/${slug}/`, formData);
+  return data.data;
+}
+
+export async function deleteTechnology(slug: string): Promise<void> {
+  await api.delete(`/admin/technologies/${slug}/`);
+}

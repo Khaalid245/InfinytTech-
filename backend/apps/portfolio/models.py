@@ -23,19 +23,29 @@ class ProjectCategory(UUIDModel, TimeStampedModel):
 
 class Technology(UUIDModel, TimeStampedModel):
     """
-    Technology tag used across projects (e.g. React, Django, PostgreSQL).
+    Technology tag used across projects and Tech Stack showcase (e.g. React, Django, PostgreSQL).
     """
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=120, unique=True)
+    category = models.CharField(
+        max_length=50,
+        default='runtime',
+        help_text='Tech category: runtime (Languages & Runtimes), ai (AI & Machine Learning), cloud (Cloud & Scaling), db (Databases & APIs)'
+    )
+    description = models.TextField(
+        blank=True,
+        help_text='Short description of tech capability for tech stack showcase.'
+    )
     icon_name = models.CharField(
         max_length=100, blank=True,
-        help_text='Icon identifier for frontend rendering (e.g. "react", "django")'
+        help_text='Icon identifier for frontend rendering (e.g. "nextjs", "go", "python", "pytorch", "kubernetes", "terraform", "postgresql", "flutter")'
     )
+    display_order = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'portfolio_technologies'
-        ordering = ['name']
+        ordering = ['display_order', 'name']
         verbose_name = 'Technology'
         verbose_name_plural = 'Technologies'
 

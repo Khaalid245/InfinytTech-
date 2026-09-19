@@ -124,6 +124,24 @@ export default function LeadDrawer({ lead, isOpen, onClose }: LeadDrawerProps) {
             />
           </div>
 
+          {/* Inquiry / Booking Scope Callout */}
+          <section className="p-4 rounded-xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5" />
+                {lead.source || 'Direct Website Submission'}
+              </span>
+              {lead.project_type && (
+                <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300">
+                  {lead.project_type}
+                </span>
+              )}
+            </div>
+            <p className="text-sm text-primary-text whitespace-pre-wrap leading-relaxed">
+              {lead.message || 'No initial message provided.'}
+            </p>
+          </section>
+
           <hr className="border-border-primary/50" />
 
           {/* Contact Information */}

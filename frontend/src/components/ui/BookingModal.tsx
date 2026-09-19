@@ -671,6 +671,7 @@ export default function BookingModal({ theme }: BookingModalProps) {
                   company: bookingCompany.trim() || 'N/A',
                   project_type: projectInterest,
                   budget_range: 'Discovery Call',
+                  source: 'Discovery Call Booking',
                   message: `[Scheduled Discovery Call] Date: ${formattedSelectedDate} at ${selectedTime} (${activeTimezoneString}). Primary Focus: ${projectInterest}. Organization: ${bookingCompany || 'Not Specified'}.`,
                 });
                 queryClient.invalidateQueries({ queryKey: ['leads'] });

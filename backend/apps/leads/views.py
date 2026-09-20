@@ -10,7 +10,7 @@ from django.utils import timezone
 from django.db.models import Count, Q
 from django.db.models.functions import TruncMonth
 
-from apps.core.response import api_response
+from apps.core.response import api_response, api_error
 from apps.core.services import EmailService
 from apps.accounts.permissions import IsAdminOrSuperAdmin
 from apps.site_settings.services import get_active_site_settings
@@ -46,13 +46,23 @@ class LeadSubmitView(APIView):
     )
     def post(self, request):
         serializer = LeadCreateSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        if not serializer.is_valid():
+            first_key = next(iter(serializer.errors.keys()))
+            first_val = serializer.errors[first_key]
+            err_detail = first_val[0] if isinstance(first_val, list) and first_val else str(first_val)
+            formatted_msg = f"{first_key.replace('_', ' ').capitalize()}: {err_detail}"
+            return api_error(
+                message=formatted_msg,
+                status=status.HTTP_400_BAD_REQUEST,
+                errors=serializer.errors
+            )
+
         lead = serializer.save()
         
         LeadTimeline.objects.create(
             lead=lead,
             action='CREATED',
-            description='Lead created from public contact form.',
+            description=f"Lead created from {lead.source or 'public contact form'}.",
             created_by=None
         )
 

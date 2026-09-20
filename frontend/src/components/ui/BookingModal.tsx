@@ -660,7 +660,7 @@ export default function BookingModal({ theme }: BookingModalProps) {
 
               setIsSubmitting(true);
               try {
-                const nameParts = bookingName.trim().split(' ');
+                const nameParts = bookingName.trim().split(/\s+/);
                 const first_name = nameParts[0] || 'Client';
                 const last_name = nameParts.slice(1).join(' ') || '';
 
@@ -678,8 +678,9 @@ export default function BookingModal({ theme }: BookingModalProps) {
                 queryClient.invalidateQueries({ queryKey: ['dashboard'] });
                 setSchedulerStep(3);
               } catch (err: unknown) {
-                const errorObj = err as { response?: { data?: { message?: string; detail?: string } } };
-                toast.error(errorObj.response?.data?.message || errorObj.response?.data?.detail || 'Unable to schedule discovery call. Please try again.');
+                const errorObj = err as { response?: { data?: { message?: string; detail?: string; errors?: Record<string, string[]> } } };
+                const backendMsg = errorObj.response?.data?.message || errorObj.response?.data?.detail;
+                toast.error(backendMsg || 'Unable to schedule discovery call. Please try again.');
               } finally {
                 setIsSubmitting(false);
               }

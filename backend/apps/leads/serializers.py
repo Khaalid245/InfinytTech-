@@ -6,8 +6,23 @@ from .models import Lead, LeadTimeline
 class LeadCreateSerializer(serializers.ModelSerializer):
     """
     Public lead submission serializer.
-    Only exposes input fields required for contact form submission.
+    Only exposes input fields required for contact form submission and discovery call booking.
     """
+    first_name = serializers.CharField(max_length=150, required=True, trim_whitespace=True)
+    last_name = serializers.CharField(max_length=150, required=False, allow_blank=True, default='', trim_whitespace=True)
+    email = serializers.EmailField(required=True)
+    phone = serializers.CharField(max_length=20, required=False, allow_blank=True, default='', trim_whitespace=True)
+    whatsapp = serializers.CharField(max_length=20, required=False, allow_blank=True, default='', trim_whitespace=True)
+    company = serializers.CharField(max_length=150, required=False, allow_blank=True, default='', trim_whitespace=True)
+    industry = serializers.CharField(max_length=100, required=False, allow_blank=True, default='', trim_whitespace=True)
+    website = serializers.URLField(max_length=255, required=False, allow_blank=True, default='')
+    company_size = serializers.CharField(max_length=50, required=False, allow_blank=True, default='', trim_whitespace=True)
+    country = serializers.CharField(max_length=100, required=False, allow_blank=True, default='', trim_whitespace=True)
+    project_type = serializers.CharField(max_length=100, required=False, allow_blank=True, default='', trim_whitespace=True)
+    budget_range = serializers.CharField(max_length=100, required=False, allow_blank=True, default='', trim_whitespace=True)
+    message = serializers.CharField(required=False, allow_blank=True, default='', trim_whitespace=True)
+    source = serializers.CharField(max_length=100, required=False, allow_blank=True, default='Contact Form', trim_whitespace=True)
+
     class Meta:
         model = Lead
         fields = (
@@ -19,10 +34,9 @@ class LeadCreateSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'created_at')
 
     def validate_email(self, value):
-        # Perform basic email validation (can be expanded if needed)
         if not value:
             raise serializers.ValidationError("Email is required.")
-        return value.lower()
+        return value.lower().strip()
 
 
 class LeadTimelineSerializer(serializers.ModelSerializer):

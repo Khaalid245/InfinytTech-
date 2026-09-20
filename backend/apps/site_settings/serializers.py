@@ -116,6 +116,10 @@ class SiteSettingsSerializer(serializers.ModelSerializer):
             'hero_secondary_button_text', 'hero_secondary_button_url',
             # Stats
             'completed_projects', 'happy_clients', 'countries_served', 'years_experience',
+            # Mission & Vision & Values
+            'mission_title', 'mission_statement', 'vision_title', 'vision_statement', 'core_values',
+            # Why Choose Us / Differentiators
+            'why_choose_us_title', 'why_choose_us_subtitle', 'differentiators',
             # Footer
             'footer_description', 'copyright_text', 'newsletter_title', 'newsletter_description',
             # System

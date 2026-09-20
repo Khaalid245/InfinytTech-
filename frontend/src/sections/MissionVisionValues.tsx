@@ -10,68 +10,94 @@ import {
   Sparkles, 
   Users, 
   BookOpen, 
+  BadgeCheck,
+  CheckCircle,
+  Lightbulb,
+  Heart,
+  Zap,
   type LucideIcon 
 } from 'lucide-react';
+import { useSiteSettings } from '../hooks/useSiteSettings';
+import type { CoreValueItem } from '../types/siteSettings.types';
 
 interface MissionVisionValuesProps {
   theme: 'dark' | 'light';
 }
 
-interface ValueItem {
-  id: string;
-  title: string;
-  desc: string;
-  icon: LucideIcon;
-}
+const ICON_MAP: Record<string, LucideIcon> = {
+  Award,
+  ShieldCheck,
+  Globe,
+  Sparkles,
+  Users,
+  BookOpen,
+  Target,
+  Eye,
+  Compass,
+  BadgeCheck,
+  CheckCircle,
+  Lightbulb,
+  Heart,
+  Zap,
+};
+
+const DEFAULT_VALUES: CoreValueItem[] = [
+  {
+    id: '01',
+    title: 'Excellence',
+    desc: 'We hold ourselves to the highest standards, ensuring every solution we deliver is durable, reliable, and crafted with meticulous attention to detail.',
+    icon: 'Award',
+  },
+  {
+    id: '02',
+    title: 'Ownership',
+    desc: 'We approach every project with the mindset of a founder, taking full responsibility for the outcomes and long-term success of the partners we serve.',
+    icon: 'ShieldCheck',
+  },
+  {
+    id: '03',
+    title: 'Transparency',
+    desc: 'We build trust through honest, open, and clear communication, keeping our partners fully aligned and informed at every stage.',
+    icon: 'Globe',
+  },
+  {
+    id: '04',
+    title: 'Innovation',
+    desc: 'We challenge conventional approaches and continuously seek better ways to solve meaningful problems.',
+    icon: 'Sparkles',
+  },
+  {
+    id: '05',
+    title: 'Collaboration',
+    desc: 'We work as an extension of your team, aligning our goals with yours to build strong, unified partnerships that amplify our collective impact.',
+    icon: 'Users',
+  },
+  {
+    id: '06',
+    title: 'Continuous Learning',
+    desc: 'We remain perpetually curious, constantly expanding our knowledge and adapting to new paradigms to deliver future-ready solutions.',
+    icon: 'BookOpen',
+  },
+];
+
+const TAB_ICONS = {
+  mission: Target,
+  vision: Eye,
+  values: Compass,
+};
 
 export default function MissionVisionValues({ theme }: MissionVisionValuesProps) {
   const [activeTab, setActiveTab] = useState<'mission' | 'vision' | 'values'>('mission');
   const isDark = theme === 'dark';
+  const { data: settings } = useSiteSettings();
 
-  const tabIcons = {
-    mission: Target,
-    vision: Eye,
-    values: Compass,
-  };
-
-  const values: ValueItem[] = [
-    {
-      id: '01',
-      title: 'Excellence',
-      desc: 'We hold ourselves to the highest standards, ensuring every solution we deliver is durable, reliable, and crafted with meticulous attention to detail.',
-      icon: Award,
-    },
-    {
-      id: '02',
-      title: 'Ownership',
-      desc: 'We approach every project with the mindset of a founder, taking full responsibility for the outcomes and long-term success of the partners we serve.',
-      icon: ShieldCheck,
-    },
-    {
-      id: '03',
-      title: 'Transparency',
-      desc: 'We build trust through honest, open, and clear communication, keeping our partners fully aligned and informed at every stage.',
-      icon: Globe,
-    },
-    {
-      id: '04',
-      title: 'Innovation',
-      desc: 'We challenge conventional approaches and continuously seek better ways to solve meaningful problems.',
-      icon: Sparkles,
-    },
-    {
-      id: '05',
-      title: 'Collaboration',
-      desc: 'We work as an extension of your team, aligning our goals with yours to build strong, unified partnerships that amplify our collective impact.',
-      icon: Users,
-    },
-    {
-      id: '06',
-      title: 'Continuous Learning',
-      desc: 'We remain perpetually curious, constantly expanding our knowledge and adapting to new paradigms to deliver future-ready solutions.',
-      icon: BookOpen,
-    },
-  ];
+  const missionTitle = settings?.mission_title || 'Our Mission';
+  const missionStatement = settings?.mission_statement || 'To help startups, businesses, and organizations build scalable digital products through modern engineering, AI innovation, and world-class technology solutions.';
+  const visionTitle = settings?.vision_title || 'Our Vision';
+  const visionStatement = settings?.vision_statement || "To become Africa's most trusted technology partner, connecting world-class engineering talent with organizations building the future.";
+  const values: CoreValueItem[] = (settings?.core_values && settings.core_values.length > 0)
+    ? settings.core_values
+    : DEFAULT_VALUES;
 
   return (
     <section 
@@ -94,7 +120,7 @@ export default function MissionVisionValues({ theme }: MissionVisionValuesProps)
         >
           {(['mission', 'vision', 'values'] as const).map((tab) => {
             const isActive = activeTab === tab;
-            const IconComponent = tabIcons[tab];
+            const IconComponent = TAB_ICONS[tab];
             return (
               <button
                 key={tab}
@@ -138,10 +164,10 @@ export default function MissionVisionValues({ theme }: MissionVisionValuesProps)
                 Mission
               </span>
               <h3 className={cn('text-3xl font-black tracking-tight', isDark ? 'text-[#F8FAFC]' : 'text-slate-900')}>
-                Our Mission
+                {missionTitle}
               </h3>
               <p className={cn('text-lg font-light leading-relaxed', isDark ? 'text-[#94A3B8]' : 'text-slate-600')}>
-                To help startups, businesses, and organizations build scalable digital products through modern engineering, AI innovation, and world-class technology solutions.
+                {missionStatement}
               </p>
             </div>
           )}
@@ -160,10 +186,10 @@ export default function MissionVisionValues({ theme }: MissionVisionValuesProps)
                 Vision
               </span>
               <h3 className={cn('text-3xl font-black tracking-tight', isDark ? 'text-[#F8FAFC]' : 'text-slate-900')}>
-                Our Vision
+                {visionTitle}
               </h3>
               <p className={cn('text-lg font-light leading-relaxed', isDark ? 'text-[#94A3B8]' : 'text-slate-600')}>
-                To become Africa's most trusted technology partner, connecting world-class engineering talent with organizations building the future.
+                {visionStatement}
               </p>
             </div>
           )}
@@ -182,7 +208,7 @@ export default function MissionVisionValues({ theme }: MissionVisionValuesProps)
               {/* Grid Layout */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-6">
                 {values.map((val) => {
-                  const ValIcon = val.icon;
+                  const ValIcon = ICON_MAP[val.icon] || Award;
                   return (
                     <div
                       key={val.title}

@@ -26,6 +26,12 @@ const GeneralSettings: React.FC = () => {
         happy_clients: settings.happy_clients ?? 0,
         countries_served: settings.countries_served ?? 0,
         years_experience: settings.years_experience ?? 0,
+        mission_title: settings.mission_title || 'Our Mission',
+        mission_statement: settings.mission_statement || '',
+        vision_title: settings.vision_title || 'Our Vision',
+        vision_statement: settings.vision_statement || '',
+        why_choose_us_title: settings.why_choose_us_title || 'What Makes Us Different',
+        why_choose_us_subtitle: settings.why_choose_us_subtitle || '',
       });
     }
   }, [settings, reset]);
@@ -108,6 +114,59 @@ const GeneralSettings: React.FC = () => {
               { value: 'Asia/Tokyo', label: 'Asia/Tokyo (JST)' },
             ]}
           />
+        </div>
+
+        {/* Mission & Vision Section */}
+        <div className="pt-6 border-t border-border-primary space-y-4">
+          <div>
+            <h3 className="text-base font-semibold text-primary-text mb-1">Mission & Vision Statements</h3>
+            <p className="text-xs text-secondary-text">Displayed dynamically in the About page Mission, Vision & Values section.</p>
+          </div>
+
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-3">
+              <Input 
+                label="Mission Heading" 
+                {...register('mission_title')} 
+              />
+              <TextArea 
+                label="Mission Statement" 
+                {...register('mission_statement')} 
+                rows={3} 
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 pt-2">
+              <Input 
+                label="Vision Heading" 
+                {...register('vision_title')} 
+              />
+              <TextArea 
+                label="Vision Statement" 
+                {...register('vision_statement')} 
+                rows={3} 
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Why Choose Us Section */}
+        <div className="pt-6 border-t border-border-primary space-y-4">
+          <div>
+            <h3 className="text-base font-semibold text-primary-text mb-1">What Makes Us Different (Why Choose Us)</h3>
+            <p className="text-xs text-secondary-text">Controls the section title and subtitle on the Homepage and About page.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input 
+              label="Section Title" 
+              {...register('why_choose_us_title')} 
+            />
+            <Input 
+              label="Section Subtitle (Optional)" 
+              {...register('why_choose_us_subtitle')} 
+            />
+          </div>
         </div>
 
         {/* Business Statistics Section */}

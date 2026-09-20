@@ -48,6 +48,20 @@ export interface SocialLink {
   updated_at: string;
 }
 
+export interface CoreValueItem {
+  id: string;
+  title: string;
+  desc: string;
+  icon: string;
+}
+
+export interface DifferentiatorItem {
+  icon: string;
+  stat?: string;
+  title: string;
+  description: string;
+}
+
 export interface SiteSettings {
   id: string;
   is_active: boolean;
@@ -136,6 +150,18 @@ export interface SiteSettings {
   happy_clients: number;
   countries_served: number;
   years_experience: number;
+
+  // Mission, Vision & Values
+  mission_title?: string;
+  mission_statement?: string;
+  vision_title?: string;
+  vision_statement?: string;
+  core_values?: CoreValueItem[];
+
+  // Why Choose Us / Differentiators
+  why_choose_us_title?: string;
+  why_choose_us_subtitle?: string;
+  differentiators?: DifferentiatorItem[];
   
   // Footer
   footer_description: string;

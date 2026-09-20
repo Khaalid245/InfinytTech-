@@ -13,6 +13,89 @@ def get_fernet():
     key = hashlib.sha256(settings.SECRET_KEY.encode()).digest()
     return Fernet(base64.urlsafe_b64encode(key))
 
+
+def get_default_core_values():
+    return [
+        {
+            'id': '01',
+            'title': 'Excellence',
+            'desc': 'We hold ourselves to the highest standards, ensuring every solution we deliver is durable, reliable, and crafted with meticulous attention to detail.',
+            'icon': 'Award',
+        },
+        {
+            'id': '02',
+            'title': 'Ownership',
+            'desc': 'We approach every project with the mindset of a founder, taking full responsibility for the outcomes and long-term success of the partners we serve.',
+            'icon': 'ShieldCheck',
+        },
+        {
+            'id': '03',
+            'title': 'Transparency',
+            'desc': 'We build trust through honest, open, and clear communication, keeping our partners fully aligned and informed at every stage.',
+            'icon': 'Globe',
+        },
+        {
+            'id': '04',
+            'title': 'Innovation',
+            'desc': 'We challenge conventional approaches and continuously seek better ways to solve meaningful problems.',
+            'icon': 'Sparkles',
+        },
+        {
+            'id': '05',
+            'title': 'Collaboration',
+            'desc': 'We work as an extension of your team, aligning our goals with yours to build strong, unified partnerships that amplify our collective impact.',
+            'icon': 'Users',
+        },
+        {
+            'id': '06',
+            'title': 'Continuous Learning',
+            'desc': 'We remain perpetually curious, constantly expanding our knowledge and adapting to new paradigms to deliver future-ready solutions.',
+            'icon': 'BookOpen',
+        },
+    ]
+
+
+def get_default_differentiators():
+    return [
+        {
+            'icon': 'Target',
+            'stat': 'Business-First',
+            'title': 'Business-First Thinking',
+            'description': 'Every technical decision is evaluated against business goals, helping organizations invest in technology that creates measurable value.',
+        },
+        {
+            'icon': 'BadgeCheck',
+            'stat': 'Product Ownership',
+            'title': 'Product Ownership',
+            'description': 'We go beyond implementation by identifying risks, uncovering opportunities, and helping shape stronger product decisions.',
+        },
+        {
+            'icon': 'MessageSquare',
+            'stat': 'Transparency',
+            'title': 'Transparent Communication',
+            'description': 'Clear milestones, regular updates, and open collaboration ensure complete visibility throughout the engagement.',
+        },
+        {
+            'icon': 'ShieldCheck',
+            'stat': 'Quality Engineering',
+            'title': 'Quality Engineering',
+            'description': 'Built with maintainability, performance, security, and scalability to support long-term business growth.',
+        },
+        {
+            'icon': 'Handshake',
+            'stat': 'Partnership',
+            'title': 'Long-Term Partnership',
+            'description': 'Our relationship continues after launch through optimization, support, and strategic guidance as products evolve.',
+        },
+        {
+            'icon': 'Globe',
+            'stat': 'Standards',
+            'title': 'Global Standards',
+            'description': 'We apply internationally recognized engineering practices and delivery standards to every project we undertake.',
+        },
+    ]
+
+
 class SiteSettings(UUIDModel, TimeStampedModel):
     """
     Singleton model containing global settings for the InfinytTech platform.
@@ -137,6 +220,32 @@ class SiteSettings(UUIDModel, TimeStampedModel):
     happy_clients = models.PositiveIntegerField(default=0)
     countries_served = models.PositiveIntegerField(default=0)
     years_experience = models.PositiveIntegerField(default=0)
+
+    # Mission, Vision & Core Values
+    mission_title = models.CharField(max_length=255, default="Our Mission", blank=True)
+    mission_statement = models.TextField(
+        default="To help startups, businesses, and organizations build scalable digital products through modern engineering, AI innovation, and world-class technology solutions.",
+        blank=True
+    )
+    vision_title = models.CharField(max_length=255, default="Our Vision", blank=True)
+    vision_statement = models.TextField(
+        default="To become Africa's most trusted technology partner, connecting world-class engineering talent with organizations building the future.",
+        blank=True
+    )
+    core_values = models.JSONField(
+        default=get_default_core_values,
+        blank=True,
+        help_text="List of core values [{id: '01', title: '...', desc: '...', icon: 'Award'}]"
+    )
+
+    # Why Choose Us / What Makes Us Different
+    why_choose_us_title = models.CharField(max_length=255, default="What Makes Us Different", blank=True)
+    why_choose_us_subtitle = models.CharField(max_length=255, blank=True)
+    differentiators = models.JSONField(
+        default=get_default_differentiators,
+        blank=True,
+        help_text="List of differentiator cards [{stat: '...', title: '...', description: '...', icon: 'Target'}]"
+    )
 
     # Footer
     footer_description = models.TextField(blank=True)

@@ -1,4 +1,5 @@
 import { cn } from '../utils/cn';
+import { useProcessSteps } from '../hooks/useServices';
 
 interface JourneyStep {
   id: string;
@@ -12,6 +13,7 @@ interface HorizontalJourneyProps {
 
 export default function HorizontalJourney({ theme }: HorizontalJourneyProps) {
   const isDark = theme === 'dark';
+  const { data: dbSteps } = useProcessSteps();
 
   const bg      = isDark ? '#0B0D0F' : '#FAFAFA';
   const border  = isDark ? '#23262D' : '#E2E8F0';
@@ -19,12 +21,20 @@ export default function HorizontalJourney({ theme }: HorizontalJourneyProps) {
   const primary = isDark ? '#F8FAFC' : '#0F172A';
   const sub     = isDark ? '#94A3B8' : '#475569';
 
-  const steps: JourneyStep[] = [
+  const defaultSteps: JourneyStep[] = [
     { id: '01', title: 'Discover', desc: 'Understand business goals, users, and opportunities.' },
     { id: '02', title: 'Design', desc: 'Validate ideas through strategy and product design.' },
     { id: '03', title: 'Build', desc: 'Develop scalable software with quality engineering.' },
     { id: '04', title: 'Scale', desc: 'Optimize, support, and evolve the product over time.' },
   ];
+
+  const steps: JourneyStep[] = (dbSteps && dbSteps.length > 0)
+    ? dbSteps.map((step, idx) => ({
+        id: step.step_number || String(idx + 1).padStart(2, '0'),
+        title: step.short_title || step.full_title || `Phase ${idx + 1}`,
+        desc: step.description,
+      }))
+    : defaultSteps;
 
   return (
     <section 

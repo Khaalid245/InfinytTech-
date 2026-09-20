@@ -38,6 +38,8 @@ const AdminUsersPage = lazy(() => import('./pages/admin/users/AdminUsersPage'));
 const AdminRolesPage = lazy(() => import('./pages/admin/users/AdminRolesPage'));
 const SettingsLayout = lazy(() => import('./pages/admin/settings/SettingsLayout'));
 const GeneralSettings = lazy(() => import('./pages/admin/settings/GeneralSettings'));
+const MissionValuesSettings = lazy(() => import('./pages/admin/settings/MissionValuesSettings'));
+const WhyChooseUsSettings = lazy(() => import('./pages/admin/settings/WhyChooseUsSettings'));
 const BrandingSettings = lazy(() => import('./pages/admin/settings/BrandingSettings'));
 const ContactSettings = lazy(() => import('./pages/admin/settings/ContactSettings'));
 const SocialSettings = lazy(() => import('./pages/admin/settings/SocialSettings'));
@@ -120,6 +122,8 @@ export const App: React.FC = () => {
             <Route path="settings" element={<SettingsLayout />}>
               <Route index element={<GeneralSettings />} />
               <Route path="general" element={<GeneralSettings />} />
+              <Route path="mission-values" element={<MissionValuesSettings />} />
+              <Route path="why-choose-us" element={<WhyChooseUsSettings />} />
               <Route path="branding" element={<BrandingSettings />} />
               <Route path="contact" element={<ContactSettings />} />
               <Route path="social" element={<SocialSettings />} />

@@ -2,10 +2,12 @@ import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import Heading from '../../../components/ui/Heading';
 import Text from '../../../components/ui/Text';
-import { Settings, Image, Phone, Share2, Globe, Mail, Shield, Server } from 'lucide-react';
+import { Settings, Image, Phone, Share2, Globe, Mail, Shield, Server, Compass, Award } from 'lucide-react';
 
 const tabs = [
   { path: '/admin/settings/general', label: 'General', icon: Settings },
+  { path: '/admin/settings/mission-values', label: 'Mission & Values', icon: Compass },
+  { path: '/admin/settings/why-choose-us', label: 'Why Choose Us', icon: Award },
   { path: '/admin/settings/branding', label: 'Branding', icon: Image },
   { path: '/admin/settings/contact', label: 'Contact', icon: Phone },
   { path: '/admin/settings/social', label: 'Social Media', icon: Share2 },

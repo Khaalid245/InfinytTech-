@@ -103,7 +103,23 @@ const navSections: NavSection[] = [
           { path: '/admin/roles', label: 'Roles & Access' },
         ]
       },
-      { path: '/admin/settings', label: 'Platform Settings', icon: Settings },
+      { 
+        path: '/admin/settings', 
+        label: 'Platform Settings', 
+        icon: Settings,
+        children: [
+          { path: '/admin/settings/general', label: 'General' },
+          { path: '/admin/settings/mission-values', label: 'Mission & Values' },
+          { path: '/admin/settings/why-choose-us', label: 'Why Choose Us' },
+          { path: '/admin/settings/branding', label: 'Branding' },
+          { path: '/admin/settings/contact', label: 'Contact' },
+          { path: '/admin/settings/social', label: 'Social Media' },
+          { path: '/admin/settings/seo', label: 'Global SEO' },
+          { path: '/admin/settings/email', label: 'Email / SMTP' },
+          { path: '/admin/settings/security', label: 'Security' },
+          { path: '/admin/settings/system', label: 'System & Health' },
+        ]
+      },
     ]
   }
 ];
@@ -115,6 +131,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, setIsOpen }) => {
     '/admin/team': true,
     '/admin/testimonials': true,
     '/admin/users': true,
+    '/admin/settings': true,
   });
 
   const toggleMenu = (path: string) => {

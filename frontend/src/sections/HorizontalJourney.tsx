@@ -74,7 +74,13 @@ export default function HorizontalJourney({ theme }: HorizontalJourneyProps) {
         </div>
 
         {/* 2. Responsive Timeline Container */}
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
+        <div className={cn(
+          "relative mx-auto px-4 sm:px-6",
+          steps.length === 1 ? "max-w-md" :
+          steps.length === 2 ? "max-w-2xl" :
+          steps.length === 3 ? "max-w-4xl" :
+          "max-w-5xl"
+        )}>
           {/* Horizontal line (Desktop) */}
           <div 
             className="absolute top-4 left-12 right-12 h-[1px] hidden md:block transition-colors duration-300"
@@ -88,7 +94,13 @@ export default function HorizontalJourney({ theme }: HorizontalJourneyProps) {
           />
 
           {/* Steps Grid mapping */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8 relative z-10">
+          <div className={cn(
+            "grid gap-12 md:gap-8 relative z-10",
+            steps.length === 1 ? "grid-cols-1" :
+            steps.length === 2 ? "grid-cols-1 md:grid-cols-2" :
+            steps.length === 3 ? "grid-cols-1 md:grid-cols-3" :
+            "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
+          )}>
             {steps.map((step) => (
               <div 
                 key={step.id}
@@ -111,7 +123,7 @@ export default function HorizontalJourney({ theme }: HorizontalJourneyProps) {
                 <div className="space-y-1">
                   <h3 
                     className={cn(
-                      'text-lg md:text-xl font-bold transition-colors duration-300',
+                      'text-lg md:text-xl font-bold transition-colors duration-300 capitalize',
                       isDark 
                         ? 'text-[#F8FAFC] group-hover:text-[#D4A017]' 
                         : 'text-[#0F172A] group-hover:text-[#B8860B]'
@@ -120,7 +132,7 @@ export default function HorizontalJourney({ theme }: HorizontalJourneyProps) {
                     {step.title}
                   </h3>
                   <p 
-                    className="text-xs md:text-sm font-light leading-relaxed"
+                    className="text-xs md:text-sm font-light leading-relaxed whitespace-pre-line"
                     style={{ color: sub }}
                   >
                     {step.desc}

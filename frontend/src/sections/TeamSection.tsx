@@ -55,98 +55,105 @@ export const TeamSection: React.FC<TeamSectionProps> = ({
       aria-label="Executive Leadership and Engineering Team"
     >
       <Container size="lg">
-        {/* 1. Header & Dynamic Measurable Filters Block */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16">
-          <div className="max-w-2xl flex flex-col items-start space-y-4">
-            {/* Eyebrow Capsule */}
-            <div className="inline-flex">
-              <span 
-                className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border transition-all duration-300"
+        {/* 1. Header Block (Centered Hierarchy Matching Section System) */}
+        <div className="text-center space-y-4 max-w-3xl mx-auto mb-16">
+          {/* Eyebrow Capsule */}
+          <div className="inline-flex justify-center">
+            <span 
+              className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border transition-all duration-300"
+              style={{
+                background:  isDark ? '#181B1F' : '#F1F5F9',
+                borderColor: border,
+                color:       accent,
+              }}
+            >
+              OUR LEADERSHIP
+            </span>
+          </div>
+
+          <h2
+            className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight"
+            style={{ color: primary }}
+          >
+            Meet the Team
+          </h2>
+
+          <p
+            className="text-sm sm:text-base font-light leading-relaxed max-w-xl mx-auto"
+            style={{ color: sub }}
+          >
+            A collective of elite engineers, architects, and strategists dedicated to driving your digital transformation.
+          </p>
+
+          {/* 2. Centered Unified Segmented Filter Dock */}
+          {showFilters && (
+            <div className="pt-4 flex justify-center">
+              <div 
+                className="inline-flex items-center p-1.5 rounded-2xl md:rounded-full border backdrop-blur-xl shadow-lg gap-1 max-w-full overflow-x-auto transition-all"
                 style={{
-                  background:  isDark ? '#181B1F' : '#F1F5F9',
+                  background: isDark ? 'rgba(18, 20, 23, 0.85)' : 'rgba(255, 255, 255, 0.9)',
                   borderColor: border,
-                  color:       accent,
                 }}
               >
-                OUR LEADERSHIP
-              </span>
-            </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveDepartment('All')}
+                  className={cn(
+                    'px-4 py-1.5 rounded-xl md:rounded-full text-xs font-semibold tracking-wide transition-all duration-300 flex items-center gap-2 cursor-pointer select-none whitespace-nowrap',
+                    activeDepartment === 'All'
+                      ? isDark
+                        ? 'bg-[#D4A017] text-black shadow-md shadow-amber-500/20 font-bold'
+                        : 'bg-[#B8860B] text-white shadow-md font-bold'
+                      : isDark
+                        ? 'text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/5'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  )}
+                >
+                  <span>All</span>
+                  <span className={cn(
+                    'text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold leading-none',
+                    activeDepartment === 'All'
+                      ? 'bg-black/20 text-black'
+                      : isDark ? 'bg-white/10 text-slate-300' : 'bg-slate-200 text-slate-700'
+                  )}>
+                    {totalCount}
+                  </span>
+                </button>
 
-            <h2
-              className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight"
-              style={{ color: primary }}
-            >
-              Meet the Team
-            </h2>
-
-            <p
-              className="text-sm sm:text-base font-light leading-relaxed max-w-xl"
-              style={{ color: sub }}
-            >
-              A collective of elite engineers, architects, and strategists dedicated to driving your digital transformation.
-            </p>
-          </div>
-          
-          {/* 2. Filter Pills with Dynamic Measurable Counts */}
-          {showFilters && (
-            <div className="flex flex-wrap items-center gap-2 max-w-xl self-start lg:self-end">
-              <button
-                type="button"
-                onClick={() => setActiveDepartment('All')}
-                className={cn(
-                  'px-4 py-2 rounded-full text-xs font-semibold tracking-wide border transition-all duration-300 flex items-center gap-2 cursor-pointer select-none',
-                  activeDepartment === 'All'
-                    ? isDark 
-                      ? 'bg-[#D4A017]/15 border-[#D4A017] text-[#D4A017] shadow-[0_0_15px_rgba(212,160,23,0.15)]'
-                      : 'bg-[#B8860B]/10 border-[#B8860B] text-[#B8860B]'
-                    : isDark
-                      ? 'bg-[#121417] border-[#23262D] text-[#94A3B8] hover:border-[#3A3F4A] hover:text-[#F8FAFC]'
-                      : 'bg-white border-[#E2E8F0] text-slate-600 hover:border-slate-300 hover:text-slate-900'
-                )}
-              >
-                <span>All</span>
-                <span className={cn(
-                  'text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold leading-none',
-                  activeDepartment === 'All'
-                    ? isDark ? 'bg-[#D4A017]/30 text-[#D4A017]' : 'bg-[#B8860B]/20 text-[#B8860B]'
-                    : isDark ? 'bg-[#181B1F] text-slate-400' : 'bg-slate-100 text-slate-500'
-                )}>
-                  {totalCount}
-                </span>
-              </button>
-
-              {filterCategories.map((dept) => {
-                const count = dept.members_count ?? allMembersData?.results?.filter(m => m.department?.id === dept.id || m.department?.slug === dept.slug).length;
-                return (
-                  <button
-                    key={dept.id}
-                    type="button"
-                    onClick={() => setActiveDepartment(dept.slug)}
-                    className={cn(
-                      'px-4 py-2 rounded-full text-xs font-semibold tracking-wide border capitalize transition-all duration-300 flex items-center gap-2 cursor-pointer select-none',
-                      activeDepartment === dept.slug
-                        ? isDark 
-                          ? 'bg-[#D4A017]/15 border-[#D4A017] text-[#D4A017] shadow-[0_0_15px_rgba(212,160,23,0.15)]'
-                          : 'bg-[#B8860B]/10 border-[#B8860B] text-[#B8860B]'
-                        : isDark
-                          ? 'bg-[#121417] border-[#23262D] text-[#94A3B8] hover:border-[#3A3F4A] hover:text-[#F8FAFC]'
-                          : 'bg-white border-[#E2E8F0] text-slate-600 hover:border-slate-300 hover:text-slate-900'
-                    )}
-                  >
-                    <span>{dept.name}</span>
-                    {count !== undefined && (
-                      <span className={cn(
-                        'text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold leading-none',
-                        activeDepartment === dept.slug
-                          ? isDark ? 'bg-[#D4A017]/30 text-[#D4A017]' : 'bg-[#B8860B]/20 text-[#B8860B]'
-                          : isDark ? 'bg-[#181B1F] text-slate-400' : 'bg-slate-100 text-slate-500'
-                      )}>
-                        {count}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
+                {filterCategories.map((dept) => {
+                  const count = dept.members_count ?? allMembersData?.results?.filter(m => m.department?.id === dept.id || m.department?.slug === dept.slug).length;
+                  const isActive = activeDepartment === dept.slug;
+                  return (
+                    <button
+                      key={dept.id}
+                      type="button"
+                      onClick={() => setActiveDepartment(dept.slug)}
+                      className={cn(
+                        'px-4 py-1.5 rounded-xl md:rounded-full text-xs font-semibold tracking-wide capitalize transition-all duration-300 flex items-center gap-2 cursor-pointer select-none whitespace-nowrap',
+                        isActive
+                          ? isDark
+                            ? 'bg-[#D4A017] text-black shadow-md shadow-amber-500/20 font-bold'
+                            : 'bg-[#B8860B] text-white shadow-md font-bold'
+                          : isDark
+                            ? 'text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/5'
+                            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                      )}
+                    >
+                      <span>{dept.name}</span>
+                      {count !== undefined && (
+                        <span className={cn(
+                          'text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold leading-none',
+                          isActive
+                            ? 'bg-black/20 text-black'
+                            : isDark ? 'bg-white/10 text-slate-300' : 'bg-slate-200 text-slate-700'
+                        )}>
+                          {count}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>

@@ -42,6 +42,13 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
     is_active: true,
     order: 0,
     benefits: [],
+    what_we_build: [],
+    tech_stack: [],
+    typical_engagements: [],
+    timeline: '',
+    engagement_model: '',
+    support_sla: '',
+    case_study_hook: '',
     industry_ids: [],
     faq_ids: [],
   });
@@ -55,11 +62,18 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
         description: serviceDetail.description || '',
         category_id: serviceDetail.category?.id || '',
         icon: serviceDetail.icon || '',
-        featured_media_id: null, // We keep null unless updated, the API doesn't return the ID cleanly unless we use the detail API. We will just leave it null to keep the existing one unless changed.
+        featured_media_id: null,
         is_featured: serviceDetail.is_featured,
         is_active: serviceDetail.is_active,
         order: serviceDetail.order || 0,
         benefits: serviceDetail.benefits || [],
+        what_we_build: serviceDetail.what_we_build || [],
+        tech_stack: serviceDetail.tech_stack || [],
+        typical_engagements: serviceDetail.typical_engagements || [],
+        timeline: serviceDetail.timeline || '',
+        engagement_model: serviceDetail.engagement_model || '',
+        support_sla: serviceDetail.support_sla || '',
+        case_study_hook: serviceDetail.case_study_hook || '',
         industry_ids: serviceDetail.industries?.map(i => i.id) || [],
         faq_ids: serviceDetail.faqs?.map(f => f.id) || [],
       });
@@ -77,6 +91,13 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
         is_active: true,
         order: 0,
         benefits: [],
+        what_we_build: [],
+        tech_stack: [],
+        typical_engagements: [],
+        timeline: '',
+        engagement_model: '',
+        support_sla: '',
+        case_study_hook: '',
         industry_ids: [],
         faq_ids: [],
       });
@@ -126,48 +147,55 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
     setFeaturedMediaPreview(null);
   };
 
-  const handleAddBenefit = () => {
-    setFormData(prev => ({ ...prev, benefits: [...prev.benefits, ''] }));
+  // Helper for array fields: benefits, what_we_build, tech_stack, typical_engagements
+  const handleAddItem = (field: 'benefits' | 'what_we_build' | 'tech_stack' | 'typical_engagements') => {
+    setFormData(prev => ({ ...prev, [field]: [...(prev[field] || []), ''] }));
   };
 
-  const handleUpdateBenefit = (index: number, value: string) => {
+  const handleUpdateItem = (field: 'benefits' | 'what_we_build' | 'tech_stack' | 'typical_engagements', index: number, value: string) => {
     setFormData(prev => {
-      const newBenefits = [...prev.benefits];
-      newBenefits[index] = value;
-      return { ...prev, benefits: newBenefits };
+      const list = [...(prev[field] || [])];
+      list[index] = value;
+      return { ...prev, [field]: list };
     });
   };
 
-  const handleMoveBenefit = (index: number, direction: 'up' | 'down') => {
+  const handleMoveItem = (field: 'benefits' | 'what_we_build' | 'tech_stack' | 'typical_engagements', index: number, direction: 'up' | 'down') => {
     setFormData(prev => {
-      const newBenefits = [...prev.benefits];
+      const list = [...(prev[field] || [])];
       if (direction === 'up' && index > 0) {
-        const temp = newBenefits[index - 1];
-        newBenefits[index - 1] = newBenefits[index];
-        newBenefits[index] = temp;
-      } else if (direction === 'down' && index < newBenefits.length - 1) {
-        const temp = newBenefits[index + 1];
-        newBenefits[index + 1] = newBenefits[index];
-        newBenefits[index] = temp;
+        const temp = list[index - 1];
+        list[index - 1] = list[index];
+        list[index] = temp;
+      } else if (direction === 'down' && index < list.length - 1) {
+        const temp = list[index + 1];
+        list[index + 1] = list[index];
+        list[index] = temp;
       }
-      return { ...prev, benefits: newBenefits };
+      return { ...prev, [field]: list };
     });
   };
 
-  const handleRemoveBenefit = (index: number) => {
+  const handleRemoveItem = (field: 'benefits' | 'what_we_build' | 'tech_stack' | 'typical_engagements', index: number) => {
     setFormData(prev => {
-      const newBenefits = [...prev.benefits];
-      newBenefits.splice(index, 1);
-      return { ...prev, benefits: newBenefits };
+      const list = [...(prev[field] || [])];
+      list.splice(index, 1);
+      return { ...prev, [field]: list };
     });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Filter out empty benefits
-    const cleanedFormData = {
+    const cleanedFormData: ServiceFormData = {
       ...formData,
-      benefits: formData.benefits.filter(b => b.trim() !== '')
+      benefits: (formData.benefits || []).filter(b => b.trim() !== ''),
+      what_we_build: (formData.what_we_build || []).filter(b => b.trim() !== ''),
+      tech_stack: (formData.tech_stack || []).filter(b => b.trim() !== ''),
+      typical_engagements: (formData.typical_engagements || []).filter(b => b.trim() !== ''),
+      timeline: formData.timeline?.trim() || undefined,
+      engagement_model: formData.engagement_model?.trim() || undefined,
+      support_sla: formData.support_sla?.trim() || undefined,
+      case_study_hook: formData.case_study_hook?.trim() || undefined,
     };
     onSubmit(cleanedFormData);
   };
@@ -345,34 +373,37 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
                   </div>
                 </div>
 
-                {/* Benefits / Features */}
+                {/* What We Build / Deliverables */}
                 <div className="bg-black/2 dark:bg-white/2 p-6 rounded-xl border border-border-primary">
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-semibold text-primary-text">Benefits & Features</h3>
-                    <Button type="button" variant="secondary" onClick={handleAddBenefit} className="py-1 px-3 text-sm">
-                      <Plus className="w-4 h-4 mr-1.5" /> Add Benefit
+                    <div>
+                      <h3 className="text-lg font-semibold text-primary-text">What We Build</h3>
+                      <p className="text-xs text-secondary-text">Core deliverables shown in the service drawer</p>
+                    </div>
+                    <Button type="button" variant="secondary" onClick={() => handleAddItem('what_we_build')} className="py-1 px-3 text-sm">
+                      <Plus className="w-4 h-4 mr-1.5" /> Add Deliverable
                     </Button>
                   </div>
                   
-                  {formData.benefits.length === 0 ? (
+                  {(!formData.what_we_build || formData.what_we_build.length === 0) ? (
                     <div className="text-sm text-secondary-text italic text-center py-6 bg-surface-light rounded-lg border border-border-primary">
-                      No benefits added yet. Click 'Add Benefit' to start.
+                      No deliverables added yet. Click 'Add Deliverable' to customize.
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {formData.benefits.map((benefit, index) => (
+                      {formData.what_we_build.map((item, index) => (
                         <div key={index} className="flex gap-2">
                           <input 
                             type="text" 
                             className="flex-1 bg-surface-light border border-transparent focus:border-accent-primary rounded-lg py-2 px-3 text-primary-text outline-none transition-all shadow-sm"
-                            value={benefit}
-                            onChange={(e) => handleUpdateBenefit(index, e.target.value)}
-                            placeholder="e.g. Scalable Architecture"
+                            value={item}
+                            onChange={(e) => handleUpdateItem('what_we_build', index, e.target.value)}
+                            placeholder="e.g. Multi-Tenant SaaS Platforms"
                           />
                           <div className="flex bg-surface-light border border-transparent rounded-lg shadow-sm overflow-hidden">
                             <button 
                               type="button"
-                              onClick={() => handleMoveBenefit(index, 'up')}
+                              onClick={() => handleMoveItem('what_we_build', index, 'up')}
                               disabled={index === 0}
                               className="p-2 text-secondary-text hover:bg-black/5 dark:hover:bg-white/5 disabled:opacity-30 transition-colors"
                               title="Move Up"
@@ -381,8 +412,8 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
                             </button>
                             <button 
                               type="button"
-                              onClick={() => handleMoveBenefit(index, 'down')}
-                              disabled={index === formData.benefits.length - 1}
+                              onClick={() => handleMoveItem('what_we_build', index, 'down')}
+                              disabled={index === formData.what_we_build!.length - 1}
                               className="p-2 text-secondary-text hover:bg-black/5 dark:hover:bg-white/5 disabled:opacity-30 transition-colors border-l border-border-primary/50"
                               title="Move Down"
                             >
@@ -390,7 +421,7 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
                             </button>
                             <button 
                               type="button"
-                              onClick={() => handleRemoveBenefit(index)}
+                              onClick={() => handleRemoveItem('what_we_build', index)}
                               className="p-2 text-red-500/70 hover:text-red-500 hover:bg-red-500/10 transition-colors border-l border-border-primary/50"
                               title="Remove"
                             >
@@ -401,6 +432,201 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
                       ))}
                     </div>
                   )}
+                </div>
+
+                {/* Business Impact / Benefits */}
+                <div className="bg-black/2 dark:bg-white/2 p-6 rounded-xl border border-border-primary">
+                  <div className="flex justify-between items-center mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-primary-text">Business Impact</h3>
+                      <p className="text-xs text-secondary-text">Key outcomes and business benefits displayed with green checks</p>
+                    </div>
+                    <Button type="button" variant="secondary" onClick={() => handleAddItem('benefits')} className="py-1 px-3 text-sm">
+                      <Plus className="w-4 h-4 mr-1.5" /> Add Impact Point
+                    </Button>
+                  </div>
+                  
+                  {(!formData.benefits || formData.benefits.length === 0) ? (
+                    <div className="text-sm text-secondary-text italic text-center py-6 bg-surface-light rounded-lg border border-border-primary">
+                      No impact points added yet. Click 'Add Impact Point' to customize.
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {formData.benefits.map((benefit, index) => (
+                        <div key={index} className="flex gap-2">
+                          <input 
+                            type="text" 
+                            className="flex-1 bg-surface-light border border-transparent focus:border-accent-primary rounded-lg py-2 px-3 text-primary-text outline-none transition-all shadow-sm"
+                            value={benefit}
+                            onChange={(e) => handleUpdateItem('benefits', index, e.target.value)}
+                            placeholder="e.g. Zero-Debt Engineering"
+                          />
+                          <div className="flex bg-surface-light border border-transparent rounded-lg shadow-sm overflow-hidden">
+                            <button 
+                              type="button"
+                              onClick={() => handleMoveItem('benefits', index, 'up')}
+                              disabled={index === 0}
+                              className="p-2 text-secondary-text hover:bg-black/5 dark:hover:bg-white/5 disabled:opacity-30 transition-colors"
+                              title="Move Up"
+                            >
+                              <ArrowUp className="w-4 h-4" />
+                            </button>
+                            <button 
+                              type="button"
+                              onClick={() => handleMoveItem('benefits', index, 'down')}
+                              disabled={index === formData.benefits.length - 1}
+                              className="p-2 text-secondary-text hover:bg-black/5 dark:hover:bg-white/5 disabled:opacity-30 transition-colors border-l border-border-primary/50"
+                              title="Move Down"
+                            >
+                              <ArrowDown className="w-4 h-4" />
+                            </button>
+                            <button 
+                              type="button"
+                              onClick={() => handleRemoveItem('benefits', index)}
+                              className="p-2 text-red-500/70 hover:text-red-500 hover:bg-red-500/10 transition-colors border-l border-border-primary/50"
+                              title="Remove"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Technologies & Ecosystem */}
+                <div className="bg-black/2 dark:bg-white/2 p-6 rounded-xl border border-border-primary">
+                  <div className="flex justify-between items-center mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-primary-text">Technologies & Ecosystem</h3>
+                      <p className="text-xs text-secondary-text">Tech badges shown in this service's drawer</p>
+                    </div>
+                    <Button type="button" variant="secondary" onClick={() => handleAddItem('tech_stack')} className="py-1 px-3 text-sm">
+                      <Plus className="w-4 h-4 mr-1.5" /> Add Technology
+                    </Button>
+                  </div>
+                  
+                  {(!formData.tech_stack || formData.tech_stack.length === 0) ? (
+                    <div className="text-sm text-secondary-text italic text-center py-6 bg-surface-light rounded-lg border border-border-primary">
+                      No custom technologies specified (defaults will be used).
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                      {formData.tech_stack.map((tech, index) => (
+                        <div key={index} className="flex gap-1.5">
+                          <input 
+                            type="text" 
+                            className="flex-1 bg-surface-light border border-transparent focus:border-accent-primary rounded-lg py-1.5 px-3 text-sm text-primary-text outline-none transition-all shadow-sm font-mono"
+                            value={tech}
+                            onChange={(e) => handleUpdateItem('tech_stack', index, e.target.value)}
+                            placeholder="e.g. Next.js 15"
+                          />
+                          <button 
+                            type="button"
+                            onClick={() => handleRemoveItem('tech_stack', index)}
+                            className="p-2 text-red-500/70 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                            title="Remove"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Typical Engagements */}
+                <div className="bg-black/2 dark:bg-white/2 p-6 rounded-xl border border-border-primary">
+                  <div className="flex justify-between items-center mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-primary-text">Typical Engagements</h3>
+                      <p className="text-xs text-secondary-text">Scenarios and engagement models for this service</p>
+                    </div>
+                    <Button type="button" variant="secondary" onClick={() => handleAddItem('typical_engagements')} className="py-1 px-3 text-sm">
+                      <Plus className="w-4 h-4 mr-1.5" /> Add Engagement
+                    </Button>
+                  </div>
+                  
+                  {(!formData.typical_engagements || formData.typical_engagements.length === 0) ? (
+                    <div className="text-sm text-secondary-text italic text-center py-6 bg-surface-light rounded-lg border border-border-primary">
+                      No custom engagements specified (defaults will be used).
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {formData.typical_engagements.map((eng, index) => (
+                        <div key={index} className="flex gap-2">
+                          <input 
+                            type="text" 
+                            className="flex-1 bg-surface-light border border-transparent focus:border-accent-primary rounded-lg py-2 px-3 text-primary-text outline-none transition-all shadow-sm"
+                            value={eng}
+                            onChange={(e) => handleUpdateItem('typical_engagements', index, e.target.value)}
+                            placeholder="e.g. New SaaS Product MVP"
+                          />
+                          <button 
+                            type="button"
+                            onClick={() => handleRemoveItem('typical_engagements', index)}
+                            className="p-2 text-red-500/70 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                            title="Remove"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Timeline, Engagement Model, Support SLA & Case Study Hook */}
+                <div className="bg-black/2 dark:bg-white/2 p-6 rounded-xl border border-border-primary space-y-4">
+                  <h3 className="text-lg font-semibold text-primary-text">Delivery Parameters & Case Study Hook</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-medium text-primary-text">Timeline</label>
+                      <input 
+                        type="text" 
+                        name="timeline"
+                        className="w-full bg-surface-light border border-transparent focus:border-accent-primary rounded-lg py-2 px-3 text-primary-text outline-none transition-all shadow-sm"
+                        value={formData.timeline || ''}
+                        onChange={handleChange}
+                        placeholder="e.g. 8–14 Weeks"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-medium text-primary-text">Engagement Model</label>
+                      <input 
+                        type="text" 
+                        name="engagement_model"
+                        className="w-full bg-surface-light border border-transparent focus:border-accent-primary rounded-lg py-2 px-3 text-primary-text outline-none transition-all shadow-sm"
+                        value={formData.engagement_model || ''}
+                        onChange={handleChange}
+                        placeholder="e.g. Dedicated Squad / Agile Sprint"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-medium text-primary-text">Support SLA</label>
+                      <input 
+                        type="text" 
+                        name="support_sla"
+                        className="w-full bg-surface-light border border-transparent focus:border-accent-primary rounded-lg py-2 px-3 text-primary-text outline-none transition-all shadow-sm"
+                        value={formData.support_sla || ''}
+                        onChange={handleChange}
+                        placeholder="e.g. 3 Months Post-Launch Warranty"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5 pt-2">
+                    <label className="text-sm font-medium text-primary-text">Custom Case Study Hook</label>
+                    <input 
+                      type="text" 
+                      name="case_study_hook"
+                      className="w-full bg-surface-light border border-transparent focus:border-accent-primary rounded-lg py-2 px-3 text-primary-text outline-none transition-all shadow-sm"
+                      value={formData.case_study_hook || ''}
+                      onChange={handleChange}
+                      placeholder="e.g. Helping an enterprise scale their Custom Web & SaaS Engineering capacity by 400%"
+                    />
+                  </div>
                 </div>
 
                 {/* Relations */}

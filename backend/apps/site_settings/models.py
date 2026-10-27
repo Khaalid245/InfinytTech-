@@ -96,6 +96,51 @@ def get_default_differentiators():
     ]
 
 
+def get_default_about_hero_metrics():
+    return [
+        {'val': 'Top 1.5%', 'label': 'Elite Developer Select'},
+        {'val': 'Silicon Valley', 'label': 'Standards Workflow'},
+        {'val': 'Sovereign', 'label': 'Scale Infrastructure'},
+    ]
+
+
+def get_default_about_manifesto():
+    return [
+        {'title': 'Built in Africa', 'desc': "Powered by the continent's top technical minds."},
+        {'title': 'Designed for the World', 'desc': 'Engineered to compete in Palo Alto, London, and Tokyo.'},
+        {'title': 'Business First', 'desc': 'Delivering measurable commercial impact, not just lines of code.'},
+        {'title': 'Engineering Excellence', 'desc': 'Strict compilation audits and zero technical debt guarantees.'},
+        {'title': 'Long-Term Partnership', 'desc': 'Committed to active scaling, cloud support, and lasting SLAs.'},
+    ]
+
+
+def get_default_cta_timeline_steps():
+    return [
+        {'num': '1', 'title': 'Discovery Call', 'desc': 'We learn about your goals, requirements, and timeline.'},
+        {'num': '2', 'title': 'Product Assessment', 'desc': 'Our team evaluates scope, technical requirements, and opportunities.'},
+        {'num': '3', 'title': 'Roadmap & Proposal', 'desc': 'Receive a clear plan, timeline, and project estimate.'},
+        {'num': '4', 'title': 'Build & Scale', 'desc': 'Engineering scalable systems with continuous optimization and growth.'},
+    ]
+
+
+def get_default_cta_trust_points():
+    return [
+        'Secure cloud deployments',
+        'Clear project roadmap',
+        'Dedicated product team',
+        'Long-term support available',
+    ]
+
+
+def get_default_portfolio_hero_trust_items():
+    return [
+        'Enterprise Engineering',
+        'Scalable Architecture',
+        'Modern Technology Stack',
+        'Long-Term Partnership',
+    ]
+
+
 class SiteSettings(UUIDModel, TimeStampedModel):
     """
     Singleton model containing global settings for the InfinytTech platform.
@@ -245,6 +290,131 @@ class SiteSettings(UUIDModel, TimeStampedModel):
         default=get_default_differentiators,
         blank=True,
         help_text="List of differentiator cards [{stat: '...', title: '...', description: '...', icon: 'Target'}]"
+    )
+
+    # About Page Hero & Manifesto
+    about_hero_badge = models.CharField(max_length=100, default="LET'S BUILD TOGETHER", blank=True)
+    about_hero_title = models.CharField(max_length=255, default="Building the Future of Digital Innovation from Africa.", blank=True)
+    about_hero_description = models.TextField(
+        default="We partner with ambitious startups, enterprises, and organizations to design, engineer, and scale world-class digital products.",
+        blank=True
+    )
+    about_hero_metrics = models.JSONField(
+        default=get_default_about_hero_metrics,
+        blank=True,
+        help_text="List of metrics [{val: 'Top 1.5%', label: 'Elite Developer Select'}]"
+    )
+    about_manifesto = models.JSONField(
+        default=get_default_about_manifesto,
+        blank=True,
+        help_text="List of manifesto items [{title: '...', desc: '...'}]"
+    )
+
+    # About Page Story ("Bridging Tech Corridors")
+    about_story_badge = models.CharField(max_length=100, default="Our Story", blank=True)
+    about_story_title = models.CharField(max_length=255, default="Bridging Tech Corridors", blank=True)
+    about_story_lead = models.TextField(
+        default="We believe world-class technology talent exists everywhere. Yet too many organizations struggle to access reliable engineering partners capable of turning ambitious ideas into scalable digital products.",
+        blank=True
+    )
+    about_story_paragraph_1 = models.TextField(
+        default="InfinytTech was founded to bridge that gap. We unite highly disciplined, self-starting developers with international networks, breaking down traditional Silicon Valley corridors to unlock global engineering capacity.",
+        blank=True
+    )
+    about_story_paragraph_2 = models.TextField(
+        default="By combining strict quality standards, modern development workflows, and a philosophy of long-term partnership, we deliver production-ready SaaS platforms, machine learning systems, and complex product architectures directly to enterprises worldwide on time.",
+        blank=True
+    )
+    about_story_symbol = models.CharField(max_length=20, default="∞", blank=True)
+
+    # Interactive CTA & Partnership Section ("Ready to Work With a Long-Term Technology Partner?")
+    cta_badge = models.CharField(max_length=100, default="LET'S BUILD TOGETHER", blank=True)
+    cta_title = models.CharField(max_length=255, default="Ready to Work With a Long-Term Technology Partner?", blank=True)
+    cta_description = models.TextField(
+        default="We partner with ambitious startups, businesses, and organizations to transform ideas into scalable digital products through strategy, engineering, and long-term collaboration.",
+        blank=True
+    )
+    cta_primary_btn_text = models.CharField(max_length=100, default="Book a Free Discovery Call", blank=True)
+    cta_primary_btn_note = models.CharField(max_length=255, default="No commitment required — we'll discuss your goals and recommend a path forward.", blank=True)
+    cta_secondary_btn_text = models.CharField(max_length=100, default="or send us a project brief →", blank=True)
+    cta_secondary_btn_url = models.CharField(max_length=255, default="/contact", blank=True)
+    cta_timeline_title = models.CharField(max_length=255, default="How We Start Every Partnership", blank=True)
+    cta_timeline_subtitle = models.CharField(max_length=255, default="Our structured path from initial outreach to product scale.", blank=True)
+    cta_timeline_steps = models.JSONField(
+        default=get_default_cta_timeline_steps,
+        blank=True,
+        help_text="List of timeline steps [{num: '1', title: '...', desc: '...'}]"
+    )
+    cta_trust_points = models.JSONField(
+        default=get_default_cta_trust_points,
+        blank=True,
+        help_text="List of trust points/checklist items ['...', '...']"
+    )
+
+    # Portfolio Page Hero Section
+    portfolio_hero_badge = models.CharField(max_length=100, default="OUR WORK", blank=True)
+    portfolio_hero_title = models.CharField(max_length=255, default="Products Built For Real Business Growth.", blank=True)
+    portfolio_hero_subtitle = models.TextField(
+        default="Explore selected digital products, platforms, and technology solutions designed to help startups, businesses, and organizations scale with confidence.",
+        blank=True
+    )
+    portfolio_hero_primary_btn_text = models.CharField(max_length=100, default="View Projects", blank=True)
+    portfolio_hero_secondary_btn_text = models.CharField(max_length=100, default="Start Your Project", blank=True)
+    portfolio_hero_secondary_btn_url = models.CharField(max_length=255, default="/contact", blank=True)
+    portfolio_hero_trust_items = models.JSONField(
+        default=get_default_portfolio_hero_trust_items,
+        blank=True,
+        help_text="List of trust items displayed below the hero buttons ['...', '...']"
+    )
+
+    # Portfolio Featured Projects Section Header
+    portfolio_featured_badge = models.CharField(max_length=100, default="FEATURED PROJECTS", blank=True)
+    portfolio_featured_title = models.CharField(max_length=255, default="Solutions Designed To Solve Real Problems.", blank=True)
+    portfolio_featured_subtitle = models.TextField(
+        default="A selection of products and platforms built to improve operations, customer experiences, and business growth.",
+        blank=True
+    )
+
+    # Services / Capabilities Explorer Section Header
+    services_badge = models.CharField(max_length=100, default="OUR SERVICE OFFERINGS", blank=True)
+    services_title = models.CharField(max_length=255, default="How We Help Businesses Build, Scale, and Innovate", blank=True)
+    services_subtitle = models.TextField(
+        default="Choose a capability below to see what we build, the business impact we deliver, and how a typical engagement works.",
+        blank=True
+    )
+
+    # Technology Stack Section Header
+    tech_stack_badge = models.CharField(max_length=100, default="Technology Stack", blank=True)
+    tech_stack_title = models.CharField(max_length=255, default="Tools We Trust to Build and Scale", blank=True)
+    tech_stack_subtitle = models.TextField(
+        default="We use proven technologies, modern frameworks, and scalable infrastructure to build reliable digital products for startups, businesses, and growing organizations.",
+        blank=True
+    )
+
+    # Industries We Serve Section Header & Banner
+    industries_badge = models.CharField(max_length=100, default="OUR INDUSTRIES", blank=True)
+    industries_title = models.CharField(max_length=255, default="Technology Solutions Across Every Industry", blank=True)
+    industries_subtitle = models.TextField(
+        default="We partner with startups, enterprises, and organizations to design, build, and scale digital products that solve real business challenges across diverse industries.",
+        blank=True
+    )
+    industries_quote = models.TextField(
+        default="From a healthcare startup to an enterprise logistics platform — our process adapts, our standards don't.",
+        blank=True
+    )
+    industries_cta_title = models.CharField(max_length=255, default="Don't see your industry?", blank=True)
+    industries_cta_subtitle = models.TextField(
+        default="Our team builds custom digital solutions for organizations of all sizes.",
+        blank=True
+    )
+    industries_cta_btn_text = models.CharField(max_length=100, default="Explore Our Services", blank=True)
+
+    # Delivery Process Section Header
+    process_badge = models.CharField(max_length=100, default="Our Delivery Process", blank=True)
+    process_title = models.CharField(max_length=255, default="From Idea to Product. A Transparent Process.", blank=True)
+    process_subtitle = models.TextField(
+        default="Every successful product follows a structured process designed for clarity, quality, speed, and long-term business success.",
+        blank=True
     )
 
     # Footer

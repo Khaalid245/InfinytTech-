@@ -38,6 +38,12 @@ const AdminUsersPage = lazy(() => import('./pages/admin/users/AdminUsersPage'));
 const AdminRolesPage = lazy(() => import('./pages/admin/users/AdminRolesPage'));
 const SettingsLayout = lazy(() => import('./pages/admin/settings/SettingsLayout'));
 const GeneralSettings = lazy(() => import('./pages/admin/settings/GeneralSettings'));
+const TechStackSettings = lazy(() => import('./pages/admin/settings/TechStackSettings'));
+const ServicesSettings = lazy(() => import('./pages/admin/settings/ServicesSettings'));
+const PortfolioHeroSettings = lazy(() => import('./pages/admin/settings/PortfolioHeroSettings'));
+const AboutHeroSettings = lazy(() => import('./pages/admin/settings/AboutHeroSettings'));
+const OurStorySettings = lazy(() => import('./pages/admin/settings/OurStorySettings'));
+const CtaSettings = lazy(() => import('./pages/admin/settings/CtaSettings'));
 const MissionValuesSettings = lazy(() => import('./pages/admin/settings/MissionValuesSettings'));
 const WhyChooseUsSettings = lazy(() => import('./pages/admin/settings/WhyChooseUsSettings'));
 const BrandingSettings = lazy(() => import('./pages/admin/settings/BrandingSettings'));
@@ -122,6 +128,12 @@ export const App: React.FC = () => {
             <Route path="settings" element={<SettingsLayout />}>
               <Route index element={<GeneralSettings />} />
               <Route path="general" element={<GeneralSettings />} />
+              <Route path="services-sections" element={<ServicesSettings />} />
+              <Route path="tech-stack" element={<TechStackSettings />} />
+              <Route path="portfolio-hero" element={<PortfolioHeroSettings />} />
+              <Route path="about-hero" element={<AboutHeroSettings />} />
+              <Route path="our-story" element={<OurStorySettings />} />
+              <Route path="cta" element={<CtaSettings />} />
               <Route path="mission-values" element={<MissionValuesSettings />} />
               <Route path="why-choose-us" element={<WhyChooseUsSettings />} />
               <Route path="branding" element={<BrandingSettings />} />

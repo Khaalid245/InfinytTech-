@@ -2,10 +2,16 @@ import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import Heading from '../../../components/ui/Heading';
 import Text from '../../../components/ui/Text';
-import { Settings, Image, Phone, Share2, Globe, Mail, Shield, Server, Compass, Award } from 'lucide-react';
+import { Settings, Image, Phone, Share2, Globe, Mail, Shield, Server, Compass, Award, Sparkles, BookOpen, Megaphone, Briefcase, Cpu } from 'lucide-react';
 
 const tabs = [
   { path: '/admin/settings/general', label: 'General', icon: Settings },
+  { path: '/admin/settings/services-sections', label: 'Services & Industries', icon: Briefcase },
+  { path: '/admin/settings/tech-stack', label: 'Tech Stack Section', icon: Cpu },
+  { path: '/admin/settings/portfolio-hero', label: 'Portfolio Hero', icon: Briefcase },
+  { path: '/admin/settings/about-hero', label: 'About Hero & Creed', icon: Sparkles },
+  { path: '/admin/settings/our-story', label: 'Our Story Narrative', icon: BookOpen },
+  { path: '/admin/settings/cta', label: 'Call To Action & Roadmap', icon: Megaphone },
   { path: '/admin/settings/mission-values', label: 'Mission & Values', icon: Compass },
   { path: '/admin/settings/why-choose-us', label: 'Why Choose Us', icon: Award },
   { path: '/admin/settings/branding', label: 'Branding', icon: Image },

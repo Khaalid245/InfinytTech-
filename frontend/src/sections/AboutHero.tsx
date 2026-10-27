@@ -1,19 +1,38 @@
 import { cn } from '../utils/cn';
+import { useSiteSettings } from '../hooks/useSiteSettings';
+import type { ManifestoItem, AboutHeroMetric } from '../types/siteSettings.types';
 
 interface AboutHeroProps {
   theme: 'dark' | 'light';
 }
 
+const FALLBACK_MANIFESTO: ManifestoItem[] = [
+  { title: 'Built in Africa', desc: "Powered by the continent's top technical minds." },
+  { title: 'Designed for the World', desc: 'Engineered to compete in Palo Alto, London, and Tokyo.' },
+  { title: 'Business First', desc: 'Delivering measurable commercial impact, not just lines of code.' },
+  { title: 'Engineering Excellence', desc: 'Strict compilation audits and zero technical debt guarantees.' },
+  { title: 'Long-Term Partnership', desc: 'Committed to active scaling, cloud support, and lasting SLAs.' },
+];
+
+const FALLBACK_METRICS: AboutHeroMetric[] = [
+  { val: 'Top 1.5%', label: 'Elite Developer Select' },
+  { val: 'Silicon Valley', label: 'Standards Workflow' },
+  { val: 'Sovereign', label: 'Scale Infrastructure' },
+];
+
 export default function AboutHero({ theme }: AboutHeroProps) {
   const isDark = theme === 'dark';
+  const { data: settings } = useSiteSettings();
 
-  const manifesto = [
-    { title: 'Built in Africa', desc: "Powered by the continent's top technical minds." },
-    { title: 'Designed for the World', desc: 'Engineered to compete in Palo Alto, London, and Tokyo.' },
-    { title: 'Business First', desc: 'Delivering measurable commercial impact, not just lines of code.' },
-    { title: 'Engineering Excellence', desc: 'Strict compilation audits and zero technical debt guarantees.' },
-    { title: 'Long-Term Partnership', desc: 'Committed to active scaling, cloud support, and lasting SLAs.' },
-  ];
+  const badge = settings?.about_hero_badge || "LET'S BUILD TOGETHER";
+  const title = settings?.about_hero_title || 'Building the Future of Digital Innovation from Africa.';
+  const description = settings?.about_hero_description || 'We partner with ambitious startups, enterprises, and organizations to design, engineer, and scale world-class digital products.';
+  const metrics = (settings?.about_hero_metrics && settings.about_hero_metrics.length > 0) 
+    ? settings.about_hero_metrics 
+    : FALLBACK_METRICS;
+  const manifesto = (settings?.about_manifesto && settings.about_manifesto.length > 0)
+    ? settings.about_manifesto
+    : FALLBACK_MANIFESTO;
 
   // Theme-specific style tokens
   const bgSection = isDark ? 'bg-[#0B0D0F]' : 'bg-[#FAFAFA]';
@@ -40,27 +59,23 @@ export default function AboutHero({ theme }: AboutHeroProps) {
                 : 'border-[#E2E8F0] text-[#B8860B] bg-white shadow-sm'
             )}
           >
-            LET'S BUILD TOGETHER
+            {badge}
           </span>
 
           {/* Section Title */}
           <h1 className={cn('text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight', textPrimary)}>
-            Building the Future of Digital Innovation from Africa.
+            {title}
           </h1>
 
           {/* Strategic Paragraph */}
           <p className={cn('text-lg sm:text-xl font-light leading-relaxed max-w-2xl', textSecondary)}>
-            We partner with ambitious startups, enterprises, and organizations to design, engineer, and scale world-class digital products.
+            {description}
           </p>
 
           {/* Core Metrics Grid */}
           <div className={cn('grid grid-cols-3 gap-4 pt-6 border-t w-full mt-2', borderBase)}>
-            {[
-              { val: 'Top 1.5%', label: 'Elite Developer Select' },
-              { val: 'Silicon Valley', label: 'Standards Workflow' },
-              { val: 'Sovereign', label: 'Scale Infrastructure' },
-            ].map((metric) => (
-              <div key={metric.val} className="flex flex-col gap-1">
+            {metrics.map((metric, idx) => (
+              <div key={`${metric.val}-${idx}`} className="flex flex-col gap-1">
                 <span 
                   className="text-base sm:text-lg lg:text-xl font-black tracking-tight"
                   style={{ color: accentColor }}

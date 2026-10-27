@@ -1,5 +1,6 @@
 import { cn } from '../utils/cn';
 import { useProcessSteps } from '../hooks/useServices';
+import { useSiteSettings } from '../hooks/useSiteSettings';
 
 interface JourneyStep {
   id: string;
@@ -14,6 +15,11 @@ interface HorizontalJourneyProps {
 export default function HorizontalJourney({ theme }: HorizontalJourneyProps) {
   const isDark = theme === 'dark';
   const { data: dbSteps } = useProcessSteps();
+  const { data: settings } = useSiteSettings();
+
+  const badge = settings?.process_badge || 'OUR PROCESS';
+  const title = settings?.process_title || 'A Proven Path from Concept to Scale';
+  const subtitle = settings?.process_subtitle || 'Our streamlined workflow balances high velocity with rigorous, zero-debt engineering standards.';
 
   const bg      = isDark ? '#0B0D0F' : '#FAFAFA';
   const border  = isDark ? '#23262D' : '#E2E8F0';
@@ -54,7 +60,7 @@ export default function HorizontalJourney({ theme }: HorizontalJourneyProps) {
                 color:       accent,
               }}
             >
-              OUR PROCESS
+              {badge}
             </span>
           </div>
 
@@ -62,14 +68,14 @@ export default function HorizontalJourney({ theme }: HorizontalJourneyProps) {
             className="text-3xl font-black mt-4 leading-tight"
             style={{ color: primary }}
           >
-            A Proven Path from Concept to Scale
+            {title}
           </h2>
 
           <p
             className="text-sm font-light max-w-xl mx-auto leading-relaxed"
             style={{ color: sub }}
           >
-            Our streamlined workflow balances high velocity with rigorous, zero-debt engineering standards.
+            {subtitle}
           </p>
         </div>
 

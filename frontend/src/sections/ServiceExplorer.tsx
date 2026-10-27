@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { cn } from '../utils/cn';
 import { useServices } from '../hooks/useServices';
+import { useSiteSettings } from '../hooks/useSiteSettings';
 import { getLucideIcon } from '../utils/iconHelper';
 import {
   Layers,
@@ -16,54 +17,157 @@ interface ServiceExplorerProps {
   theme: 'dark' | 'light';
 }
 
+const DOMAIN_DATA: Record<string, {
+  techStack: string[];
+  typicalEngagements: string[];
+  timeline: string;
+  engagementModel: string;
+  support: string;
+}> = {
+  'custom-web-saas-engineering': {
+    techStack: ['Next.js 15', 'React 19', 'TypeScript', 'Node.js', 'PostgreSQL'],
+    typicalEngagements: [
+      'New SaaS Product MVP',
+      'High-Concurrency Scaling Sprint',
+      'API Integration & Migration',
+      'Enterprise Design System Rollout',
+    ],
+    timeline: '8–14 Weeks',
+    engagementModel: 'Dedicated Squad / Agile Sprint',
+    support: '3 Months Post-Launch Warranty',
+  },
+  'ai-intelligent-systems': {
+    techStack: ['PyTorch', 'Python 3.12', 'OpenAI', 'pgvector', 'FastAPI'],
+    typicalEngagements: [
+      'Custom LLM Fine-Tuning',
+      'RAG Vector Knowledge Ingestion',
+      'Autonomous Agent Workflows',
+      'Predictive ML Decision Engines',
+    ],
+    timeline: '6–12 Weeks',
+    engagementModel: 'AI Engineering Sprint / Milestone',
+    support: 'Continuous Model Monitoring & Drift SLA',
+  },
+  'iot-edge-embedded-systems': {
+    techStack: ['MQTT & WebSockets', 'C++ / Rust', 'WebAssembly ML', 'Go', 'InfluxDB'],
+    typicalEngagements: [
+      'Hardware-to-Cloud Ingestion',
+      'Low-Latency Edge Telemetry',
+      'Secure OTA Firmware Pipeline',
+      'Smart Device Fleet Management',
+    ],
+    timeline: '10–18 Weeks',
+    engagementModel: 'Hybrid Embedded & Cloud Team',
+    support: 'Hardware Support & Firmware Patching',
+  },
+  'cloud-infrastructure-devops': {
+    techStack: ['Kubernetes (EKS/GKE)', 'Terraform & IaC', 'AWS & GCP', 'Docker', 'Prometheus & Grafana'],
+    typicalEngagements: [
+      'Multi-Region Cloud Migration',
+      'Zero-Downtime CI/CD Pipeline',
+      'Kubernetes Cluster Hardening',
+      'FinOps Cloud Cost Optimization',
+    ],
+    timeline: '4–10 Weeks',
+    engagementModel: 'DevOps Architecture Retainer',
+    support: '24/7 Infrastructure SLA & Monitoring',
+  },
+  'mobile-applications-native-ux': {
+    techStack: ['Flutter & Dart', 'Swift (iOS)', 'Kotlin (Android)', 'React Native', 'Firebase'],
+    typicalEngagements: [
+      'Greenfield iOS & Android App',
+      'Legacy Mobile App Modernization',
+      'App Store & Play Store Release',
+      'Offline-First Sync & Biometrics',
+    ],
+    timeline: '8–16 Weeks',
+    engagementModel: 'Cross-Platform Mobile Team',
+    support: 'OS Version Updates & Maintenance',
+  },
+  'digital-enterprise-transformation': {
+    techStack: ['Golang & Java', 'PostgreSQL', 'Apache Kafka', 'GraphQL', 'Docker'],
+    typicalEngagements: [
+      'Monolith Microservices Modernization',
+      'ERP / CRM Enterprise System Bridging',
+      'Process Automation Re-engineering',
+      'Sovereign Cloud & Security Compliance',
+    ],
+    timeline: '12–24 Weeks',
+    engagementModel: 'Enterprise Co-Engineering Team',
+    support: 'Enterprise SLA & Dedicated Support',
+  },
+};
+
 export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
   const isDark = theme === 'dark';
   const [activeIndex, setActiveIndex] = useState(0);
   const [expandedMobileIndex, setExpandedMobileIndex] = useState<number | null>(0);
 
-  // Fetch Services via React Query
+  // Fetch Services & Site Settings via React Query
   const { data, isLoading, isError } = useServices();
+  const { data: settings } = useSiteSettings();
   const servicesList = data?.results ?? [];
+
+  const servicesBadge = settings?.services_badge || 'OUR SERVICE OFFERINGS';
+  const servicesTitle = settings?.services_title || 'How We Help Businesses Build, Scale, and Innovate';
+  const servicesSubtitle = settings?.services_subtitle || 'Choose a capability below to see what we build, the business impact we deliver, and how a typical engagement works.';
 
   // Sane mapper helper to match CMS records to the premium UX card layout
   const mapServiceToExplorerItem = (service: Service | undefined) => {
     if (!service) return null;
-    
-    // Fallbacks if features list is empty
-    const buildItems = service.features?.length > 0
-      ? service.features.map(f => f.title)
-      : ["SaaS Applications", "Cloud Architectures", "Custom Integrations"];
 
-    const techStack = service.features?.length > 0
-      ? service.features.map(f => f.description).filter(d => d && d.length < 20).slice(0, 5)
-      : ["React", "TypeScript", "Node.js", "Python"];
+    const slug = service.slug?.toLowerCase() || '';
+    const domain = DOMAIN_DATA[slug] || Object.entries(DOMAIN_DATA).find(([k]) => slug.includes(k) || k.includes(slug))?.[1];
     
-    const impacts = service.features?.length > 0
-      ? service.features.map(f => f.description).filter(d => d && d.length >= 20).slice(0, 4)
-      : ["Reduced latency", "Faster velocity", "Secure applications"];
-    
+    // Dynamic deliverables (what we build) from database
+    const buildItems = (service.what_we_build && service.what_we_build.length > 0)
+      ? service.what_we_build
+      : (service.features && service.features.length > 0)
+      ? service.features.map(f => f.title)
+      : [
+          `${service.title} Architecture`,
+          `Custom High-Scale Solutions`,
+          `Enterprise System Integration`
+        ];
+
+    // Dynamic impacts from service.benefits or feature descriptions
+    const impacts = (service.benefits && service.benefits.length > 0)
+      ? service.benefits
+      : (service.features && service.features.length > 0)
+      ? service.features.map(f => f.description).filter(Boolean).slice(0, 4)
+      : [
+          'High performance & reliability',
+          'Measurable commercial velocity',
+          'Enterprise security standards'
+        ];
+
+    // Dynamic tech stack
+    const techStack = (service.tech_stack && service.tech_stack.length > 0)
+      ? service.tech_stack
+      : domain?.techStack ?? ['React 19', 'TypeScript', 'Node.js', 'Python'];
+
+    // Dynamic typical engagements
+    const engagements = (service.typical_engagements && service.typical_engagements.length > 0)
+      ? service.typical_engagements
+      : domain?.typicalEngagements ?? [
+          'New Product Development',
+          'Legacy Software Modernization',
+          'API Integration & Migration',
+          'Feature Expansion & Scaling'
+        ];
+
     return {
-      category: service.category?.name ?? "Service",
+      category: service.category?.name ?? 'Service',
       title: service.title,
-      description: service.description,
+      description: service.description || service.short_description,
       whatWeBuild: buildItems,
-      techEcosystem: techStack.length > 0 ? techStack : ["React", "TypeScript", "Tailwind", "Node.js"],
-      typicalEngagements: [
-        "New Product Development",
-        "Legacy Software Modernization",
-        "API Integration & Migration",
-        "Feature Expansion & Scaling"
-      ],
-      businessImpact: impacts.length > 0 ? impacts : [
-        "Faster time-to-market",
-        "Reduced maintenance costs",
-        "Highly secure & compliant systems",
-        "Seamless user onboarding"
-      ],
-      caseStudyHook: `Helping an enterprise scale their ${service.title} capacity by 400%`,
-      timeline: "8–16 Weeks",
-      engagementModel: "Dedicated Team / Agile Sprint",
-      support: "3 Months Post-Launch",
+      techEcosystem: techStack,
+      typicalEngagements: engagements,
+      businessImpact: impacts,
+      caseStudyHook: service.case_study_hook?.trim() || `Helping an enterprise scale their ${service.title} capacity by 400%`,
+      timeline: service.timeline?.trim() || domain?.timeline || '8–16 Weeks',
+      engagementModel: service.engagement_model?.trim() || domain?.engagementModel || 'Dedicated Team / Agile Sprint',
+      support: service.support_sla?.trim() || domain?.support || '3 Months Post-Launch',
       icon: service.icon
     };
   };
@@ -143,16 +247,16 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ theme }) => {
                   : "bg-slate-100 border-slate-200 text-[#B8860B]"
               )}
             >
-              Our Service Offerings
+              {servicesBadge}
             </span>
           </div>
 
           <h2 className={cn("text-3xl sm:text-4xl font-black leading-tight tracking-tight mt-2", textPrimary)}>
-            How We Help Businesses Build, Scale, and Innovate
+            {servicesTitle}
           </h2>
 
           <p className={cn("text-base font-light leading-relaxed max-w-xl mx-auto mt-2", textSecondary)}>
-            Choose a capability below to see what we build, the business impact we deliver, and how a typical engagement works.
+            {servicesSubtitle}
           </p>
 
           {/* Escape hatch for undecided visitors */}

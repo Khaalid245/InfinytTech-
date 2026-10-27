@@ -1,6 +1,7 @@
 import React from 'react';
 import { cn } from '../utils/cn';
 import { useIndustries } from '../hooks/useServices';
+import { useSiteSettings } from '../hooks/useSiteSettings';
 import { getLucideIcon } from '../utils/iconHelper';
 import { Landmark, ArrowRight } from 'lucide-react';
 
@@ -29,6 +30,15 @@ export const IndustriesSection: React.FC<IndustriesSectionProps> = ({ theme }) =
 
   // Fetch industries list via React Query hook
   const { data: industries = [], isLoading, isError } = useIndustries();
+  const { data: settings } = useSiteSettings();
+
+  const badge = settings?.industries_badge || "OUR INDUSTRIES";
+  const title = settings?.industries_title || "Technology Solutions Across Every Industry";
+  const subtitle = settings?.industries_subtitle || "We partner with startups, enterprises, and organizations to design, build, and scale digital products that solve real business challenges across diverse industries.";
+  const quote = settings?.industries_quote || "From a healthcare startup to an enterprise logistics platform — our process adapts, our standards don't.";
+  const ctaTitle = settings?.industries_cta_title || "Don't see your industry?";
+  const ctaSubtitle = settings?.industries_cta_subtitle || "Our team builds custom digital solutions for organizations of all sizes.";
+  const ctaBtnText = settings?.industries_cta_btn_text || "Explore Our Services";
 
   // Theme-specific styling tokens
   const bg = isDark ? 'bg-[#0B0D0F]' : 'bg-[#FAFAFA]';
@@ -120,16 +130,16 @@ export const IndustriesSection: React.FC<IndustriesSectionProps> = ({ theme }) =
               )}
               style={{ color: goldAccent }}
             >
-              OUR INDUSTRIES
+              {badge}
             </span>
           </div>
 
           <h2 className={cn("text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight mt-2", textPrimary)}>
-            Technology Solutions Across Every Industry
+            {title}
           </h2>
 
           <p className={cn("text-base sm:text-lg font-light leading-relaxed max-w-2xl mx-auto", textSecondary)}>
-            We partner with startups, enterprises, and organizations to design, build, and scale digital products that solve real business challenges across diverse industries.
+            {subtitle}
           </p>
         </div>
 
@@ -207,10 +217,10 @@ export const IndustriesSection: React.FC<IndustriesSectionProps> = ({ theme }) =
 
         {/* Bottom Centered Section */}
         <div className="text-center space-y-12 pt-12 max-w-4xl mx-auto border-t" style={{ borderColor: isDark ? '#23262D' : '#E2E8F0' }}>
-          {/* Trust Quote — replaced with specific outcome statement */}
+          {/* Trust Quote — dynamic outcome statement */}
           <div className="max-w-2xl mx-auto">
             <p className={cn("text-lg sm:text-xl font-medium italic leading-relaxed", textPrimary)}>
-              "From a healthcare startup to an enterprise logistics platform — our process adapts, our standards don't."
+              "{quote}"
             </p>
           </div>
 
@@ -225,10 +235,10 @@ export const IndustriesSection: React.FC<IndustriesSectionProps> = ({ theme }) =
           >
             <div className="space-y-1.5 max-w-md">
               <h4 className={cn("text-lg font-bold tracking-tight", textPrimary)}>
-                Don't see your industry?
+                {ctaTitle}
               </h4>
               <p className={cn("text-sm font-light leading-relaxed", textSecondary)}>
-                Our team builds custom digital solutions for organizations of all sizes.
+                {ctaSubtitle}
               </p>
             </div>
             
@@ -243,7 +253,7 @@ export const IndustriesSection: React.FC<IndustriesSectionProps> = ({ theme }) =
                     : "bg-white border-slate-200 text-slate-900 hover:border-[#B8860B] hover:text-[#B8860B]"
                 )}
               >
-                <span>Explore Our Services</span>
+                <span>{ctaBtnText}</span>
                 <ArrowRight
                   className="w-4 h-4 transition-all duration-300 transform group-hover:translate-x-1"
                   style={{ color: goldAccent }}

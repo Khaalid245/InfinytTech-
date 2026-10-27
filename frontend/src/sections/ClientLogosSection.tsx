@@ -48,7 +48,7 @@ const ClientLogoCard: React.FC<{ client: Client; isDark: boolean }> = ({ client,
   const resolvedLogoUrl = rawLogoUrl ? resolveImageUrl(rawLogoUrl) : undefined;
   
   const hasValidImage = Boolean(resolvedLogoUrl && !imageError);
-  const IndustryIcon = getIndustryIcon(client.industry);
+  const iconElement = React.createElement(getIndustryIcon(client.industry), { className: "w-4 h-4" });
 
   const cardContent = (
     <div
@@ -89,7 +89,7 @@ const ClientLogoCard: React.FC<{ client: Client; isDark: boolean }> = ({ client,
                 : 'bg-amber-500/10 text-amber-600'
             )}
           >
-            <IndustryIcon className="w-4 h-4" />
+            {iconElement}
           </div>
           <div className="text-left overflow-hidden">
             <div

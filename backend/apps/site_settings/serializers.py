@@ -120,6 +120,27 @@ class SiteSettingsSerializer(serializers.ModelSerializer):
             'mission_title', 'mission_statement', 'vision_title', 'vision_statement', 'core_values',
             # Why Choose Us / Differentiators
             'why_choose_us_title', 'why_choose_us_subtitle', 'differentiators',
+            # About Page Hero, Manifesto & Story
+            'about_hero_badge', 'about_hero_title', 'about_hero_description', 'about_hero_metrics', 'about_manifesto',
+            'about_story_badge', 'about_story_title', 'about_story_lead', 'about_story_paragraph_1', 'about_story_paragraph_2', 'about_story_symbol',
+            # CTA & Partnership Section
+            'cta_badge', 'cta_title', 'cta_description', 'cta_primary_btn_text', 'cta_primary_btn_note',
+            'cta_secondary_btn_text', 'cta_secondary_btn_url', 'cta_timeline_title', 'cta_timeline_subtitle',
+            'cta_timeline_steps', 'cta_trust_points',
+            # Portfolio Page Hero & Featured Section
+            'portfolio_hero_badge', 'portfolio_hero_title', 'portfolio_hero_subtitle',
+            'portfolio_hero_primary_btn_text', 'portfolio_hero_secondary_btn_text', 'portfolio_hero_secondary_btn_url',
+            'portfolio_hero_trust_items',
+            'portfolio_featured_badge', 'portfolio_featured_title', 'portfolio_featured_subtitle',
+            # Services / Capabilities Explorer Section Header
+            'services_badge', 'services_title', 'services_subtitle',
+            # Technology Stack Section Header
+            'tech_stack_badge', 'tech_stack_title', 'tech_stack_subtitle',
+            # Industries We Serve Section Header & Banner
+            'industries_badge', 'industries_title', 'industries_subtitle', 'industries_quote',
+            'industries_cta_title', 'industries_cta_subtitle', 'industries_cta_btn_text',
+            # Delivery Process Section Header
+            'process_badge', 'process_title', 'process_subtitle',
             # Footer
             'footer_description', 'copyright_text', 'newsletter_title', 'newsletter_description',
             # System

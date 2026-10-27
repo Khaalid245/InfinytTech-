@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { cn } from '../utils/cn';
 import { useTechnologies } from '../hooks/usePortfolio';
+import { useSiteSettings } from '../hooks/useSiteSettings';
 import { getLucideIcon } from '../utils/iconHelper';
 import { 
   Code2, 
@@ -74,8 +75,13 @@ export default function TechStackSection({ theme }: TechStackSectionProps) {
   const [activeTechFilter, setActiveTechFilter] = useState<string>('all');
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
 
-  // Fetch dynamic technologies from MySQL database
+  // Fetch dynamic technologies and site settings
   const { data: dbTechnologies, isLoading } = useTechnologies();
+  const { data: settings } = useSiteSettings();
+
+  const techStackBadge = settings?.tech_stack_badge || 'Technology Stack';
+  const techStackTitle = settings?.tech_stack_title || 'Tools We Trust to Build and Scale';
+  const techStackSubtitle = settings?.tech_stack_subtitle || 'We use proven technologies, modern frameworks, and scalable infrastructure to build reliable digital products for startups, businesses, and growing organizations.';
 
   // Map database technologies or fallbacks
   const allTechItems: TechItem[] = useMemo(() => {
@@ -154,16 +160,15 @@ export default function TechStackSection({ theme }: TechStackSectionProps) {
                 : 'border-[#E2E8F0] text-[#B8860B] bg-white shadow-sm'
             )}
           >
-            Technology Stack
+            {techStackBadge}
           </span>
           
           <h2 className={cn('text-3xl sm:text-4xl font-black mt-4 leading-tight tracking-tight', textPrimary)}>
-            Tools We Trust to Build and Scale
+            {techStackTitle}
           </h2>
           
           <p className={cn('text-base max-w-xl mx-auto font-light leading-relaxed', textSecondary)}>
-            We use proven technologies, modern frameworks, and scalable infrastructure to build reliable digital products 
-            for startups, businesses, and growing organizations.
+            {techStackSubtitle}
           </p>
         </div>
 

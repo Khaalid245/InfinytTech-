@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { cn } from '../utils/cn';
 import { X } from 'lucide-react';
 import { useProjects, useCategories, useProjectDetail } from '../hooks/usePortfolio';
+import { useSiteSettings } from '../hooks/useSiteSettings';
 import type { ProjectListItem } from '../types/portfolio';
 import { StaggerContainer, StaggerItem } from '../components/animation/StaggerContainer';
 import { Image } from '../components/ui/Image';
@@ -77,6 +78,12 @@ export const FeaturedCaseStudies: React.FC<FeaturedCaseStudiesProps> = ({ theme 
   const dim     = isDark ? '#64748B' : '#94A3B8';
 
   // ── Data fetching ──────────────────────────────────────────────────────────
+  const { data: settings } = useSiteSettings();
+
+  const featuredBadge = settings?.portfolio_featured_badge || 'FEATURED PROJECTS';
+  const featuredTitle = settings?.portfolio_featured_title || 'Solutions Designed To Solve Real Problems.';
+  const featuredSubtitle = settings?.portfolio_featured_subtitle || 'A selection of products and platforms built to improve operations, customer experiences, and business growth.';
+
   const {
     data: projectsPage,
     isLoading: projectsLoading,
@@ -148,7 +155,7 @@ export const FeaturedCaseStudies: React.FC<FeaturedCaseStudiesProps> = ({ theme 
       <section
         style={{ background: bg }}
         className="w-full py-24 px-4 sm:px-6 lg:px-8"
-        aria-label="Featured Projects"
+        aria-label={featuredBadge}
       >
         <div className="max-w-7xl mx-auto">
 
@@ -159,20 +166,19 @@ export const FeaturedCaseStudies: React.FC<FeaturedCaseStudiesProps> = ({ theme 
               style={{ borderColor: border, color: accent, background: isDark ? '#121417' : '#FFFBEB' }}
             >
               <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: accent }} aria-hidden="true" />
-              FEATURED PROJECTS
+              {featuredBadge}
             </span>
             <h2
               className="text-4xl sm:text-5xl font-black mt-2 mb-4 tracking-tight leading-[1.1]"
               style={{ color: primary }}
             >
-              Solutions Designed <br className="hidden sm:inline" />
-              To Solve Real Problems.
+              {featuredTitle}
             </h2>
             <p
               className="text-base sm:text-lg font-light max-w-2xl mx-auto leading-relaxed"
               style={{ color: sub }}
             >
-              A selection of products and platforms built to improve operations, customer experiences, and business growth.
+              {featuredSubtitle}
             </p>
           </div>
 

@@ -1,14 +1,21 @@
 import { cn } from '../utils/cn';
+import { useSiteSettings } from '../hooks/useSiteSettings';
 
 interface OurStorySectionProps {
   theme: 'dark' | 'light';
 }
 
-import { useSiteSettings } from '../hooks/useSiteSettings';
-
 export default function OurStorySection({ theme }: OurStorySectionProps) {
   const isDark = theme === 'dark';
   const { data: settings } = useSiteSettings();
+
+  const companyName = settings?.company_name || 'InfinytTech';
+  const badge = settings?.about_story_badge || 'Our Story';
+  const title = settings?.about_story_title || 'Bridging Tech Corridors';
+  const lead = settings?.about_story_lead || 'We believe world-class technology talent exists everywhere. Yet too many organizations struggle to access reliable engineering partners capable of turning ambitious ideas into scalable digital products.';
+  const p1 = settings?.about_story_paragraph_1 || `${companyName} was founded to bridge that gap. We unite highly disciplined, self-starting developers with international networks, breaking down traditional Silicon Valley corridors to unlock global engineering capacity.`;
+  const p2 = settings?.about_story_paragraph_2 || 'By combining strict quality standards, modern development workflows, and a philosophy of long-term partnership, we deliver production-ready SaaS platforms, machine learning systems, and complex product architectures directly to enterprises worldwide on time.';
+  const symbol = settings?.about_story_symbol || '∞';
 
   // Theme-specific color classes
   const eyebrowText = isDark ? 'text-[#D4A017]' : 'text-[#B8860B]';
@@ -33,7 +40,7 @@ export default function OurStorySection({ theme }: OurStorySectionProps) {
               eyebrowText
             )}
           >
-            Our Story
+            {badge}
           </span>
 
           {/* Section Title */}
@@ -43,7 +50,7 @@ export default function OurStorySection({ theme }: OurStorySectionProps) {
               isDark ? 'text-[#F8FAFC]' : 'text-slate-900'
             )}
           >
-            Bridging Tech Corridors
+            {title}
           </h2>
 
           {/* Bold Core Narrative */}
@@ -55,7 +62,7 @@ export default function OurStorySection({ theme }: OurStorySectionProps) {
                 : 'text-slate-900 group-hover:text-[#B8860B]'
             )}
           >
-            We believe world-class technology talent exists everywhere. Yet too many organizations struggle to access reliable engineering partners capable of turning ambitious ideas into scalable digital products.
+            {lead}
           </p>
 
           {/* Detailed Body Paragraphs */}
@@ -65,12 +72,8 @@ export default function OurStorySection({ theme }: OurStorySectionProps) {
               isDark ? 'text-[#94A3B8]' : 'text-slate-600'
             )}
           >
-            <p>
-              {settings?.company_name || 'Our company'} was founded to bridge that gap. We unite highly disciplined, self-starting developers with international networks, breaking down traditional Silicon Valley corridors to unlock global engineering capacity.
-            </p>
-            <p>
-              By combining strict quality standards, modern development workflows, and a philosophy of long-term partnership, we deliver production-ready SaaS platforms, machine learning systems, and complex product architectures directly to enterprises worldwide on time.
-            </p>
+            <p>{p1}</p>
+            <p>{p2}</p>
           </div>
         </div>
 
@@ -91,7 +94,7 @@ export default function OurStorySection({ theme }: OurStorySectionProps) {
               className="inline-block transition-transform duration-500 group-hover:rotate-12 select-none"
               aria-hidden="true"
             >
-              ∞
+              {symbol}
             </span>
           </div>
         </div>

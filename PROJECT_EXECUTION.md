@@ -1064,10 +1064,13 @@ As required by remediation conditions, backend anti-spam controls were audited w
 
 | Check | Target / Requirement | Result | Status |
 | :--- | :--- | :--- | :--- |
+| **GitHub Actions Cloud CI** | Commit `82c18f2` on Ubuntu runners | **Total Duration: 1m 40s**, Overall Status: **SUCCESS** | **PASS** |
+| **Cloud Frontend CI Job** | ESLint + Node 22 Test Runner + Vite Build | **1m 21s**, 62/62 tests passing, bundle compiled, 1 artifact uploaded | **PASS** |
+| **Cloud Backend CI Job** | MySQL 8.4 Service Container + Python 3.12 + 176 Tests | **1m 37s**, 176/176 tests passing, 0 migrations pending, 0 issues | **PASS** |
+| **Cloud CD Release Job** | Container image build & GHCR publish condition | **Cleanly skipped as designed** (triggers on `main` branch push/PR merge) | **PASS** |
 | **Frontend Docker Build** | `docker build -t infinyttech-frontend:test ./frontend` | **Built in 1.28s**, Nginx 1.27 + React 1.6.0 bundle packaged | **PASS** |
 | **Backend Docker Build** | `docker build -t infinyttech-backend:test ./backend` | **Built & packaged**, Python 3.12 + Gunicorn 22.0.0 | **PASS** |
 | **Backend Container Runtime Check** | `docker run --rm infinyttech-backend:test python manage.py check` | **161 static files collected**, 0 Django issues | **PASS** |
-| **GitHub Actions Workflow** | `.github/workflows/ci-cd.yml` | **Syntactically valid**, matrix for MySQL 8.4 service container, Node 20, Python 3.12, GHCR publish | **PASS** |
 | **Production Compose** | `docker-compose.prod.yml` | **Valid compose spec**, connects MySQL 8.4, backend Gunicorn, frontend Nginx | **PASS** |
 
 

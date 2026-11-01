@@ -1,6 +1,6 @@
 # Multi-stage production Dockerfile for InfinytTech React + Vite Frontend
 # Stage 1: Build static assets
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 

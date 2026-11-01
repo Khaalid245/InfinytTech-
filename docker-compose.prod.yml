@@ -1,0 +1,76 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: infinyttech-mysql-prod
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-InfinytRoot_2026_Secr3t!}
+      MYSQL_DATABASE: ${DB_NAME:-infinyttech_db}
+      MYSQL_USER: ${DB_USER:-infinyttech_app}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-InfinytApp_2026_Secr3t!}
+    volumes:
+      - infinyttech_mysql_prod_data:/var/lib/mysql
+    networks:
+      - infinyttech_prod_net
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: ghcr.io/${GITHUB_REPOSITORY:-khaalid245/infinyttech-}/backend:latest
+    container_name: infinyttech-backend-prod
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DJANGO_ENV: production
+      DEBUG: "False"
+      SECRET_KEY: ${SECRET_KEY}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,backend,frontend}
+      DB_NAME: ${DB_NAME:-infinyttech_db}
+      DB_USER: ${DB_USER:-infinyttech_app}
+      DB_PASSWORD: ${DB_PASSWORD:-InfinytApp_2026_Secr3t!}
+      DB_HOST: mysql
+      DB_PORT: 3306
+      APPLY_MIGRATIONS: "true"
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-3}
+      GUNICORN_THREADS: ${GUNICORN_THREADS:-2}
+    volumes:
+      - infinyttech_media_data:/app/media
+      - infinyttech_static_data:/app/static
+    networks:
+      - infinyttech_prod_net
+    expose:
+      - "8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: ghcr.io/${GITHUB_REPOSITORY:-khaalid245/infinyttech-}/frontend:latest
+    container_name: infinyttech-frontend-prod
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${PORT:-80}:80"
+    networks:
+      - infinyttech_prod_net
+
+volumes:
+  infinyttech_mysql_prod_data:
+    name: infinyttech_mysql_prod_data
+  infinyttech_media_data:
+    name: infinyttech_media_data
+  infinyttech_static_data:
+    name: infinyttech_static_data
+
+networks:
+  infinyttech_prod_net:
+    name: infinyttech_prod_net

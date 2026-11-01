@@ -73,3 +73,8 @@ CLAUDE.md
 AGENTS.md
 infnyt/CLAUDE.md
 infnyt/AGENTS.md
+
+# Audit and review archives
+*.zip
+phase-1-*/
+

@@ -31,10 +31,10 @@ export const FOOTER_LINKS = [
   {
     title: 'Resources',
     links: [
-      { label: 'Design Showcase', href: '/showcase' },
+      { label: 'Design Showcase', href: PATHS.WORK },
       { label: 'Insights & News', href: PATHS.INSIGHTS },
       { label: 'Case Studies', href: PATHS.WORK },
-      { label: 'Privacy Policy', href: PATHS.HOME },
+      { label: 'Privacy Policy', href: '/contact' },
     ],
   },
 ] as const;

@@ -2,21 +2,33 @@ import React, { useEffect, useRef } from 'react';
 import { cn } from '../utils/cn';
 import { Button } from '../components/ui/Button';
 import { ArrowRight, ChevronDown, Check } from 'lucide-react';
+import { useSiteSettings } from '../hooks/useSiteSettings';
 
 interface PortfolioHeroProps {
   theme: 'dark' | 'light';
 }
 
-const TRUST_ITEMS = [
+const DEFAULT_TRUST_ITEMS = [
   'Enterprise Engineering',
   'Scalable Architecture',
   'Modern Technology Stack',
   'Long-Term Partnership',
-] as const;
+];
 
 export const PortfolioHero: React.FC<PortfolioHeroProps> = ({ theme }) => {
   const isDark = theme === 'dark';
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const { data: settings } = useSiteSettings();
+
+  const badge = settings?.portfolio_hero_badge || 'OUR WORK';
+  const title = settings?.portfolio_hero_title || 'Products Built For Real Business Growth.';
+  const subtitle = settings?.portfolio_hero_subtitle || 'Explore selected digital products, platforms, and technology solutions designed to help startups, businesses, and organizations scale with confidence.';
+  const primaryBtnText = settings?.portfolio_hero_primary_btn_text || 'View Projects';
+  const secondaryBtnText = settings?.portfolio_hero_secondary_btn_text || 'Start Your Project';
+  const secondaryBtnUrl = settings?.portfolio_hero_secondary_btn_url || '/contact';
+  const trustItems = (settings?.portfolio_hero_trust_items && settings.portfolio_hero_trust_items.length > 0)
+    ? settings.portfolio_hero_trust_items
+    : DEFAULT_TRUST_ITEMS;
 
   const gold    = '#D4A017';
   const bg      = isDark ? 'bg-[#0B0D0F]'  : 'bg-[#F8FAFC]';
@@ -46,7 +58,7 @@ export const PortfolioHero: React.FC<PortfolioHeroProps> = ({ theme }) => {
   return (
     <section
       className={cn('relative w-full overflow-hidden transition-colors duration-300', bg)}
-      aria-label="OUR WORK"
+      aria-label={badge}
     >
       {/* Subtle atmosphere glow */}
       <div
@@ -73,7 +85,7 @@ export const PortfolioHero: React.FC<PortfolioHeroProps> = ({ theme }) => {
           style={{ color: gold, borderColor: isDark ? '#252527' : '#E2E8F0', backgroundColor: isDark ? 'rgba(20,20,22,0.9)' : '#F1F5F9' }}
         >
           <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: gold }} aria-hidden="true" />
-          OUR WORK
+          {badge}
         </span>
 
         {/* Headline */}
@@ -83,8 +95,14 @@ export const PortfolioHero: React.FC<PortfolioHeroProps> = ({ theme }) => {
             textPri
           )}
         >
-          Products Built<br />
-          <span style={{ color: gold }}>For Real Business Growth.</span>
+          {title.includes('For Real Business Growth') ? (
+            <>
+              Products Built<br />
+              <span style={{ color: gold }}>For Real Business Growth.</span>
+            </>
+          ) : (
+            title
+          )}
         </h1>
 
         {/* Supporting text */}
@@ -92,7 +110,7 @@ export const PortfolioHero: React.FC<PortfolioHeroProps> = ({ theme }) => {
           className={cn('text-base sm:text-[17px] font-light leading-[1.75] mb-10', textSec)}
           style={{ maxWidth: '620px' }}
         >
-          Explore selected digital products, platforms, and technology solutions designed to help startups, businesses, and organizations scale with confidence.
+          {subtitle}
         </p>
 
         {/* CTA Buttons */}
@@ -108,12 +126,12 @@ export const PortfolioHero: React.FC<PortfolioHeroProps> = ({ theme }) => {
                 : 'bg-[#0F172A] text-white hover:bg-slate-800'
             )}
           >
-            View Projects
+            {primaryBtnText}
             <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
           </Button>
 
           <Button
-            to="/contact"
+            to={secondaryBtnUrl}
             variant="secondary"
             className={cn(
               'px-8 py-4 text-sm font-semibold w-full sm:w-auto',
@@ -123,33 +141,35 @@ export const PortfolioHero: React.FC<PortfolioHeroProps> = ({ theme }) => {
                 : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
             )}
           >
-            Start Your Project
+            {secondaryBtnText}
           </Button>
         </div>
 
         {/* Trust row */}
-        <div
-          className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5 mb-12"
-          role="list"
-          aria-label="Our architecture commitments"
-        >
-          {TRUST_ITEMS.map((item) => (
-            <div key={item} role="listitem" className="flex items-center gap-1.5">
-              <Check
-                className="w-3.5 h-3.5 flex-shrink-0"
-                style={{ color: gold }}
-                strokeWidth={3}
-                aria-hidden="true"
-              />
-              <span
-                className="text-[12px] font-medium tracking-wide"
-                style={{ color: isDark ? '#64748B' : '#94A3B8' }}
-              >
-                {item}
-              </span>
-            </div>
-          ))}
-        </div>
+        {trustItems.length > 0 && (
+          <div
+            className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5 mb-12"
+            role="list"
+            aria-label="Our architecture commitments"
+          >
+            {trustItems.map((item) => (
+              <div key={item} role="listitem" className="flex items-center gap-1.5">
+                <Check
+                  className="w-3.5 h-3.5 flex-shrink-0"
+                  style={{ color: gold }}
+                  strokeWidth={3}
+                  aria-hidden="true"
+                />
+                <span
+                  className="text-[12px] font-medium tracking-wide"
+                  style={{ color: isDark ? '#64748B' : '#94A3B8' }}
+                >
+                  {item}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Scroll cue */}
         <button

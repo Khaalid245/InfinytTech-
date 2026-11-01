@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useUploadMedia } from '../../../hooks/useMedia';
 import Button from '../../ui/Button';
 import { X, UploadCloud, File as FileIcon, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
@@ -24,7 +24,24 @@ const MediaUploadModal: React.FC<MediaUploadModalProps> = ({ onClose, folders = 
   const [jobs, setJobs] = useState<UploadJob[]>([]);
   const [destinationFolderId, setDestinationFolderId] = useState<string>(currentFolderId || '');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const jobsRef = useRef<UploadJob[]>([]);
+
+  useEffect(() => {
+    jobsRef.current = jobs;
+  }, [jobs]);
+
   const { mutateAsync: uploadMedia } = useUploadMedia();
+
+  // Revoke object URLs on component unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      jobsRef.current.forEach(j => {
+        if (j.previewUrl) {
+          URL.revokeObjectURL(j.previewUrl);
+        }
+      });
+    };
+  }, []);
 
   const startUpload = async (job: UploadJob) => {
     setJobs(prev => prev.map(j => j.id === job.id ? { ...j, status: 'uploading' } : j));
@@ -87,17 +104,61 @@ const MediaUploadModal: React.FC<MediaUploadModalProps> = ({ onClose, folders = 
 
 
   const removeJob = (id: string) => {
-    setJobs(prev => prev.filter(j => j.id !== id));
+    setJobs(prev => {
+      const target = prev.find(j => j.id === id);
+      if (target?.previewUrl) {
+        URL.revokeObjectURL(target.previewUrl);
+      }
+      return prev.filter(j => j.id !== id);
+    });
   };
 
   const isUploading = jobs.some(j => j.status === 'uploading');
 
+  const handleClose = useCallback(() => {
+    if (isUploading) return;
+    jobs.forEach(j => {
+      if (j.previewUrl) {
+        URL.revokeObjectURL(j.previewUrl);
+      }
+    });
+    onClose();
+  }, [isUploading, jobs, onClose]);
+
+  // Handle Escape key navigation and body scroll locking
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isUploading) {
+        handleClose();
+      }
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isUploading, handleClose]);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-      <div className="bg-surface-light border border-border-primary rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="media-upload-modal-title"
+    >
+      <div 
+        className="absolute inset-0 bg-transparent" 
+        onClick={handleClose} 
+        aria-hidden="true" 
+      />
+      <div className="relative bg-surface-light border border-border-primary rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
         
         <div className="flex items-center justify-between p-4 border-b border-border-primary shrink-0">
-          <h2 className="text-lg font-semibold text-primary-text">Upload Media</h2>
+          <h2 id="media-upload-modal-title" className="text-lg font-semibold text-primary-text">Upload Media</h2>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <label className="text-sm text-secondary-text whitespace-nowrap">Destination:</label>
@@ -114,7 +175,7 @@ const MediaUploadModal: React.FC<MediaUploadModalProps> = ({ onClose, folders = 
               </select>
             </div>
             {!isUploading && (
-              <button onClick={onClose} className="p-2 text-secondary-text hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors">
+              <button onClick={handleClose} className="p-2 text-secondary-text hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors">
                 <X className="w-5 h-5" />
               </button>
             )}
@@ -194,7 +255,7 @@ const MediaUploadModal: React.FC<MediaUploadModalProps> = ({ onClose, folders = 
         </div>
 
         <div className="px-6 py-4 border-t border-border-primary bg-black/5 dark:bg-white/5 flex justify-end gap-3">
-          <Button variant="secondary" onClick={onClose} disabled={isUploading}>
+          <Button variant="secondary" onClick={handleClose} disabled={isUploading}>
             {jobs.length > 0 && !isUploading ? 'Close' : 'Cancel'}
           </Button>
         </div>

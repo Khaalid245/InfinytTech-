@@ -1,4 +1,6 @@
 import { cn } from '../utils/cn';
+import { useProcessSteps } from '../hooks/useServices';
+import { useSiteSettings } from '../hooks/useSiteSettings';
 
 interface JourneyStep {
   id: string;
@@ -12,6 +14,12 @@ interface HorizontalJourneyProps {
 
 export default function HorizontalJourney({ theme }: HorizontalJourneyProps) {
   const isDark = theme === 'dark';
+  const { data: dbSteps } = useProcessSteps();
+  const { data: settings } = useSiteSettings();
+
+  const badge = settings?.process_badge || 'OUR PROCESS';
+  const title = settings?.process_title || 'A Proven Path from Concept to Scale';
+  const subtitle = settings?.process_subtitle || 'Our streamlined workflow balances high velocity with rigorous, zero-debt engineering standards.';
 
   const bg      = isDark ? '#0B0D0F' : '#FAFAFA';
   const border  = isDark ? '#23262D' : '#E2E8F0';
@@ -19,12 +27,20 @@ export default function HorizontalJourney({ theme }: HorizontalJourneyProps) {
   const primary = isDark ? '#F8FAFC' : '#0F172A';
   const sub     = isDark ? '#94A3B8' : '#475569';
 
-  const steps: JourneyStep[] = [
+  const defaultSteps: JourneyStep[] = [
     { id: '01', title: 'Discover', desc: 'Understand business goals, users, and opportunities.' },
     { id: '02', title: 'Design', desc: 'Validate ideas through strategy and product design.' },
     { id: '03', title: 'Build', desc: 'Develop scalable software with quality engineering.' },
     { id: '04', title: 'Scale', desc: 'Optimize, support, and evolve the product over time.' },
   ];
+
+  const steps: JourneyStep[] = (dbSteps && dbSteps.length > 0)
+    ? dbSteps.map((step, idx) => ({
+        id: step.step_number || String(idx + 1).padStart(2, '0'),
+        title: step.short_title || step.full_title || `Phase ${idx + 1}`,
+        desc: step.description,
+      }))
+    : defaultSteps;
 
   return (
     <section 
@@ -44,7 +60,7 @@ export default function HorizontalJourney({ theme }: HorizontalJourneyProps) {
                 color:       accent,
               }}
             >
-              OUR PROCESS
+              {badge}
             </span>
           </div>
 
@@ -52,19 +68,25 @@ export default function HorizontalJourney({ theme }: HorizontalJourneyProps) {
             className="text-3xl font-black mt-4 leading-tight"
             style={{ color: primary }}
           >
-            A Proven Path from Concept to Scale
+            {title}
           </h2>
 
           <p
             className="text-sm font-light max-w-xl mx-auto leading-relaxed"
             style={{ color: sub }}
           >
-            Our streamlined workflow balances high velocity with rigorous, zero-debt engineering standards.
+            {subtitle}
           </p>
         </div>
 
         {/* 2. Responsive Timeline Container */}
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
+        <div className={cn(
+          "relative mx-auto px-4 sm:px-6",
+          steps.length === 1 ? "max-w-md" :
+          steps.length === 2 ? "max-w-2xl" :
+          steps.length === 3 ? "max-w-4xl" :
+          "max-w-5xl"
+        )}>
           {/* Horizontal line (Desktop) */}
           <div 
             className="absolute top-4 left-12 right-12 h-[1px] hidden md:block transition-colors duration-300"
@@ -78,7 +100,13 @@ export default function HorizontalJourney({ theme }: HorizontalJourneyProps) {
           />
 
           {/* Steps Grid mapping */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8 relative z-10">
+          <div className={cn(
+            "grid gap-12 md:gap-8 relative z-10",
+            steps.length === 1 ? "grid-cols-1" :
+            steps.length === 2 ? "grid-cols-1 md:grid-cols-2" :
+            steps.length === 3 ? "grid-cols-1 md:grid-cols-3" :
+            "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
+          )}>
             {steps.map((step) => (
               <div 
                 key={step.id}
@@ -101,7 +129,7 @@ export default function HorizontalJourney({ theme }: HorizontalJourneyProps) {
                 <div className="space-y-1">
                   <h3 
                     className={cn(
-                      'text-lg md:text-xl font-bold transition-colors duration-300',
+                      'text-lg md:text-xl font-bold transition-colors duration-300 capitalize',
                       isDark 
                         ? 'text-[#F8FAFC] group-hover:text-[#D4A017]' 
                         : 'text-[#0F172A] group-hover:text-[#B8860B]'
@@ -110,7 +138,7 @@ export default function HorizontalJourney({ theme }: HorizontalJourneyProps) {
                     {step.title}
                   </h3>
                   <p 
-                    className="text-xs md:text-sm font-light leading-relaxed"
+                    className="text-xs md:text-sm font-light leading-relaxed whitespace-pre-line"
                     style={{ color: sub }}
                   >
                     {step.desc}

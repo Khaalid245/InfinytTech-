@@ -89,6 +89,24 @@ class LeadsCRMTestCase(TestCase):
         )
         self.assertEqual(res.status_code, 400)
 
+    def test_public_contact_submission_honeypot_rejected(self):
+        # Automated bot submission with populated honeypot field
+        payload = {
+            "first_name": "Spam",
+            "last_name": "Bot",
+            "email": "bot@spammer.com",
+            "website_url_hp": "http://malicious-spam-link.com",
+            "message": "Automated spam payload."
+        }
+        res = self.client.post(
+            "/api/leads/contact/",
+            data=payload,
+            content_type="application/json"
+        )
+        self.assertEqual(res.status_code, 400)
+        # Ensure spam record was NOT saved to the database
+        self.assertFalse(Lead.objects.filter(email="bot@spammer.com").exists())
+
     def test_security_anonymous_denied_admin(self):
         # Anonymous GET denied
         res = self.client.get("/api/leads/")

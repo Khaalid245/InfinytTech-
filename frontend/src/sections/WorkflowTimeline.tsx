@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '../utils/cn';
 import { useProcessSteps } from '../hooks/useServices';
+import { useSiteSettings } from '../hooks/useSiteSettings';
 import { getLucideIcon } from '../utils/iconHelper';
 import { Search, Check } from 'lucide-react';
 
@@ -18,6 +19,11 @@ export const WorkflowTimeline: React.FC<WorkflowTimelineProps> = ({ theme }) => 
   // Fetch process steps via React Query hook
   const { data: rawSteps = [], isLoading, isError } = useProcessSteps();
   const processSteps = [...rawSteps].sort((a, b) => a.order - b.order);
+
+  const { data: settings } = useSiteSettings();
+  const badge = settings?.process_badge || 'Our Delivery Process';
+  const title = settings?.process_title || 'From Idea to Product. A Transparent Process.';
+  const subtitle = settings?.process_subtitle || 'Every successful product follows a structured process designed for clarity, quality, speed, and long-term business success.';
 
   // Scroll panel into view on mobile after step change
   useEffect(() => {
@@ -137,18 +143,16 @@ export const WorkflowTimeline: React.FC<WorkflowTimelineProps> = ({ theme }) => 
                 style={{ backgroundColor: gold }}
                 aria-hidden="true"
               />
-              Our Delivery Process
+              {badge}
             </span>
           </div>
 
           <h2 className={cn('text-4xl sm:text-5xl lg:text-[3.25rem] font-black leading-[1.12] tracking-tight', textPrimary)}>
-            From Idea to Product.{' '}
-            <span className="block">A Transparent Process.</span>
+            {title}
           </h2>
 
           <p className={cn('text-base sm:text-lg leading-relaxed font-light max-w-xl mx-auto', textSecondary)}>
-            Every successful product follows a structured process designed for clarity, quality,
-            speed, and long-term business success.
+            {subtitle}
           </p>
         </div>
 

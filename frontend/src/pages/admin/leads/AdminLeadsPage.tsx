@@ -12,6 +12,7 @@ import type { ColumnDef } from '../../../components/admin/shared/DataTable';
 import ConfirmDialog from '../../../components/admin/shared/ConfirmDialog';
 import SkeletonTable from '../../../components/admin/shared/SkeletonTable';
 import LeadDrawer from '../../../components/admin/leads/LeadDrawer';
+import Pagination from '../../../components/admin/shared/Pagination';
 
 import { 
   useAdminLeads, 
@@ -45,7 +46,7 @@ export default function AdminLeadsPage() {
   const [statusFilter, setStatusFilter] = useState('');
   
   // DataTable state
-  const page = 1;
+  const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   
@@ -232,7 +233,10 @@ export default function AdminLeadsPage() {
                 type="text"
                 placeholder="Search leads..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
                 className="w-full pl-10 pr-4 py-2 bg-surface-light border border-border-primary rounded-lg text-sm focus:outline-none focus:border-accent-primary"
               />
             </div>
@@ -240,7 +244,10 @@ export default function AdminLeadsPage() {
             <div className="relative">
               <select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value);
+                  setPage(1);
+                }}
                 className="pl-10 pr-8 py-2 bg-surface-light border border-border-primary rounded-lg text-sm appearance-none focus:outline-none focus:border-accent-primary"
               >
                 <option value="">All Statuses</option>
@@ -301,6 +308,19 @@ export default function AdminLeadsPage() {
               selectedKeys={new Set(selectedIds)}
               onSelectRow={handleSelectionChange}
             />
+          )}
+
+          {leadsData && leadsData.count > 10 && (
+            <div className="p-4 border-t border-border-primary flex flex-col sm:flex-row justify-between items-center gap-4">
+              <span className="text-xs text-secondary-text">
+                Showing {Math.min((page - 1) * 10 + 1, leadsData.count)} to {Math.min(page * 10, leadsData.count)} of {leadsData.count} leads
+              </span>
+              <Pagination
+                currentPage={page}
+                totalPages={Math.ceil(leadsData.count / 10)}
+                onPageChange={setPage}
+              />
+            </div>
           )}
         </div>
       </div>

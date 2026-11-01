@@ -48,6 +48,36 @@ export interface SocialLink {
   updated_at: string;
 }
 
+export interface CoreValueItem {
+  id: string;
+  title: string;
+  desc: string;
+  icon: string;
+}
+
+export interface DifferentiatorItem {
+  icon: string;
+  stat?: string;
+  title: string;
+  description: string;
+}
+
+export interface AboutHeroMetric {
+  val: string;
+  label: string;
+}
+
+export interface ManifestoItem {
+  title: string;
+  desc: string;
+}
+
+export interface CtaTimelineStep {
+  num: string;
+  title: string;
+  desc: string;
+}
+
 export interface SiteSettings {
   id: string;
   is_active: boolean;
@@ -136,7 +166,83 @@ export interface SiteSettings {
   happy_clients: number;
   countries_served: number;
   years_experience: number;
+
+  // Mission, Vision & Values
+  mission_title?: string;
+  mission_statement?: string;
+  vision_title?: string;
+  vision_statement?: string;
+  core_values?: CoreValueItem[];
+
+  // Why Choose Us / Differentiators
+  why_choose_us_title?: string;
+  why_choose_us_subtitle?: string;
+  differentiators?: DifferentiatorItem[];
   
+  // About Page Hero & Manifesto
+  about_hero_badge?: string;
+  about_hero_title?: string;
+  about_hero_description?: string;
+  about_hero_metrics?: AboutHeroMetric[];
+  about_manifesto?: ManifestoItem[];
+
+  // About Page Story
+  about_story_badge?: string;
+  about_story_title?: string;
+  about_story_lead?: string;
+  about_story_paragraph_1?: string;
+  about_story_paragraph_2?: string;
+  about_story_symbol?: string;
+
+  // Interactive CTA & Partnership Section
+  cta_badge?: string;
+  cta_title?: string;
+  cta_description?: string;
+  cta_primary_btn_text?: string;
+  cta_primary_btn_note?: string;
+  cta_secondary_btn_text?: string;
+  cta_secondary_btn_url?: string;
+  cta_timeline_title?: string;
+  cta_timeline_subtitle?: string;
+  cta_timeline_steps?: CtaTimelineStep[];
+  cta_trust_points?: string[];
+
+  // Portfolio Page Hero & Featured Section
+  portfolio_hero_badge?: string;
+  portfolio_hero_title?: string;
+  portfolio_hero_subtitle?: string;
+  portfolio_hero_primary_btn_text?: string;
+  portfolio_hero_secondary_btn_text?: string;
+  portfolio_hero_secondary_btn_url?: string;
+  portfolio_hero_trust_items?: string[];
+  portfolio_featured_badge?: string;
+  portfolio_featured_title?: string;
+  portfolio_featured_subtitle?: string;
+
+  // Services / Capabilities Explorer Section Header
+  services_badge?: string;
+  services_title?: string;
+  services_subtitle?: string;
+
+  // Technology Stack Section Header
+  tech_stack_badge?: string;
+  tech_stack_title?: string;
+  tech_stack_subtitle?: string;
+
+  // Industries We Serve Section Header & Banner
+  industries_badge?: string;
+  industries_title?: string;
+  industries_subtitle?: string;
+  industries_quote?: string;
+  industries_cta_title?: string;
+  industries_cta_subtitle?: string;
+  industries_cta_btn_text?: string;
+
+  // Delivery Process Section Header
+  process_badge?: string;
+  process_title?: string;
+  process_subtitle?: string;
+
   // Footer
   footer_description: string;
   copyright_text: string;

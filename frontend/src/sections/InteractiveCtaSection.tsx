@@ -1,6 +1,8 @@
 
 import { cn } from '../utils/cn';
 import { Button } from '../components/ui/Button';
+import { useSiteSettings } from '../hooks/useSiteSettings';
+import type { CtaTimelineStep } from '../types/siteSettings.types';
 
 // ─── Standard, thin-stroke (2px) inline SVGs ─────────────────────────────
 const Icon = {
@@ -16,11 +18,19 @@ const Icon = {
   ),
 };
 
-interface Step {
-  num: string;
-  title: string;
-  desc: string;
-}
+const FALLBACK_STEPS: CtaTimelineStep[] = [
+  { num: '1', title: 'Discovery Call', desc: 'We learn about your goals, requirements, and timeline.' },
+  { num: '2', title: 'Product Assessment', desc: 'Our team evaluates scope, technical requirements, and opportunities.' },
+  { num: '3', title: 'Roadmap & Proposal', desc: 'Receive a clear plan, timeline, and project estimate.' },
+  { num: '4', title: 'Build & Scale', desc: 'Engineering scalable systems with continuous optimization and growth.' },
+];
+
+const FALLBACK_TRUST_POINTS: string[] = [
+  'Secure cloud deployments',
+  'Clear project roadmap',
+  'Dedicated product team',
+  'Long-term support available',
+];
 
 interface InteractiveCtaSectionProps {
   theme: 'dark' | 'light';
@@ -29,13 +39,23 @@ interface InteractiveCtaSectionProps {
 
 export default function InteractiveCtaSection({ theme, onNavigate }: InteractiveCtaSectionProps) {
   const isDark = theme === 'dark';
+  const { data: settings } = useSiteSettings();
 
-  const steps: Step[] = [
-    { num: '1', title: 'Discovery Call', desc: 'We learn about your goals, requirements, and timeline.' },
-    { num: '2', title: 'Product Assessment', desc: 'Our team evaluates scope, technical requirements, and opportunities.' },
-    { num: '3', title: 'Roadmap & Proposal', desc: 'Receive a clear plan, timeline, and project estimate.' },
-    { num: '4', title: 'Build & Scale', desc: 'Engineering scalable systems with continuous optimization and growth.' },
-  ];
+  const badge = settings?.cta_badge || "LET'S BUILD TOGETHER";
+  const title = settings?.cta_title || 'Ready to Work With a Long-Term Technology Partner?';
+  const description = settings?.cta_description || 'We partner with ambitious startups, businesses, and organizations to transform ideas into scalable digital products through strategy, engineering, and long-term collaboration.';
+  const primaryBtnText = settings?.cta_primary_btn_text || 'Book a Free Discovery Call';
+  const primaryBtnNote = settings?.cta_primary_btn_note || "No commitment required — we'll discuss your goals and recommend a path forward.";
+  const secondaryBtnText = settings?.cta_secondary_btn_text || 'or send us a project brief →';
+  const secondaryBtnUrl = settings?.cta_secondary_btn_url || '/contact';
+  const timelineTitle = settings?.cta_timeline_title || 'How We Start Every Partnership';
+  const timelineSubtitle = settings?.cta_timeline_subtitle || 'Our structured path from initial outreach to product scale.';
+  const steps = (settings?.cta_timeline_steps && settings.cta_timeline_steps.length > 0)
+    ? settings.cta_timeline_steps
+    : FALLBACK_STEPS;
+  const trustPoints = (settings?.cta_trust_points && settings.cta_trust_points.length > 0)
+    ? settings.cta_trust_points
+    : FALLBACK_TRUST_POINTS;
 
   // Color Mapping Tokens
   const bgSection = isDark 
@@ -67,17 +87,17 @@ export default function InteractiveCtaSection({ theme, onNavigate }: Interactive
                 : 'border-[#E2E8F0] text-[#B8860B] bg-white shadow-sm'
             )}
           >
-            LET'S BUILD TOGETHER
+            {badge}
           </span>
 
           {/* Section Title */}
           <h2 className={cn('text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight', textPrimary)}>
-            Ready to Work With a Long-Term Technology Partner?
+            {title}
           </h2>
 
           {/* Supporting Narrative */}
           <p className={cn('text-base font-light leading-relaxed max-w-xl', textSecondary)}>
-            We partner with ambitious startups, businesses, and organizations to transform ideas into scalable digital products through strategy, engineering, and long-term collaboration.
+            {description}
           </p>
 
           {/* Action Buttons — primary first, clear hierarchy */}
@@ -94,18 +114,20 @@ export default function InteractiveCtaSection({ theme, onNavigate }: Interactive
                   : 'bg-[#0F172A] text-white hover:bg-slate-800 shadow-slate-900/10'
               )}
             >
-              Book a Free Discovery Call
+              {primaryBtnText}
               <Icon.ArrowRight className="w-4 h-4" />
             </Button>
 
             {/* Micro-copy: removes hesitation */}
-            <p className={cn('text-xs font-light text-center sm:text-left', textSecondary)}>
-              No commitment required — we'll discuss your goals and recommend a path forward.
-            </p>
+            {primaryBtnNote && (
+              <p className={cn('text-xs font-light text-center sm:text-left', textSecondary)}>
+                {primaryBtnNote}
+              </p>
+            )}
 
             {/* SECONDARY: direct project start */}
             <Button
-              to="/contact"
+              to={secondaryBtnUrl}
               variant="secondary"
               onClick={() => onNavigate?.('contact')}
               className={cn(
@@ -115,7 +137,7 @@ export default function InteractiveCtaSection({ theme, onNavigate }: Interactive
                   : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
               )}
             >
-              or send us a project brief →
+              {secondaryBtnText}
             </Button>
           </div>
 
@@ -158,10 +180,10 @@ export default function InteractiveCtaSection({ theme, onNavigate }: Interactive
             {/* Card Title */}
             <div>
               <h3 className={cn('text-lg font-bold tracking-tight', textPrimary)}>
-                How We Start Every Partnership
+                {timelineTitle}
               </h3>
               <p className="text-xs opacity-50 mt-1 select-none">
-                Our structured path from initial outreach to product scale.
+                {timelineSubtitle}
               </p>
             </div>
 
@@ -209,26 +231,23 @@ export default function InteractiveCtaSection({ theme, onNavigate }: Interactive
             </div>
 
             {/* Footprint Trust Area Checklist Grid */}
-            <div 
-              className={cn(
-                'pt-6 border-t grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs leading-normal select-none',
-                 isDark ? 'border-[#23262D]' : 'border-slate-100'
-              )}
-            >
-              {[
-                'Secure cloud deployments',
-                'Clear project roadmap',
-                'Dedicated product team',
-                'Long-term support available',
-              ].map((bullet) => (
-                <div key={bullet} className="flex items-center gap-2">
-                  <Icon.Check 
-                    className="w-4 h-4 flex-shrink-0 text-emerald-600 dark:text-emerald-500" 
-                  />
-                  <span className={textSecondary}>{bullet}</span>
-                </div>
-              ))}
-            </div>
+            {trustPoints.length > 0 && (
+              <div 
+                className={cn(
+                  'pt-6 border-t grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs leading-normal select-none',
+                   isDark ? 'border-[#23262D]' : 'border-slate-100'
+                )}
+              >
+                {trustPoints.map((bullet, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <Icon.Check 
+                      className="w-4 h-4 flex-shrink-0 text-emerald-600 dark:text-emerald-500" 
+                    />
+                    <span className={textSecondary}>{bullet}</span>
+                  </div>
+                ))}
+              </div>
+            )}
 
           </div>
         </div>

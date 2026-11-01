@@ -15,6 +15,8 @@ import { useSiteSettings } from '../hooks/useSiteSettings';
 import { Search } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { resolveImageUrl } from '../utils/imageHelper';
+import { SchemaOrg } from '../components/seo/SchemaOrg';
+import Breadcrumb from '../components/ui/Breadcrumb';
 
 interface InsightsPageProps {
   theme: 'dark' | 'light';
@@ -133,8 +135,27 @@ export default function InsightsPage({ theme }: InsightsPageProps) {
   const isDark = theme === 'dark';
 
   return (
-    <div className="py-20 animate-fade-in">
+    <div className="pb-20 animate-fade-in">
+      <SchemaOrg
+        breadcrumbs={[
+          { name: 'Insights & Articles', url: '/blog' },
+        ]}
+        schema={{
+          '@type': 'Blog',
+          name: `${settings?.company_name || 'Infinity Technologies'} Engineering Insights`,
+          description: 'Perspectives on engineering, distributed systems, and premium design systems.',
+        }}
+      />
+
       <Container size="lg">
+        {/* Breadcrumb Navigation */}
+        <div className="mb-6">
+          <Breadcrumb
+            theme={theme}
+            items={[{ label: 'Insights & Blog', href: '/blog', isCurrent: true }]}
+          />
+        </div>
+
         {/* Hero Header */}
         <div className="border-b border-border-primary pb-10 mb-12">
           <div className="max-w-3xl">
@@ -175,7 +196,7 @@ export default function InsightsPage({ theme }: InsightsPageProps) {
               <button
                 onClick={() => handleCategorySelect('')}
                 className={cn(
-                  'px-4 py-2 text-small font-medium rounded-full transition-all whitespace-nowrap cursor-pointer',
+                  'px-4 py-2 min-h-[44px] flex items-center text-small font-medium rounded-full transition-all whitespace-nowrap cursor-pointer',
                   !activeCategory
                     ? (isDark ? 'bg-[#D4A017] text-[#0B0D0F]' : 'bg-[#0F172A] text-white')
                     : (isDark ? 'bg-surface-light text-[#94A3B8] hover:text-[#F8FAFC]' : 'bg-slate-100 text-slate-600 hover:bg-slate-200')
@@ -188,7 +209,7 @@ export default function InsightsPage({ theme }: InsightsPageProps) {
                   key={cat.id}
                   onClick={() => handleCategorySelect(cat.slug)}
                   className={cn(
-                    'px-4 py-2 text-small font-medium rounded-full transition-all whitespace-nowrap cursor-pointer',
+                    'px-4 py-2 min-h-[44px] flex items-center text-small font-medium rounded-full transition-all whitespace-nowrap cursor-pointer',
                     activeCategory === cat.slug
                       ? (isDark ? 'bg-[#D4A017] text-[#0B0D0F]' : 'bg-[#0F172A] text-white')
                       : (isDark ? 'bg-surface-light text-[#94A3B8] hover:text-[#F8FAFC]' : 'bg-slate-100 text-slate-600 hover:bg-slate-200')
@@ -211,7 +232,7 @@ export default function InsightsPage({ theme }: InsightsPageProps) {
                     key={tag.id}
                     onClick={() => handleTagSelect(tag.slug)}
                     className={cn(
-                      'px-3 py-1 rounded-md text-caption font-medium border transition-all cursor-pointer',
+                      'px-3 py-1 min-h-[44px] flex items-center rounded-md text-caption font-medium border transition-all cursor-pointer',
                       isSelected
                         ? (isDark ? 'bg-[#D4A017]/10 border-[#D4A017] text-[#D4A017]' : 'bg-[#0F172A]/10 border-[#0F172A] text-[#0F172A]')
                         : (isDark ? 'border-[#23262D] text-[#94A3B8] hover:text-[#F8FAFC] bg-[#121417]' : 'border-slate-200 text-slate-500 hover:text-slate-900 bg-white')

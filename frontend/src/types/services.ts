@@ -35,6 +35,13 @@ export interface Service {
   featured_image: string | null;
   is_featured: boolean;
   benefits: string[];
+  what_we_build?: string[];
+  tech_stack?: string[];
+  typical_engagements?: string[];
+  timeline?: string;
+  engagement_model?: string;
+  support_sla?: string;
+  case_study_hook?: string;
   is_active: boolean;
   order: number;
   features: ServiceFeature[];
@@ -94,6 +101,13 @@ export interface ServiceFormData {
   featured_media_id: string | null;
   is_featured: boolean;
   benefits: string[];
+  what_we_build?: string[];
+  tech_stack?: string[];
+  typical_engagements?: string[];
+  timeline?: string;
+  engagement_model?: string;
+  support_sla?: string;
+  case_study_hook?: string;
   industry_ids: string[];
   faq_ids: string[];
   is_active: boolean;

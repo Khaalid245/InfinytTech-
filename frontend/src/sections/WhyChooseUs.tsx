@@ -7,62 +7,72 @@ import {
   Handshake, 
   MessageSquare, 
   Globe, 
+  Award,
+  Sparkles,
+  Users,
+  BookOpen,
+  CheckCircle,
+  Zap,
   type LucideIcon 
 } from 'lucide-react';
 import { useSiteSettings } from '../hooks/useSiteSettings';
+import type { DifferentiatorItem } from '../types/siteSettings.types';
 
+// ─── Icon Map ─────────────────────────────────────────────────────────────
+const ICON_MAP: Record<string, LucideIcon> = {
+  Target,
+  BadgeCheck,
+  ShieldCheck,
+  Handshake,
+  MessageSquare,
+  Globe,
+  Award,
+  Sparkles,
+  Users,
+  BookOpen,
+  CheckCircle,
+  Zap,
+};
 
-// ─── Types ────────────────────────────────────────────────────────────────
-interface Differentiator {
-  icon: LucideIcon;
-  stat: string;
-  title: string;
-  description: string;
-}
-
-interface WhyChooseUsProps {
-  theme: 'dark' | 'light';
-}
-
-// ─── Static data ──────────────────────────────────────────────────────────
-const DIFFERENTIATORS: Differentiator[] = [
+// ─── Static Fallback Data ─────────────────────────────────────────────────
+const DEFAULT_DIFFERENTIATORS: DifferentiatorItem[] = [
   {
-    icon: Target,
+    icon: 'Target',
     stat: 'Business-First',
     title: 'Business-First Thinking',
     description:
       'Every technical decision is evaluated against business goals, helping organizations invest in technology that creates measurable value.',
   },
   {
-    icon: BadgeCheck,
+    icon: 'BadgeCheck',
     stat: 'Product Ownership',
     title: 'Product Ownership',
     description:
       'We go beyond implementation by identifying risks, uncovering opportunities, and helping shape stronger product decisions.',
   },
   {
-    icon: MessageSquare,
+    icon: 'MessageSquare',
     stat: 'Transparency',
     title: 'Transparent Communication',
     description:
       'Clear milestones, regular updates, and open collaboration ensure complete visibility throughout the engagement.',
   },
   {
-    icon: ShieldCheck,
+    icon: 'ShieldCheck',
     stat: 'Quality Engineering',
     title: 'Quality Engineering',
     description:
       'Built with maintainability, performance, security, and scalability to support long-term business growth.',
   },
   {
-    icon: Handshake,
+    icon: 'Handshake',
     stat: 'Partnership',
     title: 'Long-Term Partnership',
     description:
       'Our relationship continues after launch through optimization, support, and strategic guidance as products evolve.',
   },
   {
-    icon: Globe,
+    icon: 'Globe',
     stat: 'Standards',
     title: 'Global Standards',
     description:
@@ -70,9 +80,13 @@ const DIFFERENTIATORS: Differentiator[] = [
   },
 ];
 
+interface WhyChooseUsProps {
+  theme: 'dark' | 'light';
+}
+
 // ─── Differentiator card ─────────────────────────────────────────────────
 interface CardProps {
-  item: Differentiator;
+  item: DifferentiatorItem;
   isDark: boolean;
   accent: string;
   cardBg: string;
@@ -80,14 +94,13 @@ interface CardProps {
   primary: string;
   sub: string;
   dim: string;
-  secondary?: boolean;
 }
 
 const DiffCard: React.FC<CardProps> = ({
   item, isDark, cardBg, border, primary, sub, dim,
 }) => {
   const [hovered, setHovered] = useState(false);
-  const IconComp = item.icon;
+  const IconComp = ICON_MAP[item.icon] || Target;
 
   const hoverBorderColor = isDark ? 'rgba(212,160,23,0.35)' : 'rgba(184,134,11,0.35)';
   const hoverShadowColor = isDark ? 'rgba(212,160,23,0.08)' : 'rgba(184,134,11,0.06)';
@@ -147,6 +160,12 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ theme }) => {
   const isDark = theme === 'dark';
   const { data: settings } = useSiteSettings();
 
+  const title = settings?.why_choose_us_title || 'What Makes Us Different';
+  const subtitle = settings?.why_choose_us_subtitle || '';
+  const differentiators: DifferentiatorItem[] = (settings?.differentiators && settings.differentiators.length > 0)
+    ? settings.differentiators
+    : DEFAULT_DIFFERENTIATORS;
+
   const bg      = isDark ? '#0B0D0F' : '#FAFAFA';
   const cardBg  = isDark ? '#181B1F' : '#FFFFFF';
   const border  = isDark ? '#23262D' : '#E2E8F0';
@@ -182,13 +201,18 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ theme }) => {
             className="text-3xl sm:text-4xl font-black leading-tight tracking-tight mt-2"
             style={{ color: primary }}
           >
-            What Makes Us Different
+            {title}
           </h2>
+          {subtitle && (
+            <p className="text-sm max-w-xl mx-auto" style={{ color: sub }}>
+              {subtitle}
+            </p>
+          )}
         </div>
 
         {/* Centered 3x2 Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {DIFFERENTIATORS.map(item => (
+          {differentiators.map(item => (
             <DiffCard
               key={item.title}
               item={item}

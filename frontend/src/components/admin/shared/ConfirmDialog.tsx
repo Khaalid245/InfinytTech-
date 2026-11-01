@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import Button from '../../ui/Button';
 
 interface ConfirmDialogProps {
@@ -11,14 +12,39 @@ interface ConfirmDialogProps {
 }
 
 export default function ConfirmDialog({ isOpen, onClose, onConfirm, title, description, confirmText = 'Confirm', variant = 'danger' }: ConfirmDialogProps) {
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+    <div 
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-dialog-title"
+      aria-describedby="confirm-dialog-description"
+    >
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
       <div className="relative w-full max-w-md bg-surface-light border border-border-primary rounded-xl shadow-2xl p-6">
-        <h3 className="text-lg font-bold text-primary-text mb-2">{title}</h3>
-        <p className="text-sm text-secondary-text mb-6">{description}</p>
+        <h3 id="confirm-dialog-title" className="text-lg font-bold text-primary-text mb-2">{title}</h3>
+        <p id="confirm-dialog-description" className="text-sm text-secondary-text mb-6">{description}</p>
         <div className="flex justify-end gap-3">
           <Button variant="secondary" onClick={onClose}>Cancel</Button>
           <button 

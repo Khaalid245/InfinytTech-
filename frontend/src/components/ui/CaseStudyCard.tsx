@@ -64,7 +64,7 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({
           
           <Heading
             variant="h3"
-            className="mb-3 text-xl font-medium leading-snug tracking-tight group-hover:text-neutral-700 transition-colors"
+            className="mb-3 text-xl font-medium leading-snug tracking-tight group-hover:text-accent-primary transition-colors"
           >
             {title}
           </Heading>

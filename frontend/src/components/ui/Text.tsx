@@ -10,9 +10,9 @@ interface TextProps extends React.HTMLAttributes<HTMLParagraphElement> {
 }
 
 const styles: Record<TextVariant, string> = {
-  'body-large': 'text-body-large text-secondary-text leading-relaxed font-light',
-  'body': 'text-body text-secondary-text leading-relaxed',
-  'small': 'text-small text-secondary-text leading-normal',
+  'body-large': 'text-body-large text-secondary-text leading-relaxed font-normal',
+  'body': 'text-body text-secondary-text leading-relaxed font-normal',
+  'small': 'text-small text-secondary-text leading-normal font-normal',
   'caption': 'text-caption text-secondary-text uppercase tracking-wider font-semibold',
 };
 

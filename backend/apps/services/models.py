@@ -49,6 +49,13 @@ class Service(UUIDModel, TimeStampedModel):
         related_name='featured_services'
     )
     benefits = models.JSONField(default=list, blank=True, help_text='List of benefit strings.')
+    what_we_build = models.JSONField(default=list, blank=True, help_text="List of deliverables e.g. ['Multi-Tenant SaaS', 'Web Portals']")
+    tech_stack = models.JSONField(default=list, blank=True, help_text="List of technologies e.g. ['Next.js 15', 'TypeScript']")
+    typical_engagements = models.JSONField(default=list, blank=True, help_text="List of engagement scenarios")
+    timeline = models.CharField(max_length=100, blank=True, default="8–14 Weeks")
+    engagement_model = models.CharField(max_length=150, blank=True, default="Dedicated Squad / Agile Sprint")
+    support_sla = models.CharField(max_length=150, blank=True, default="3 Months Post-Launch Warranty")
+    case_study_hook = models.CharField(max_length=255, blank=True, help_text="Custom highlight e.g. 'Helping an enterprise scale by 400%'")
     industries = models.ManyToManyField('Industry', blank=True, related_name='services')
     faqs = models.ManyToManyField('FAQ', blank=True, related_name='services')
     

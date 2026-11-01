@@ -19,26 +19,27 @@ class Lead(UUIDModel, TimeStampedModel):
         LOST = 'lost', 'Lost'
 
     first_name = models.CharField(max_length=150)
-    last_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150, blank=True, default='')
     email = models.EmailField()
-    phone = models.CharField(max_length=20, blank=True)
-    whatsapp = models.CharField(max_length=20, blank=True)
-    company = models.CharField(max_length=150, blank=True)
-    industry = models.CharField(max_length=100, blank=True)
-    website = models.URLField(max_length=255, blank=True)
-    company_size = models.CharField(max_length=50, blank=True)
-    country = models.CharField(max_length=100, blank=True)
-    project_type = models.CharField(max_length=100, blank=True)
-    budget_range = models.CharField(max_length=100, blank=True)
+    phone = models.CharField(max_length=20, blank=True, default='')
+    whatsapp = models.CharField(max_length=20, blank=True, default='')
+    company = models.CharField(max_length=150, blank=True, default='')
+    industry = models.CharField(max_length=100, blank=True, default='')
+    website = models.URLField(max_length=255, blank=True, default='')
+    company_size = models.CharField(max_length=50, blank=True, default='')
+    country = models.CharField(max_length=100, blank=True, default='')
+    project_type = models.CharField(max_length=100, blank=True, default='')
+    budget_range = models.CharField(max_length=100, blank=True, default='')
     services = models.ManyToManyField(
         'services.Service',
         blank=True,
         related_name='leads'
     )
-    message = models.TextField()
+    message = models.TextField(blank=True, default='')
     source = models.CharField(
         max_length=100, 
         blank=True, 
+        default='',
         help_text="Where the lead came from (e.g. Google, Showcase, Contact Form)"
     )
     status = models.CharField(

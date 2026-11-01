@@ -32,6 +32,7 @@ export interface Lead {
   assigned_to_email: string | null;
   assigned_to_name: string | null;
   services: string[]; // UUIDs of services
+  website_url_hp?: string; // Honeypot anti-spam field
   notes: string;
   timeline: LeadTimelineEvent[];
   created_at: string;

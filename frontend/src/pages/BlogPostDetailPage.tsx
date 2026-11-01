@@ -15,6 +15,9 @@ import { useSiteSettings } from '../hooks/useSiteSettings';
 import { Link2, ArrowLeft } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { resolveImageUrl } from '../utils/imageHelper';
+import { sanitizeHtml } from '../utils/sanitizeHtml';
+import { SchemaOrg } from '../components/seo/SchemaOrg';
+import Breadcrumb from '../components/ui/Breadcrumb';
 
 const Twitter: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -55,12 +58,10 @@ export default function BlogPostDetailPage({ theme }: BlogPostDetailPageProps) {
     .filter((p) => p.slug !== slug)
     .slice(0, 3);
 
-  // 3. Fetch all posts to determine chronological Next/Previous links
-  const { data: navigationData } = useBlogPosts({ page_size: 100 });
-  const allPosts = navigationData?.results || [];
-  const currentIndex = allPosts.findIndex((p) => p.slug === slug);
-  const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
-  const prevPost = currentIndex >= 0 && currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
+  // 3. Determine Next/Previous navigation links from contextual related articles
+  // Eliminates unthrottled 100-post overfetch query (Finding P4)
+  const prevPost = relatedPosts.length > 0 ? relatedPosts[0] : null;
+  const nextPost = relatedPosts.length > 1 ? relatedPosts[1] : null;
 
   // 4. Reading Progress Bar Sync
   useEffect(() => {
@@ -147,7 +148,38 @@ export default function BlogPostDetailPage({ theme }: BlogPostDetailPageProps) {
   const isDark = theme === 'dark';
 
   return (
-    <div className="py-20 animate-fade-in relative">
+    <div className="pb-20 animate-fade-in relative">
+      <SchemaOrg
+        breadcrumbs={[
+          { name: 'Insights & Articles', url: '/blog' },
+          { name: post.title, url: `/blog/${post.slug}` },
+        ]}
+        schema={{
+          '@type': 'BlogPosting',
+          headline: post.title,
+          description: post.excerpt || post.seo_description,
+          image: post.featured_image ? resolveImageUrl(post.featured_image) : undefined,
+          datePublished: post.published_at || undefined,
+          dateModified: post.updated_at || post.published_at || undefined,
+          author: {
+            '@type': 'Person',
+            name: post.author ? `${post.author.first_name} ${post.author.last_name}` : 'Infinity Technologies Editorial',
+          },
+          publisher: {
+            '@type': 'Organization',
+            name: settings?.company_name || 'Infinity Technologies',
+            logo: {
+              '@type': 'ImageObject',
+              url: typeof window !== 'undefined' ? `${window.location.origin}/favicon.svg` : '',
+            },
+          },
+          mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': typeof window !== 'undefined' ? window.location.href : '',
+          },
+        }}
+      />
+
       {/* Scroll Progress Indicator */}
       <div
         className="fixed top-0 left-0 h-[3px] bg-accent-primary z-50 transition-all duration-100"
@@ -155,10 +187,21 @@ export default function BlogPostDetailPage({ theme }: BlogPostDetailPageProps) {
       />
 
       <Container size="sm">
+        {/* Breadcrumb Navigation */}
+        <div className="mb-6">
+          <Breadcrumb
+            theme={theme}
+            items={[
+              { label: 'Insights & Blog', href: '/blog' },
+              { label: post.title, isCurrent: true },
+            ]}
+          />
+        </div>
+
         {/* Back Link */}
         <Link
           to="/blog"
-          className="inline-flex items-center gap-2 text-small font-medium text-secondary-text hover:text-primary-text transition-colors mb-12"
+          className="inline-flex items-center gap-2 text-small font-medium text-secondary-text hover:text-primary-text transition-colors mb-8"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Blog
@@ -215,7 +258,7 @@ export default function BlogPostDetailPage({ theme }: BlogPostDetailPageProps) {
           {/* Render Rich Body Content */}
           <div
             className="blog-content-body pt-8"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
           />
 
           {/* Article Keyword Tags */}

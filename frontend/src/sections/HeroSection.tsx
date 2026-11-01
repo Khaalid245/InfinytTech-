@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '../utils/cn';
 import { ArrowRight, Check } from 'lucide-react';
 import { Image } from '../components/ui/Image';
 import { useSiteSettings } from '../hooks/useSiteSettings';
+import { useProjects } from '../hooks/usePortfolio';
+import { resolveImageUrl } from '../utils/imageHelper';
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 interface HeroSectionProps {
@@ -12,6 +14,7 @@ interface HeroSectionProps {
 
 interface FeaturedProject {
   id: string;
+  slug: string;
   tabLabel: string;
   title: string;
   metric: string;
@@ -21,10 +24,11 @@ interface FeaturedProject {
   imageUrl: string;
 }
 
-// ─── Data ──────────────────────────────────────────────────────────────────
-const PROJECTS: FeaturedProject[] = [
+// ─── Fallback Curated Data ──────────────────────────────────────────────────
+const FALLBACK_PROJECTS: FeaturedProject[] = [
   {
     id: 'healthcare',
+    slug: 'healthcare',
     tabLabel: 'Healthcare',
     title: 'Healthcare Management Platform',
     metric: '92%',
@@ -35,6 +39,7 @@ const PROJECTS: FeaturedProject[] = [
   },
   {
     id: 'real-estate',
+    slug: 'real-estate',
     tabLabel: 'Real Estate',
     title: 'Real Estate Management System',
     metric: '$4M+',
@@ -45,6 +50,7 @@ const PROJECTS: FeaturedProject[] = [
   },
   {
     id: 'ai-assistant',
+    slug: 'ai-assistant',
     tabLabel: 'AI Assistant',
     title: 'AI Customer Support System',
     metric: '350%',
@@ -55,6 +61,7 @@ const PROJECTS: FeaturedProject[] = [
   },
   {
     id: 'saas-dashboard',
+    slug: 'saas-dashboard',
     tabLabel: 'Enterprise SaaS',
     title: 'Enterprise SaaS Dashboard',
     metric: '$14M',
@@ -64,6 +71,13 @@ const PROJECTS: FeaturedProject[] = [
     imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80',
   },
 ];
+
+const FALLBACK_CATEGORY_IMAGES: Record<string, string> = {
+  'web-applications': 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80',
+  'ai-solutions': 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=900&q=80',
+  'education': 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=900&q=80',
+  'mobile-applications': 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=900&q=80',
+};
 
 const TRUST = [
   'Product Strategy',
@@ -80,6 +94,36 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
   const [mounted, setMounted] = useState(false);
   const [progressKey, setProgressKey] = useState(0);
   const { data: settings } = useSiteSettings();
+  const { data: projectsPage } = useProjects({ featured: true, page_size: 6 });
+
+  // Map backend database projects or fallback to curated list
+  const displayProjects: FeaturedProject[] = useMemo(() => {
+    if (projectsPage?.results && projectsPage.results.length > 0) {
+      return projectsPage.results.map((p, idx) => {
+        const firstMetric = p.metrics?.[0];
+        const bullets = [
+          p.short_description,
+          ...(p.tags?.map(t => t.name) || []),
+        ].filter(Boolean).slice(0, 4);
+
+        const categorySlug = p.category?.slug || '';
+        const fallbackImg = FALLBACK_CATEGORY_IMAGES[categorySlug] || FALLBACK_PROJECTS[idx % FALLBACK_PROJECTS.length].imageUrl;
+
+        return {
+          id: p.id,
+          slug: p.slug,
+          tabLabel: p.category?.name || p.tags?.[0]?.name || p.title.slice(0, 14),
+          title: p.title,
+          metric: firstMetric?.metric_value || '99.9%',
+          metricLabel: firstMetric?.metric_label || 'Platform Uptime',
+          bullets: bullets.length > 0 ? bullets : ['Enterprise Architecture', 'High Availability & Scaling'],
+          stack: p.technologies?.map(t => t.name).slice(0, 3) || ['React', 'Django'],
+          imageUrl: resolveImageUrl(p.featured_image) || fallbackImg,
+        };
+      });
+    }
+    return FALLBACK_PROJECTS;
+  }, [projectsPage]);
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 60);
@@ -92,14 +136,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
   }, []);
 
   useEffect(() => {
-    if (paused) return;
+    if (paused || displayProjects.length === 0) return;
     const t = setInterval(() => {
-      advance((active + 1) % PROJECTS.length);
+      advance((active + 1) % displayProjects.length);
     }, 5000);
     return () => clearInterval(t);
-  }, [paused, active, advance]);
+  }, [paused, active, advance, displayProjects.length]);
 
-  const proj = PROJECTS[active];
+  const activeIndex = active >= displayProjects.length ? 0 : active;
+  const proj = displayProjects[activeIndex];
+
 
   // Design tokens
   const accent    = isDark ? '#D4A017' : '#B8860B';
@@ -288,15 +334,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
               onMouseLeave={() => setPaused(false)}
             >
               {/* Tab Row */}
-              <div className="flex border-b" style={{ borderColor: border, background: elevated }}>
-                {PROJECTS.map((p, i) => {
-                  const isActive = active === i;
+              <div className="flex border-b overflow-x-auto no-scrollbar" style={{ borderColor: border, background: elevated }}>
+                {displayProjects.map((p, i) => {
+                  const isActive = activeIndex === i;
                   return (
                     <button
                       key={p.id}
                       type="button"
                       onClick={() => advance(i)}
-                      className="relative flex-1 py-3 px-1 text-[10px] font-bold uppercase tracking-wider border-b-2 transition-all duration-200 cursor-pointer"
+                      className="relative flex-1 py-3 px-2 text-[10px] font-bold uppercase tracking-wider border-b-2 transition-all duration-200 cursor-pointer whitespace-nowrap min-w-max"
                       style={{
                         borderBottomColor: isActive ? accent : 'transparent',
                         color: isActive ? textPri : textDim,
@@ -346,7 +392,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
                     Featured Case Study
                   </span>
                   <h3
-                    className="text-base font-bold tracking-tight leading-snug"
+                    className="text-base font-bold tracking-tight leading-snug line-clamp-1"
                     style={{ color: textPri }}
                   >
                     {proj.title}
@@ -358,7 +404,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
                   {proj.bullets.map(b => (
                     <li key={b} className="flex items-center gap-2.5 text-[12px] sm:text-xs" style={{ color: textSub }}>
                       <span className="w-1 h-1 rounded-full flex-none" style={{ background: accent }} />
-                      {b}
+                      <span className="line-clamp-1">{b}</span>
                     </li>
                   ))}
                 </ul>
@@ -381,7 +427,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
                   </div>
 
                   <Link
-                    to={`/work?project=${proj.id}`}
+                    to={`/work?project=${proj.slug || proj.id}`}
                     className="group/link flex-none inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider whitespace-nowrap transition-opacity duration-150 hover:opacity-70"
                     style={{ color: accent }}
                   >
@@ -394,7 +440,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
               {/* Progress bar */}
               <div className="w-full h-[3px]" style={{ background: isDark ? '#1E2228' : '#F1F5F9' }}>
                 <div
-                  key={`${progressKey}-${active}`}
+                  key={`${progressKey}-${activeIndex}`}
                   className="h-full animate-hero-progress"
                   style={{ background: `linear-gradient(to right, ${accent}, ${accentHov})`, transformOrigin: 'left' }}
                 />
@@ -403,17 +449,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
 
             {/* Dots indicator */}
             <div className="flex items-center justify-center gap-2 pt-1">
-              {PROJECTS.map((_, i) => (
+              {displayProjects.map((_, i) => (
                 <button
                   key={i}
                   type="button"
                   onClick={() => advance(i)}
                   className="transition-all duration-300 rounded-full cursor-pointer"
                   style={{
-                    width: active === i ? '20px' : '6px',
+                    width: activeIndex === i ? '20px' : '6px',
                     height: '6px',
-                    background: active === i ? accent : textDim,
-                    opacity: active === i ? 1 : 0.35,
+                    background: activeIndex === i ? accent : textDim,
+                    opacity: activeIndex === i ? 1 : 0.35,
                   }}
                   aria-label={`View project ${i + 1}`}
                 />

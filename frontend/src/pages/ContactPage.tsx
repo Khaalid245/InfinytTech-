@@ -3,8 +3,7 @@ import Heading from '../components/ui/Heading';
 import ContactSection, { type OfficeLocation } from '../sections/ContactSection';
 import contactArtwork from '../../docs/contact-us image.webp';
 import { useSiteSettings } from '../hooks/useSiteSettings';
-
-
+import { SchemaOrg } from '../components/seo/SchemaOrg';
 
 export default function ContactPage() {
   const { data: settings } = useSiteSettings();
@@ -20,6 +19,22 @@ export default function ContactPage() {
 
   return (
     <div className="animate-fade-in bg-primary-bg">
+      <SchemaOrg
+        breadcrumbs={[
+          { name: 'Contact Us', url: '/contact' },
+        ]}
+        schema={{
+          '@type': 'ContactPage',
+          name: 'Contact Infinity Technologies',
+          description: 'Get in touch with our engineering leadership to discuss software engineering, AI transformation, or cloud architecture.',
+          mainEntity: {
+            '@type': 'Organization',
+            name: settings?.company_name || 'Infinity Technologies',
+            telephone: settings?.phone || undefined,
+            email: settings?.primary_email || settings?.sales_email || 'contact@infinyttech.com',
+          },
+        }}
+      />
       {/* HERO SECTION */}
       <section className="relative w-full overflow-hidden min-h-screen flex items-center justify-center pt-24 pb-16">
         

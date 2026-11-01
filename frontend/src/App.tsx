@@ -8,6 +8,7 @@ import PageLayout from './components/layout/PageLayout';
 import { GlobalSEO } from './components/seo/GlobalSEO';
 import ProtectedRoute from './components/admin/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 
 // Public Pages (Code Split)
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -17,12 +18,14 @@ const ServicesPage = lazy(() => import('./pages/ServicesPage'));
 const WorkPage = lazy(() => import('./pages/WorkPage'));
 const InsightsPage = lazy(() => import('./pages/InsightsPage'));
 const BlogPostDetailPage = lazy(() => import('./pages/BlogPostDetailPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 // Admin Pages (Code Split)
 const AdminLoginPage = lazy(() => import('./pages/admin/AdminLoginPage'));
 const AdminLayout = lazy(() => import('./components/admin/layout/AdminLayout'));
 const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage'));
 const AdminPortfolioPage = lazy(() => import('./pages/admin/AdminPortfolioPage'));
+const AdminTechnologiesPage = lazy(() => import('./pages/admin/portfolio/AdminTechnologiesPage'));
 const AdminServicesPage = lazy(() => import('./pages/admin/AdminServicesPage'));
 const AdminBlogPage = lazy(() => import('./pages/admin/AdminBlogPage'));
 const AdminBlogCategoriesPage = lazy(() => import('./pages/admin/AdminBlogCategoriesPage'));
@@ -37,6 +40,14 @@ const AdminUsersPage = lazy(() => import('./pages/admin/users/AdminUsersPage'));
 const AdminRolesPage = lazy(() => import('./pages/admin/users/AdminRolesPage'));
 const SettingsLayout = lazy(() => import('./pages/admin/settings/SettingsLayout'));
 const GeneralSettings = lazy(() => import('./pages/admin/settings/GeneralSettings'));
+const TechStackSettings = lazy(() => import('./pages/admin/settings/TechStackSettings'));
+const ServicesSettings = lazy(() => import('./pages/admin/settings/ServicesSettings'));
+const PortfolioHeroSettings = lazy(() => import('./pages/admin/settings/PortfolioHeroSettings'));
+const AboutHeroSettings = lazy(() => import('./pages/admin/settings/AboutHeroSettings'));
+const OurStorySettings = lazy(() => import('./pages/admin/settings/OurStorySettings'));
+const CtaSettings = lazy(() => import('./pages/admin/settings/CtaSettings'));
+const MissionValuesSettings = lazy(() => import('./pages/admin/settings/MissionValuesSettings'));
+const WhyChooseUsSettings = lazy(() => import('./pages/admin/settings/WhyChooseUsSettings'));
 const BrandingSettings = lazy(() => import('./pages/admin/settings/BrandingSettings'));
 const ContactSettings = lazy(() => import('./pages/admin/settings/ContactSettings'));
 const SocialSettings = lazy(() => import('./pages/admin/settings/SocialSettings'));
@@ -73,9 +84,11 @@ export const App: React.FC = () => {
           {/* Public Routes with PageLayout */}
           <Route element={
             <PageLayout theme={theme} onThemeToggle={handleThemeToggle}>
-              <Suspense fallback={<RouteLoadingFallback />}>
-                <Outlet />
-              </Suspense>
+              <ErrorBoundary>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <Outlet />
+                </Suspense>
+              </ErrorBoundary>
             </PageLayout>
           }>
             <Route path="/" element={<HomePage theme={theme} />} />
@@ -89,7 +102,8 @@ export const App: React.FC = () => {
             <Route path="/insights/:slug" element={<BlogPostDetailPage theme={theme} />} />
 
             <Route path="/login" element={<AdminLoginPage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="/admin/login" element={<Navigate to="/login" replace />} />
+            <Route path="*" element={<NotFoundPage theme={theme} />} />
           </Route>
 
           {/* Admin Routes with AdminLayout */}
@@ -106,7 +120,10 @@ export const App: React.FC = () => {
           }>
             <Route index element={<AdminDashboardPage />} />
             <Route path="dashboard" element={<AdminDashboardPage />} />
-            <Route path="portfolio" element={<AdminPortfolioPage />} />
+            <Route path="portfolio">
+              <Route index element={<AdminPortfolioPage />} />
+              <Route path="technologies" element={<AdminTechnologiesPage />} />
+            </Route>
             <Route path="services" element={<AdminServicesPage />} />
             <Route path="blog">
               <Route index element={<AdminBlogPage />} />
@@ -116,6 +133,14 @@ export const App: React.FC = () => {
             <Route path="settings" element={<SettingsLayout />}>
               <Route index element={<GeneralSettings />} />
               <Route path="general" element={<GeneralSettings />} />
+              <Route path="services-sections" element={<ServicesSettings />} />
+              <Route path="tech-stack" element={<TechStackSettings />} />
+              <Route path="portfolio-hero" element={<PortfolioHeroSettings />} />
+              <Route path="about-hero" element={<AboutHeroSettings />} />
+              <Route path="our-story" element={<OurStorySettings />} />
+              <Route path="cta" element={<CtaSettings />} />
+              <Route path="mission-values" element={<MissionValuesSettings />} />
+              <Route path="why-choose-us" element={<WhyChooseUsSettings />} />
               <Route path="branding" element={<BrandingSettings />} />
               <Route path="contact" element={<ContactSettings />} />
               <Route path="social" element={<SocialSettings />} />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Check, Mail, Phone, MapPin, MessageSquare, Map, Share2 } from 'lucide-react';
 import { Container } from '../components/layout/Container';
 import { Section } from '../components/layout/Section';
@@ -14,6 +14,7 @@ import { cn } from '../utils/cn';
 import { submitLead } from '../services/leads.service';
 import { useSiteSettings } from '../hooks/useSiteSettings';
 import { SocialLinks } from '../components/ui/SocialLinks';
+import { checkContactAntiSpam, validateContactForm } from '../utils/contactValidation';
 
 export interface OfficeLocation {
   city: string;
@@ -59,6 +60,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [honeypot, setHoneypot] = useState('');
+  const lastSubmitTimeRef = useRef<number>(0);
 
   const serviceOptions = [
     { value: 'design', label: 'Product & Experience Design' },
@@ -80,25 +83,33 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
           }))
         : []);
 
-  const validate = () => {
-    const newErrors: Record<string, string> = {};
-    if (!formData.name.trim()) newErrors.name = 'Name is required';
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-    if (!formData.message.trim()) newErrors.message = 'Please describe your request';
-    if (!formData.privacy) newErrors.privacy = 'You must accept the privacy policy to proceed';
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
 
+    const validation = validateContactForm(formData);
+    setErrors(validation.errors);
+    if (!validation.isValid) return;
+
+    // Client-side anti-spam check (honeypot trap + 3-second cooldown)
+    const antiSpam = checkContactAntiSpam({
+      honeypot,
+      lastSubmitTime: lastSubmitTimeRef.current,
+      cooldownMs: 3000,
+    });
+
+    if (!antiSpam.allowed) {
+      if (antiSpam.isBot) {
+        // Silently fake success to mislead automated scrapers
+        setIsSubmitted(true);
+        return;
+      }
+      if (antiSpam.isThrottled) {
+        setSubmitError('Please wait a moment before sending another message.');
+        return;
+      }
+    }
+
+    lastSubmitTimeRef.current = Date.now();
     setIsSubmitting(true);
     setSubmitError(null);
 
@@ -116,7 +127,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
         company: formData.company,
         message: formData.message,
         project_type,
-        source: 'Contact Form'
+        source: 'Contact Form',
+        website_url_hp: honeypot || undefined
       });
       setIsSubmitted(true);
       if (onSubmitSuccess) {
@@ -354,6 +366,33 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                 title="Start a Conversation"
                 description="Share details about your upcoming project and our engineering team will prepare a proposal."
               >
+                {/* Anti-spam honeypot input: visually hidden, omitted from screen readers and tab order */}
+                <div
+                  aria-hidden="true"
+                  style={{
+                    position: 'absolute',
+                    width: '1px',
+                    height: '1px',
+                    padding: 0,
+                    margin: '-1px',
+                    overflow: 'hidden',
+                    clip: 'rect(0, 0, 0, 0)',
+                    whiteSpace: 'nowrap',
+                    border: 0,
+                  }}
+                >
+                  <label htmlFor="website_url_hp">Leave this field blank</label>
+                  <input
+                    id="website_url_hp"
+                    type="text"
+                    name="website_url_hp"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Input
                     name="name"

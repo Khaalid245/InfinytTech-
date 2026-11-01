@@ -49,8 +49,9 @@ class ServiceSerializer(serializers.ModelSerializer):
         model = Service
         fields = (
             'id', 'category', 'title', 'slug', 'short_description', 'description',
-            'icon', 'featured_image', 'is_featured', 'benefits', 'is_active', 'order', 
-            'features', 'industries', 'faqs', 'created_at', 'updated_at'
+            'icon', 'featured_image', 'is_featured', 'benefits', 'what_we_build', 'tech_stack',
+            'typical_engagements', 'timeline', 'engagement_model', 'support_sla', 'case_study_hook',
+            'is_active', 'order', 'features', 'industries', 'faqs', 'created_at', 'updated_at'
         )
         read_only_fields = ('id', 'created_at', 'updated_at')
 
@@ -91,8 +92,9 @@ class ServiceAdminSerializer(serializers.ModelSerializer):
         model = Service
         fields = (
             'id', 'category_id', 'title', 'slug', 'short_description', 'description',
-            'icon', 'featured_media_id', 'is_featured', 'benefits', 'industry_ids', 'faq_ids',
-            'is_active', 'order', 'created_at', 'updated_at'
+            'icon', 'featured_media_id', 'is_featured', 'benefits', 'what_we_build', 'tech_stack',
+            'typical_engagements', 'timeline', 'engagement_model', 'support_sla', 'case_study_hook',
+            'industry_ids', 'faq_ids', 'is_active', 'order', 'created_at', 'updated_at'
         )
         read_only_fields = ('id', 'created_at', 'updated_at')
 
@@ -108,4 +110,3 @@ class ProcessStepSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'created_at', 'updated_at')
 
 
-        read_only_fields = ('id', 'created_at', 'updated_at')

@@ -4,10 +4,13 @@ on:
   push:
     branches:
       - main
+      - master
+      - "release/**"
       - "phase-**"
   pull_request:
     branches:
       - main
+      - master
   workflow_dispatch:
 
 concurrency:
@@ -131,7 +134,7 @@ jobs:
   cd-release-containers:
     name: CD Release (Build & Push Docker Containers to GHCR)
     needs: [frontend-ci, backend-ci]
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    if: (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/')) && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
 
     permissions:
@@ -159,7 +162,7 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}/backend
           tags: |
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
             type=sha,format=short
 
       - name: Build and Push Backend Image
@@ -180,7 +183,7 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}/frontend
           tags: |
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
             type=sha,format=short
 
       - name: Build and Push Frontend Image

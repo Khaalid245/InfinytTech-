@@ -109,6 +109,8 @@ const navSections: NavSection[] = [
         icon: Settings,
         children: [
           { path: '/admin/settings/general', label: 'General' },
+          { path: '/admin/settings/services-sections', label: 'Services & Industries' },
+          { path: '/admin/settings/tech-stack', label: 'Tech Stack Section' },
           { path: '/admin/settings/portfolio-hero', label: 'Portfolio Hero' },
           { path: '/admin/settings/about-hero', label: 'About Hero & Creed' },
           { path: '/admin/settings/our-story', label: 'Our Story Narrative' },

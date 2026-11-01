@@ -4,6 +4,7 @@ import { X, Globe, Briefcase, Award } from 'lucide-react';
 import type { TeamMember } from '../../types/team';
 import { Image } from './Image';
 import { cn } from '../../utils/cn';
+import { sanitizeHtml } from '../../utils/sanitizeHtml';
 
 const LinkedInIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -168,7 +169,7 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({
             isDark ? "text-[#94A3B8]" : "text-[#475569]"
           )}>
             {member.biography ? (
-              <div dangerouslySetInnerHTML={{ __html: member.biography.replace(/\n/g, '<br/>') }} />
+              <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(member.biography.replace(/\n/g, '<br/>')) }} />
             ) : (
               <p>{member.short_bio || "Dedicated engineering professional committed to crafting world-class digital systems."}</p>
             )}

@@ -135,7 +135,7 @@ export default function InsightsPage({ theme }: InsightsPageProps) {
   const isDark = theme === 'dark';
 
   return (
-    <div className="pt-24 pb-20 animate-fade-in">
+    <div className="pb-20 animate-fade-in">
       <SchemaOrg
         breadcrumbs={[
           { name: 'Insights & Articles', url: '/blog' },

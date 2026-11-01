@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
 import Heading from '../../components/ui/Heading';
@@ -10,14 +10,25 @@ import { Lock, Mail, AlertCircle } from 'lucide-react';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
 
+import { resolveSafeAdminRedirectPath } from '../../utils/adminRedirect';
+export { resolveSafeAdminRedirectPath };
+
 const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const location = useLocation();
+  const { login, isAuthenticated, isAdmin } = useAuth();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // If already authenticated as admin, bypass login screen
+  useEffect(() => {
+    if (isAuthenticated && isAdmin) {
+      navigate('/admin/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, isAdmin, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,9 +43,9 @@ const AdminLoginPage: React.FC = () => {
 
       if (data.access) {
         const role = data.user?.role || 'viewer';
-        const isAdmin = role === 'admin' || role === 'super_admin';
+        const userIsAdmin = role === 'admin' || role === 'super_admin';
 
-        if (!isAdmin) {
+        if (!userIsAdmin) {
           setError('Access denied. This dashboard is restricted to administrators only.');
           return;
         }
@@ -44,7 +55,10 @@ const AdminLoginPage: React.FC = () => {
         }
 
         login(data.access, role, data.refresh || null);
-        navigate('/admin/dashboard', { replace: true });
+        
+        const returnState = location.state as { from?: { pathname?: string } } | undefined;
+        const targetPath = resolveSafeAdminRedirectPath(returnState?.from?.pathname);
+        navigate(targetPath, { replace: true });
       } else {
         throw new Error('Invalid response from server.');
       }

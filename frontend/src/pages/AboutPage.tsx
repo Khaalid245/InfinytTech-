@@ -28,7 +28,7 @@ export default function AboutPage({ theme }: AboutPageProps) {
         }}
       />
 
-      <div className="pt-24 pb-2 border-b border-border-primary/40 bg-surface-muted/30">
+      <div className="py-3 border-b border-border-primary/40 bg-surface-muted/30">
         <Container size="lg">
           <Breadcrumb
             theme={theme}

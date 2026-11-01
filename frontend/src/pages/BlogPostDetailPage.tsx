@@ -15,6 +15,7 @@ import { useSiteSettings } from '../hooks/useSiteSettings';
 import { Link2, ArrowLeft } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { resolveImageUrl } from '../utils/imageHelper';
+import { sanitizeHtml } from '../utils/sanitizeHtml';
 import { SchemaOrg } from '../components/seo/SchemaOrg';
 import Breadcrumb from '../components/ui/Breadcrumb';
 
@@ -57,12 +58,10 @@ export default function BlogPostDetailPage({ theme }: BlogPostDetailPageProps) {
     .filter((p) => p.slug !== slug)
     .slice(0, 3);
 
-  // 3. Fetch all posts to determine chronological Next/Previous links
-  const { data: navigationData } = useBlogPosts({ page_size: 100 });
-  const allPosts = navigationData?.results || [];
-  const currentIndex = allPosts.findIndex((p) => p.slug === slug);
-  const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
-  const prevPost = currentIndex >= 0 && currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
+  // 3. Determine Next/Previous navigation links from contextual related articles
+  // Eliminates unthrottled 100-post overfetch query (Finding P4)
+  const prevPost = relatedPosts.length > 0 ? relatedPosts[0] : null;
+  const nextPost = relatedPosts.length > 1 ? relatedPosts[1] : null;
 
   // 4. Reading Progress Bar Sync
   useEffect(() => {
@@ -149,7 +148,7 @@ export default function BlogPostDetailPage({ theme }: BlogPostDetailPageProps) {
   const isDark = theme === 'dark';
 
   return (
-    <div className="pt-24 pb-20 animate-fade-in relative">
+    <div className="pb-20 animate-fade-in relative">
       <SchemaOrg
         breadcrumbs={[
           { name: 'Insights & Articles', url: '/blog' },
@@ -259,7 +258,7 @@ export default function BlogPostDetailPage({ theme }: BlogPostDetailPageProps) {
           {/* Render Rich Body Content */}
           <div
             className="blog-content-body pt-8"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
           />
 
           {/* Article Keyword Tags */}

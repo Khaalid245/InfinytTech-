@@ -1,0 +1,7 @@
+# robots.txt for https://infinyt.tech
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://infinyt.tech/sitemap.xml

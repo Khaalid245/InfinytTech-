@@ -16,6 +16,7 @@ import MediaFolderModal from '../../components/admin/media/MediaFolderModal';
 import DeleteFolderDialog from '../../components/admin/media/DeleteFolderDialog';
 import MoveMediaModal from '../../components/admin/media/MoveMediaModal';
 import MediaFolderTree from '../../components/admin/media/MediaFolderTree';
+import Pagination from '../../components/admin/shared/Pagination';
 
 const AdminMediaPage: React.FC = () => {
   const [filters, setFilters] = useState<MediaFilters>({ page: 1, page_size: 24, ordering: '-created_at' });
@@ -355,7 +356,11 @@ const AdminMediaPage: React.FC = () => {
           {/* Pagination */}
           {mediaData && mediaData.count > (filters.page_size || 24) && (
             <div className="mt-8 flex justify-center">
-              {/* Pagination controls can be implemented here */}
+              <Pagination
+                currentPage={filters.page || 1}
+                totalPages={Math.ceil(mediaData.count / (filters.page_size || 24))}
+                onPageChange={(p) => setFilters(prev => ({ ...prev, page: p }))}
+              />
             </div>
           )}
         </div>

@@ -116,6 +116,26 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
     }
   }, [formData.title, service]);
 
+  // Handle Escape key navigation and body scroll locking
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     
@@ -204,15 +224,20 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div 
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="service-form-modal-title"
+      >
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
         
         <div className="relative w-full max-w-4xl bg-surface-light border border-border-primary rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
           
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-border-primary">
             <div>
-              <h2 className="text-xl font-bold text-primary-text">
+              <h2 id="service-form-modal-title" className="text-xl font-bold text-primary-text">
                 {service ? 'Edit Service' : 'Create Service'}
               </h2>
               <p className="text-sm text-secondary-text mt-1">

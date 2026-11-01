@@ -8,6 +8,7 @@ import PageLayout from './components/layout/PageLayout';
 import { GlobalSEO } from './components/seo/GlobalSEO';
 import ProtectedRoute from './components/admin/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 
 // Public Pages (Code Split)
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -17,6 +18,7 @@ const ServicesPage = lazy(() => import('./pages/ServicesPage'));
 const WorkPage = lazy(() => import('./pages/WorkPage'));
 const InsightsPage = lazy(() => import('./pages/InsightsPage'));
 const BlogPostDetailPage = lazy(() => import('./pages/BlogPostDetailPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 // Admin Pages (Code Split)
 const AdminLoginPage = lazy(() => import('./pages/admin/AdminLoginPage'));
@@ -82,9 +84,11 @@ export const App: React.FC = () => {
           {/* Public Routes with PageLayout */}
           <Route element={
             <PageLayout theme={theme} onThemeToggle={handleThemeToggle}>
-              <Suspense fallback={<RouteLoadingFallback />}>
-                <Outlet />
-              </Suspense>
+              <ErrorBoundary>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <Outlet />
+                </Suspense>
+              </ErrorBoundary>
             </PageLayout>
           }>
             <Route path="/" element={<HomePage theme={theme} />} />
@@ -98,7 +102,8 @@ export const App: React.FC = () => {
             <Route path="/insights/:slug" element={<BlogPostDetailPage theme={theme} />} />
 
             <Route path="/login" element={<AdminLoginPage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="/admin/login" element={<Navigate to="/login" replace />} />
+            <Route path="*" element={<NotFoundPage theme={theme} />} />
           </Route>
 
           {/* Admin Routes with AdminLayout */}

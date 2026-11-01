@@ -22,6 +22,7 @@ class LeadCreateSerializer(serializers.ModelSerializer):
     budget_range = serializers.CharField(max_length=100, required=False, allow_blank=True, default='', trim_whitespace=True)
     message = serializers.CharField(required=False, allow_blank=True, default='', trim_whitespace=True)
     source = serializers.CharField(max_length=100, required=False, allow_blank=True, default='Contact Form', trim_whitespace=True)
+    website_url_hp = serializers.CharField(max_length=255, required=False, allow_blank=True, default='', write_only=True)
 
     class Meta:
         model = Lead
@@ -29,7 +30,7 @@ class LeadCreateSerializer(serializers.ModelSerializer):
             'id', 'first_name', 'last_name', 'email', 'phone', 'whatsapp',
             'company', 'industry', 'website', 'company_size',
             'country', 'project_type', 'budget_range', 
-            'message', 'source', 'services', 'created_at'
+            'message', 'source', 'services', 'created_at', 'website_url_hp'
         )
         read_only_fields = ('id', 'created_at')
 
@@ -37,6 +38,13 @@ class LeadCreateSerializer(serializers.ModelSerializer):
         if not value:
             raise serializers.ValidationError("Email is required.")
         return value.lower().strip()
+
+    def validate(self, attrs):
+        # Honeypot inspection: if a bot populated the hidden honeypot field, reject
+        hp = attrs.pop('website_url_hp', '')
+        if hp:
+            raise serializers.ValidationError({"website_url_hp": "Spam detected."})
+        return attrs
 
 
 class LeadTimelineSerializer(serializers.ModelSerializer):
